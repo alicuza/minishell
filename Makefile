@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+         #
+#    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/05/27 19:18:38 by sancuta          ###   ########.fr        #
+#    Updated: 2026/05/30 17:16:02 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,11 @@ SRCS        = \
 			token.c \
 			token_utils.c \
 			token_char.c \
-			token_transform.c
+			token_transform.c \
+			env/env_utils.c \
+			token_processor/token_processor.c \
+			builtin/env.c
+			
 DEBUG_SRCS  = debug_utils.c
 
 RELEASE_OBJS = $(addprefix $(RELEASE_DIR)/, $(SRCS:.c=.o))

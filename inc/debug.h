@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   debug.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/05/25 17:32:48 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/05/30 17:23:02 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,16 @@ typedef enum e_arena_type
 	AT_COUNT,
 } t_arena_type;
 
+typedef struct s_env
+{
+	char **envp;
+}	t_env;
 
 typedef struct s_ctx
 {
 	t_arena	arena[AT_COUNT];
 	char  	*read_line;
+	t_env	env;
 }	t_ctx;
 
 void	print_arena(t_arena *arena);
