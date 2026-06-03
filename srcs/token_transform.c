@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_transform.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 16:51:36 by sancuta           #+#    #+#             */
-/*   Updated: 2026/05/26 16:52:03 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/03 21:40:32 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,19 @@ t_token	*get_token_from_offset(t_arena *arena, size_t offset)
 t_token	*get_token_from_idx(t_arena *arena, size_t idx)
 {
 	return ((t_token *)(arena->buf + idx * arena->sentinel));
+}
+
+char *get_token_content(t_ctx *c, size_t token_idx)
+{
+	t_arena	*input;
+	t_token	*token;
+	char	*content;
+
+	input = &(c->arena[AT_STRING]);
+	token = get_token_from_idx(&(c->arena[AT_TOKEN]), token_idx);
+	content = malloc(token->content.len + 1);
+	if (!content)
+		return (NULL);
+	ft_strlcpy(content, input->buf + token->content.start, token->content.len + 1);
+	return (content);
 }

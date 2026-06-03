@@ -6,11 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2026/05/30 12:56:13 by sancuta          ###   ########.fr       */
-=======
-/*   Updated: 2026/05/30 17:26:05 by nribakov         ###   ########.fr       */
->>>>>>> 7db243d (Add env)
+/*   Updated: 2026/06/03 21:07:46 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +40,6 @@ int	main(int argc, char **argv, char **envp)
 		if (!get_user_input(&c))
 			break ;
 #ifdef DEBUG
-<<<<<<< HEAD
 //		print_arena(&c.arena[AT_PROMPT]);
 		print_arena(&c.arena[AT_STRING]);
 		while (true)

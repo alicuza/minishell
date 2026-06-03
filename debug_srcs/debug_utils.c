@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   debug_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/05/30 13:46:39 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/03 21:40:34 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,19 +54,4 @@ void	print_token(t_ctx *c, size_t token_idx)
 		name = "TOKEN";
 	printf("\ntoken\n\tstart = %lu\n\tlen = %lu\n\ttype = %u\n\tnext = %lu\n", token->content.start, token->content.len, token->type, token->next);
 	printf("%s(\"%.*s\")\n", name, (int)token->content.len, input->buf + token->content.start);
-}
-
-char *get_token_content(t_ctx *c, size_t token_idx)
-{
-	t_arena	*input;
-	t_token	*token;
-	char	*content;
-
-	input = &(c->arena[AT_STRING]);
-	token = get_token_from_idx(&(c->arena[AT_TOKEN]), token_idx);
-	content = malloc(token->content.len + 1);
-	if (!content)
-		return (NULL);
-	ft_strlcpy(content, input->buf + token->content.start, token->content.len + 1);
-	return (content);
 }
