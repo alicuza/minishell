@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/03 21:07:46 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/04 17:42:07 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,29 +26,36 @@ static t_ctx	init_ctx(char **envp)
 
 int	main(int argc, char **argv, char **envp)
 {
-	(void) argc;
-	(void) argv;
 	t_ctx	c;
-	
-#ifdef DEBUG
 	size_t	token_idx;
-#endif
 
+	(void)argc;
+	(void)argv;
+#ifdef DEBUG
+#endif
 	c = init_ctx(envp);
 	while (true)
 	{
 		if (!get_user_input(&c))
 			break ;
 #ifdef DEBUG
-//		print_arena(&c.arena[AT_PROMPT]);
+		//		print_arena(&c.arena[AT_PROMPT]);
 		print_arena(&c.arena[AT_STRING]);
 		while (true)
 		{
 			token_idx = get_next_token_idx(&c);
 			if (!token_idx)
-				break;
+				break ;
 			print_token(&c, token_idx);
 			print_arena(&c.arena[AT_TOKEN]);
+			process_token(&c, token_idx);
+		}
+#else
+		while (true)
+		{
+			token_idx = get_next_token_idx(&c);
+			if (!token_idx)
+				break ;
 			process_token(&c, token_idx);
 		}
 #endif

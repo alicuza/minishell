@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: attempting make
+    name: attempt make
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
@@ -21,7 +21,7 @@ jobs:
       - run: make re
 
   norminette:
-    name: checking norminette
+    name: check norminette
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
@@ -37,3 +37,12 @@ jobs:
         env:
           PIP_REQUIRE_VIRTUALENV: "false"
       - run: norminette inc/ srcs/ debug_srcs/ libs/libft/
+  
+  test:
+    name: run integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y libreadline-dev
+      - run: make test

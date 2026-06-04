@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/05/30 17:16:02 by nribakov         ###   ########.fr        #
+#    Updated: 2026/06/04 20:37:59 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -118,6 +118,9 @@ compile_flags.txt:
 		echo $$flag >> $@ ; \
 	done
 
+test: $(NAME)
+	./test/runner.sh
+
 clean:
 	$(MAKE) -C $(LIBFT_DIR) clean
 	rm -rf build docs/Doxyfile
@@ -127,11 +130,12 @@ fclean: clean
 	rm -f $(NAME) $(NAME)-debug
 	rm -rf docs
 	rm -f compile_flags
+	rm log
 
 re: fclean all
 
 # ---- phony targets ------------------------------------------------------- #
-.PHONY: all debug run run-debug doc clean fclean re FORCE
+.PHONY: all debug run run-debug doc test clean fclean re FORCE
 
 # ---- dependencies -------------------------------------------------------- #
 -include $(RELEASE_OBJS:.o=.d)
