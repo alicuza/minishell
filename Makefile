@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/06/04 20:37:59 by nribakov         ###   ########.fr        #
+#    Updated: 2026/06/04 20:56:08 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -130,7 +130,7 @@ fclean: clean
 	rm -f $(NAME) $(NAME)-debug
 	rm -rf docs
 	rm -f compile_flags
-	rm log
+	rm -rf log
 
 re: fclean all
 
