@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/03 20:21:46 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/05 16:54:13 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,19 +53,4 @@ void	print_token(t_ctx *c, size_t token_idx)
 		name = "TOKEN";
 	fprintf(stderr, "\ntoken\n\tstart = %lu\n\tlen = %lu\n\ttype = %u\n\tnext = %lu\n", token->content.start, token->content.len, token->token_type, token->next);
 	fprintf(stderr, "%s(%.*s)\n", name, (int)token->content.len, input->buf + token->content.start);
-}
-
-char	*get_token_content(t_ctx *c, size_t token_idx)
-{
-	t_arena	*input;
-	t_token	*token;
-	char	*content;
-
-	input = &(c->arena[AT_STRING]);
-	token = get_token_from_idx(&(c->arena[AT_TOKEN]), token_idx);
-	content = malloc(token->content.len + 1);
-	if (!content)
-		return (NULL);
-	ft_strlcpy(content, input->buf + token->content.start, token->content.len + 1);
-	return (content);
 }

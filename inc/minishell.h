@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/02 16:13:44 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/05 19:32:32 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef MINISHELL_H
@@ -51,15 +51,15 @@
 
 # define SHELLNAME "shni"
 
-/* ----- with_cwd ---------------------------------------------------------- */
+/* -------- with_cwd -------------------------------------------------------- */
 # define WITH_CWD true
 # define NO_CWD false
 
-/* ----- prompt type ------------------------------------------------------- */
+/* -------- prompt type ----------------------------------------------------- */
 # define INPUT_DEFAULT 0
 # define INPUT_CONTINUATION 1
 
-/* ----- sets -------------------------------------------------------------- */
+/* -------- sets ------------------------------------------------------------ */
 # define OPERATOR_SET "<>&|()\n"
 # define BLANK_SET " \t"
 # define QUOTE_SET "\"'"
@@ -93,9 +93,9 @@ typedef struct s_env
 
 typedef struct s_ctx
 {
+	t_env	env;
 	t_arena	arena[AT_COUNT];
 	char  	*read_line;
-	t_env	env;
 	int		return_status;
 }	t_ctx;
 # endif
@@ -155,13 +155,13 @@ bool		is_char_in_set(char c, const char *set);
 const char	**get_operator_strs(void);
 bool		is_str_in_set(char *c, const char **set);
 
-/* ------------------------------ env_utils.c ------------------------------ */
+/* --------- env_utils.c ---------------------------------------------------- */
 t_env		init_env(t_env env, char **envp);
 
-/* ------------------------------ token_processor.c ------------------------------ */
+/* --------- token_processor.c ---------------------------------------------- */
 int			process_token(t_ctx *c, size_t token_idx);
 
-/* ------------------------------ env.c ------------------------------ */
+/* --------- env.c ---------------------------------------------------------- */
 void		env(t_ctx *c);
 
 #endif

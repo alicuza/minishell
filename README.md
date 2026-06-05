@@ -233,6 +233,7 @@ export LESS_TERMCAP_ue=$'\e[0m'           # end underline
 - [p] research built-ins
 - [p] research interactive mode
 - [p] research git workflow for working in a team
+  - use git cherry-pick to create a new branch to modularize pull requests.
 - [ ] research `posix sh`
 - [x] ~~compile documentation on signals~~
 - [x] ~~research managing memory with multiple arenas, because there are actual multiple lifetimes~~
@@ -243,6 +244,7 @@ export LESS_TERMCAP_ue=$'\e[0m'           # end underline
 - [-] ~~compile documentation on `curses.h` and `term.h`~~
 
 **implementation**
+- [ ] prompt cwd -> refactor into its own reusable function, for the `cd` builtin.
 - [p] create harness for automatic unit testing (tdd)
 - [p] work on arenas - prepare prompt arena for `getcwd`
 - [p] include the additional info in the make section.

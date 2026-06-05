@@ -6,13 +6,13 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/02 16:14:31 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/05 19:24:18 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static t_ctx	init_ctx(void)
+static t_ctx	init_ctx(char **envp)
 {
 	t_ctx	c;
 
@@ -20,6 +20,7 @@ static t_ctx	init_ctx(void)
 	c.arena[AT_STRING] = arena_init(ARENA_SIZE, sizeof(char));
 	c.arena[AT_PROMPT] = arena_init(ARENA_SIZE, sizeof(char));
 	c.arena[AT_TOKEN] = arena_init(ARENA_SIZE, sizeof(t_token));
+	c.env.envp = envp;
 	return (c);
 }
 
@@ -51,6 +52,7 @@ int	main(int argc, char **argv, char **envp)
 			print_token(&c, token_idx);
 			print_arena(&c.arena[AT_TOKEN]);
 #endif
+		process_token(&c, token_idx);
 		}
 		arena_reset(&c.arena[AT_STRING]);
 		arena_reset(&c.arena[AT_TOKEN]);

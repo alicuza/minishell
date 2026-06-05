@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/02 16:15:02 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/05 19:32:04 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef DEBUG_H
@@ -25,8 +25,14 @@ typedef enum e_arena_type
 	AT_COUNT,
 }	t_arena_type;
 
+typedef struct s_env
+{
+	char **envp;
+}	t_env;
+
 typedef struct s_ctx
 {
+	t_env	env;
 	t_arena	arena[AT_COUNT];
 	char	*read_line;
 	int		return_status;
