@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/06/04 20:56:08 by nribakov         ###   ########.fr        #
+#    Updated: 2026/06/06 16:41:01 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,8 @@ SRCS        = \
 			token_transform.c \
 			env/env_utils.c \
 			token_processor/token_processor.c \
-			builtin/env.c
+			builtin/env.c \
+			builtin/pwd.c
 			
 DEBUG_SRCS  = debug_utils.c
 

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/05/30 17:23:02 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/06 17:22:06 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ typedef enum e_arena_type
 
 typedef struct s_env
 {
-	char **envp;
+	t_list val;
 }	t_env;
 
 typedef struct s_ctx

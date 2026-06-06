@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/04 18:06:22 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/06 16:43:44 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@ void	map_to_command(t_ctx *c, char *cmd)
 	if (ft_strncmp(cmd, ENV, 4) == EQUAL)
 	{
 		env(c);
+	} else if (ft_strncmp(cmd, PWD, 4) == EQUAL)
+	{
+		pwd(c);
 	}
 }
 

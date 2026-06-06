@@ -6,9 +6,9 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
+/*   Updated: 2026/06/06 18:40:04 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -34,6 +34,8 @@
 								// tputs
 
 # include <stdint.h>			// TODO: consider for the saner type names
+
+#include <linux/limits.h>		// PATH_MAX
 
 # include "libft.h"
 # include "arena.h"
@@ -74,9 +76,15 @@ typedef enum e_arena_type
 	AT_COUNT,
 } t_arena_type;
 
+typedef struct s_env_content
+{
+	char *key;
+	char *val;
+}	t_env_content;
+
 typedef struct s_env
 {
-	char **envp;
+	t_list *vals;
 }	t_env;
 
 typedef struct s_ctx
@@ -136,13 +144,16 @@ const char	**get_operator_strs(void);
 bool		is_str_in_set(char *c, const char **set);
 
 /* ------------------------------ env_utils.c ------------------------------ */
-t_env	init_env(t_env env, char **envp);
+int	init_env(t_env *env, char **envp);
+char	*search(t_env *env, char *key);
 
 /* ------------------------------ token_processor.c ------------------------------ */
 int	process_token(t_ctx *c, size_t token_idx);
 
 /* ------------------------------ env.c ------------------------------ */
 void	env(t_ctx *c);
-
+/* ------------------------------ pwd.c ------------------------------ */
+void	pwd(t_ctx *c);
 
 #endif
+

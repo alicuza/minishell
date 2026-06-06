@@ -1,24 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin.h                                          :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/30 14:27:57 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/06 16:45:31 by nribakov         ###   ########.fr       */
+/*   Created: 2026/06/06 16:21:09 by nribakov          #+#    #+#             */
+/*   Updated: 2026/06/06 19:07:02 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BUILTIN_H
-# define BUILTIN_H
+#include "minishell.h"
+#include "env.h"
 
-# define ECHO "echo"
-# define CD "cd"
-# define PWD "pwd"
-# define EXPORT "export"
-# define UNSET "unset"
-# define ENV "env"
-# define EXIT "exit"
+char *get_cwd_safely();
+{
+	char *cwd;
+	cwd = getcwd(NULL,0); 
+	while (!cwd)
+	{
+		printf("Error: failed to get cwd"); //TODO make it better
+	}
+	return cwd;
+}
 
+void	pwd(t_ctx *c)
+{
+	char* pwd;
+#ifdef DEBUG
+	printf("\nExecuting pwd:\n");
 #endif
+	pwd = search(c->env, PWD);
+	if(!pwd)
+		pwd = get_cwd_safely();
+	printf("%s\n", pwd);
+}
