@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 18:47:30 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/18 20:25:38 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@
 # include <termcap.h>			// tgetent, tgetflag, tgetnum, tgetstr, tgoto,
 								// tputs
 # include <errno.h>				// errno
+
+#include <linux/limits.h>		// PATH_MAX
 
 # include "libft.h"
 # include "arena.h"
