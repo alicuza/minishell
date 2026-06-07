@@ -23,7 +23,9 @@ echo "$2" | ./minishell > $shni_result;
 sed -i '1d' "$shni_result"
 sed -i '$d' "$shni_result"
 
-eval $3
+if [ "$#" -eq 3 ]; then
+  eval $3
+fi
 
 #Check result
 difference="$(diff -u "$bash_result" "$shni_result")"

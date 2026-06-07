@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/07 14:25:35 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/07 15:17:58 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@
 								// tputs
 
 # include <stdint.h>			// TODO: consider for the saner type names
-
-#include <linux/limits.h>		// PATH_MAX
 
 # include "libft.h"
 # include "arena.h"
@@ -91,6 +89,7 @@ typedef struct s_ctx
 {
 	t_arena	arena[AT_COUNT];
 	char  	*read_line;
+	char exit_status;
 	t_env	env;
 }	t_ctx;
 # endif
@@ -154,9 +153,9 @@ char	**ft_split_key_value(const char *s, char c);
 int	process_token(t_ctx *c, size_t token_idx);
 
 /* ------------------------------ env.c ------------------------------ */
-void	env(t_ctx *c);
+int	env(t_ctx *c);
 /* ------------------------------ pwd.c ------------------------------ */
-void	pwd(t_ctx *c);
+int	pwd(t_ctx *c);
 char *get_cwd_safely();
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/06 16:43:44 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/07 15:36:30 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,16 @@
 
 #define EQUAL 0
 
-void	map_to_command(t_ctx *c, char *cmd)
+int 	map_to_command(t_ctx *c, char *cmd)
 {
 	if (ft_strncmp(cmd, ENV, 4) == EQUAL)
 	{
-		env(c);
+		return env(c);
 	} else if (ft_strncmp(cmd, PWD, 4) == EQUAL)
 	{
-		pwd(c);
+		return pwd(c);
 	}
+	return 0;
 }
 
 /*
@@ -39,7 +40,7 @@ int	process_token(t_ctx *c, size_t token_idx)
 	if (token->type == TT_WORD)
 	{
 		content = get_token_content(c, token_idx);
-		map_to_command(c, content);
+		c->exit_status = map_to_command(c, content);
 	}
 	return (0);
 }

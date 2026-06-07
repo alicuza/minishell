@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/07 13:42:47 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/07 15:37:03 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_ctx
 {
 	t_arena	arena[AT_COUNT];
 	char  	*read_line;
+	char exit_status;
 	t_env	env;
 }	t_ctx;
 
