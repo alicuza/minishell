@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:45:50 by sancuta           #+#    #+#             */
-/*   Updated: 2026/05/25 13:57:34 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/07 16:39:36 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,10 @@
 size_t	get_user_input(t_ctx *c)
 {
 	size_t	offset;
+	struct stat buf;
 
+	if (fstat(STDIN_FILENO , &buf) == -1)
+    return (0);
 	c->read_line = readline(get_prompt(c));
 	if (!c->read_line)
 		return (0);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   arena.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com      +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 09:41:35 by sancuta           #+#    #+#             */
-/*   Updated: 2026/05/25 16:57:57 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/07 17:08:06 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,6 @@ size_t	arena_save(t_arena *arena);
 void	arena_restore(t_arena *arena, size_t idx);
 void	arena_hook_cleanup(t_arena *arena, void (*clean)(void *), void *env);
 void	arena_free(t_arena *arena);
+void	arena_free_buf(t_arena *arena);
 void	*get_arena_ptr(t_arena *arena, size_t idx);
 #endif
