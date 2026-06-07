@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/06/06 16:41:01 by nribakov         ###   ########.fr        #
+#    Updated: 2026/06/07 14:25:55 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,6 +40,7 @@ SRCS        = \
 			token_char.c \
 			token_transform.c \
 			env/env_utils.c \
+			env/ft_split_key_value.c \
 			token_processor/token_processor.c \
 			builtin/env.c \
 			builtin/pwd.c

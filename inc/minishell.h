@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/06 18:40:04 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/07 14:25:35 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,9 @@ bool		is_str_in_set(char *c, const char **set);
 int	init_env(t_env *env, char **envp);
 char	*search(t_env *env, char *key);
 
+/* ------------------------------ ft_split_key_value.c ------------------------------ */
+char	**ft_split_key_value(const char *s, char c);
+
 /* ------------------------------ token_processor.c ------------------------------ */
 int	process_token(t_ctx *c, size_t token_idx);
 
@@ -154,6 +157,7 @@ int	process_token(t_ctx *c, size_t token_idx);
 void	env(t_ctx *c);
 /* ------------------------------ pwd.c ------------------------------ */
 void	pwd(t_ctx *c);
+char *get_cwd_safely();
 
 #endif
 

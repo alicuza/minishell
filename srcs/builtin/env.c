@@ -1,8 +1,11 @@
 #include "minishell.h"
 
-static void	print_val(void *str)
+static void	print_val(void *content_void_p)
 {
-	printf("%s\n", envp[i]);
+	t_env_content* content;
+
+	content = (t_env_content*) content_void_p;
+	printf("%s=%s\n", (char*) content->key, content->val);
 }
 
 void	env(t_ctx *c)
@@ -12,7 +15,7 @@ void	env(t_ctx *c)
 #endif
 
 
-	t_list env = c->env.vals;
+	t_list *env = c->env.vals;
 	if (env)
-		ft_lstiter(list, &print_val);
+		ft_lstiter(env, &print_val);
 }
