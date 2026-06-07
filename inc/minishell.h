@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 20:45:59 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/18 20:53:05 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,7 @@ uint64_t		get_expansion_len(char *expansion);
 
 /* -------- env_utils.c ---------------------------------------------------- */
 int	init_env(t_env *env, char **envp);
+int	free_env(t_env *env);
 char	*search(t_env *env, char *key);
 
 /* -------- ft_split_key_value.c ---------------------------------------------------- */
@@ -141,6 +142,9 @@ t_parser_state	parse_input(t_ctx *c);
 
 /* -------- parser_utils.c -------------------------------------------------- */
 void			shift_symbol(t_ctx *c, t_parser_state *parse);
+
+/* ------------------------------ builtin_exit.c ------------------------------ */
+int	builtin_exit(t_ctx *c);
 
 #endif
 
