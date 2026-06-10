@@ -14,12 +14,12 @@
 
 size_t	get_idx_from_offset(t_arena *arena, size_t offset)
 {
-	return (offset / arena->sentinel);
+	return (offset / arena->stride);
 }
 
 size_t	get_offset_from_idx(t_arena *arena, size_t idx)
 {
-	return (idx * arena->sentinel);
+	return (idx * arena->stride);
 }
 
 t_token	*get_token_from_offset(t_arena *arena, size_t offset)
@@ -29,7 +29,7 @@ t_token	*get_token_from_offset(t_arena *arena, size_t offset)
 
 t_token	*get_token_from_idx(t_arena *arena, size_t idx)
 {
-	return ((t_token *)(arena->buf + idx * arena->sentinel));
+	return ((t_token *)(arena->buf + idx * arena->stride));
 }
 
 char *get_token_content(t_ctx *c, size_t token_idx)

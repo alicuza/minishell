@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:03:51 by sancuta           #+#    #+#             */
-/*   Updated: 2026/05/29 20:13:10 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/02 13:34:01 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,16 @@
 size_t	start_token(t_arena *arena, size_t start, t_token_type type)
 {
 	t_token	*token;
-	size_t offset;
+	size_t	offset;
 
 	offset = arena_alloc(arena, sizeof(t_token), _Alignof(t_token));
 #ifdef DEBUG
-	printf("in start_token at offset %zu\n", offset);
+	fprintf(stderr, "in start_token at offset %zu\n", offset);
 #endif
 	token = get_token_from_offset(arena, offset);
 	token->content.start = start;
 	token->content.len = 1;
-	token->type = type;
+	token->token_type = type;
 	return (offset);
 }
 

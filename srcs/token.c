@@ -6,44 +6,12 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:37:40 by sancuta           #+#    #+#             */
-/*   Updated: 2026/05/30 13:09:29 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/03 20:44:53 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* TODO: could be part of a bigger function that also returns the length of the quoted text, if it is enclosed
- *       i would need to modify the grow function to take the length as a parameter
- *
- * int	get_quote_type(t_arena *input, size_t idx)
- * {
- * 	static int	quote_type; // TODO: figure out if i want the hassle of implementing the unenclosed quote as a char
- *
- * 	while (input->buf[idx] && !is_quote_char(input->buf[idx]))
- * 		++idx;
- * 	if (!input->buf[idx])
- * 		return (false);
- * 	return (true);
-}
- */
-/* TODO: might be unnecessary
- *
- * bool	is_enclosed_quote(t_arena *input, size_t idx)
- * {
- * 	char	quote;
- * 
- * 	if (is_char_in_set(input->buf[cur_char_idx], QUOTE_SET))
- * 	{
- * 		quote = input->buf[idx];
- * 		++idx;
- * 	}
- * 	while (input->buf[idx] && input->buf[idx] != quote)
- * 		++idx;
- * 	if (!input->buf[idx])
- * 		return (false);
- * 	return (true);
- * }
- */ 
 // returns the passed cur_char_idx or the updated one, if the quote is closed
 static size_t	try_as_quote_pair(t_ctx *c, size_t token_idx, size_t input_idx)
 {
@@ -85,7 +53,6 @@ size_t	get_expansion_len(char *expansion)
 	return (i);
 }
 
-// TODO: !!NOW: figure out how to actually implement the blanks
 size_t	get_next_token_idx(t_ctx *c)
 {
 	static size_t	cur_char_idx;
@@ -97,27 +64,28 @@ size_t	get_next_token_idx(t_ctx *c)
 	t_arena			*tokens = &(c->arena[AT_TOKEN]);
 
 	if (!cur_char_idx)
-		cur_char_idx = input->sentinel;
+		cur_char_idx = input->stride;
 #ifdef DEBUG
-	printf("cur_char_idx: %c '%i'\n", input->buf[cur_char_idx], input->buf[cur_char_idx]);
-	printf("cur_char_idx: %s\n", input->buf + cur_char_idx);
+	fprintf(stderr, "cur_char_idx: %c '%i'\n", input->buf[cur_char_idx], input->buf[cur_char_idx]);
+	fprintf(stderr, "cur_char_idx: %s\n", input->buf + cur_char_idx);
 #endif
 	while (cur_char_idx < input->offset)
 	{
 		if (input->buf[cur_char_idx] == '\0')	// rule 1
 		{
 #ifdef DEBUG
-			printf("rule 1\n");
+			fprintf(stderr, "rule 1\n");
 #endif
 			++cur_char_idx;
 			token_idx = cur_token_idx;
 			cur_token_idx = 0;
 			return (token_idx);
 		}
-		else if ((get_token_from_idx(tokens, cur_token_idx)->type == TT_OPERATOR) && is_str_in_set(input->buf + cur_char_idx - 1, get_operator_strs()))		// rule 2
+		else if ((get_token_from_idx(tokens, cur_token_idx)->token_type == TT_OPERATOR)
+			&& is_str_in_set(input->buf + cur_char_idx - 1, get_operator_strs()))	// rule 2
 		{
 #ifdef DEBUG
-			printf("rule 2\n");
+			fprintf(stderr, "rule 2\n");
 #endif
 			if(cur_token_idx)
 			{
@@ -128,24 +96,24 @@ size_t	get_next_token_idx(t_ctx *c)
 				return (token_idx);
 			}
 		}
-		else if ((get_token_from_idx(tokens, cur_token_idx)->type == TT_OPERATOR) && !is_str_in_set(input->buf + cur_char_idx - 1, get_operator_strs()))		// rule 3
+		else if ((get_token_from_idx(tokens, cur_token_idx)->token_type == TT_OPERATOR)
+			&& !is_str_in_set(input->buf + cur_char_idx - 1, get_operator_strs()))	// rule 3
 		{
 #ifdef DEBUG
-			printf("rule 3\n");
+			fprintf(stderr, "rule 3\n");
 #endif
 			token_idx = cur_token_idx;
 			cur_token_idx = 0;
 			return (token_idx);
 		}
-/* TODO: figure out in general how this could be done better, if i want to use
-   an unclosed quote as a char.
- * also tracking of quotes is unnecessarym except for the case that a
- * variable gets expanded to something containing literal quote chars
+/* TODO: tracking of quotes is unnecessary, except for the case that a
+ *       variable gets expanded to something containing literal quote chars
+ *       will need to be handled in the expansion handler.
  */
-		else if (is_char_in_set(input->buf[cur_char_idx], QUOTE_SET))			// rule 4
+		else if (is_char_in_set(input->buf[cur_char_idx], QUOTE_SET))				// rule 4
 		{
 #ifdef DEBUG
-			printf("rule 4\n");
+			fprintf(stderr, "rule 4\n");
 #endif
 			if (!cur_token_idx)
 			{
@@ -156,10 +124,10 @@ size_t	get_next_token_idx(t_ctx *c)
 				grow_token_at_idx(tokens, cur_token_idx);
 			cur_char_idx = try_as_quote_pair(c, cur_token_idx, cur_char_idx) + 1;
 		}
-		else if (is_expansion_start(input->buf, cur_char_idx))	// rule 5
+		else if (is_expansion_start(input->buf, cur_char_idx))						// rule 5
 		{
 #ifdef DEBUG
-			printf("rule 5\n");
+			fprintf(stderr, "rule 5\n");
 #endif
 			len = get_expansion_len(input->buf + cur_char_idx);
 			if (!cur_token_idx)
@@ -169,12 +137,12 @@ size_t	get_next_token_idx(t_ctx *c)
 				--len;
 			}
 			grow_token_times_at_idx(tokens, cur_token_idx, len);
-			cur_char_idx += len + 1;
+			cur_char_idx += len;
 		}
-		else if (/*get_token_from_idx(tokens, cur_token_idx)->type != TT_OPERATOR && */ is_char_in_set(input->buf[cur_char_idx], OPERATOR_SET))		// rule 6
+		else if (is_char_in_set(input->buf[cur_char_idx], OPERATOR_SET))			// rule 6
 		{
 #ifdef DEBUG
-			printf("rule 6\n");
+			fprintf(stderr, "rule 6\n");
 #endif
 			if(cur_token_idx)
 			{
@@ -188,10 +156,10 @@ size_t	get_next_token_idx(t_ctx *c)
 				start_token(tokens, cur_char_idx, TT_OPERATOR));
 			++cur_char_idx;
 		}
-		else if (is_char_in_set(input->buf[cur_char_idx], BLANK_SET))			// rule 7
+		else if (is_char_in_set(input->buf[cur_char_idx], BLANK_SET))				// rule 7
 		{
 #ifdef DEBUG
-			printf("rule 7\n");
+			fprintf(stderr, "rule 7\n");
 #endif
 			if(cur_token_idx)
 			{
@@ -201,19 +169,23 @@ size_t	get_next_token_idx(t_ctx *c)
 			}
 			++cur_char_idx;
 		}
-		else if (get_token_from_idx(tokens, cur_token_idx)->type == TT_WORD) 	// rule 8
+		else if (get_token_from_idx(tokens, cur_token_idx)->token_type == TT_WORD) 		// rule 8
 		{
 #ifdef DEBUG
-			printf("rule 8\n");
+			fprintf(stderr, "rule 8\n");
 #endif
 			grow_token_at_idx(tokens, cur_token_idx);
 			++cur_char_idx;
 		}
-																				// rule 9 - skipped
-		else																	// rule 10
+		else if (input->buf[cur_char_idx] == '#')							 		// rule 9
+		{
+			while (input->buf[cur_char_idx] && input->buf[cur_char_idx] != '\n')
+				++cur_char_idx;
+		}
+		else																		// rule 10
 		{
 #ifdef DEBUG
-			printf("rule 10\n");
+			fprintf(stderr, "rule 10\n");
 #endif
 			cur_token_idx = get_idx_from_offset(tokens,
 					start_token(tokens, cur_char_idx, TT_WORD));

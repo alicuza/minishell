@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/04 18:06:22 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/05 19:26:42 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	process_token(t_ctx *c, size_t token_idx)
 	char	*content;
 
 	token = get_token_from_idx(&(c->arena[AT_TOKEN]), token_idx);
-	if (token->type == TT_WORD)
+	if (token->token_type == TT_WORD)
 	{
 		content = get_token_content(c, token_idx);
 		map_to_command(c, content);

@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   debug_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/03 21:40:34 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/05 16:54:13 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "minishell.h"
 
@@ -17,25 +16,25 @@ void	print_arena(t_arena *arena)
 {
 	char	*name;
 
-	if (arena->sentinel == 1)
+	if (arena->stride == 1)
 		name = "string (or prompt) arena";
-	else if (arena->sentinel == sizeof(t_token))
+	else if (arena->stride == sizeof(t_token))
 	{
 		name = "token arena";
-		poison_sentinel(arena);
+		poison_stride(arena);
 	}
 	else
 		name = "arena not initialized";
-	printf("\n%s\n\tbuffer address = %p\n\toffset = %lu\n\tcapacity = %lu\n\tsentinel = %lu\n", name, arena->buf, arena->offset, arena->cap, arena->sentinel);
-	printf("head:\n");
-	ft_print_memory(arena, sizeof(t_arena));
-	printf("buffer:\n");
-	ft_print_memory(arena->buf, arena->cap + arena->sentinel);
+	fprintf(stderr, "\n%s\n\tbuffer address = %p\n\toffset = %lu\n\tcapacity = %lu\n\tstride = %lu\n", name, arena->buf, arena->offset, arena->cap, arena->stride);
+	fprintf(stderr, "head:\n");
+	ft_print_memory(STDERR_FILENO, arena, sizeof(t_arena));
+	fprintf(stderr, "buffer:\n");
+	ft_print_memory(STDERR_FILENO, arena->buf, arena->cap + arena->stride);
 }
 
-void	poison_sentinel(t_arena *arena)
+void	poison_stride(t_arena *arena)
 {
-	arena->buf[arena->sentinel - 1] = 0xFF;
+	arena->buf[arena->stride - 1] = 0xFF;
 }
 
 void	print_token(t_ctx *c, size_t token_idx)
@@ -46,12 +45,12 @@ void	print_token(t_ctx *c, size_t token_idx)
 
 	input = &(c->arena[AT_STRING]);
 	token = get_token_from_idx(&(c->arena[AT_TOKEN]), token_idx);
-	if (token->type == TT_WORD)
+	if (token->token_type == TT_WORD)
 		name = "WORD";
-	else if (token->type == TT_OPERATOR)
+	else if (token->token_type == TT_OPERATOR)
 		name = "OPERATOR";
 	else
 		name = "TOKEN";
-	printf("\ntoken\n\tstart = %lu\n\tlen = %lu\n\ttype = %u\n\tnext = %lu\n", token->content.start, token->content.len, token->type, token->next);
-	printf("%s(\"%.*s\")\n", name, (int)token->content.len, input->buf + token->content.start);
+	fprintf(stderr, "\ntoken\n\tstart = %lu\n\tlen = %lu\n\ttype = %u\n\tnext = %lu\n", token->content.start, token->content.len, token->token_type, token->next);
+	fprintf(stderr, "%s(%.*s)\n", name, (int)token->content.len, input->buf + token->content.start);
 }

@@ -3,14 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   debug.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/05/30 17:23:02 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/05 19:32:04 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
 #ifndef DEBUG_H
 # define DEBUG_H
 
@@ -25,7 +23,7 @@ typedef enum e_arena_type
 	AT_STACK,
 	AT_CMD,
 	AT_COUNT,
-} t_arena_type;
+}	t_arena_type;
 
 typedef struct s_env
 {
@@ -34,14 +32,14 @@ typedef struct s_env
 
 typedef struct s_ctx
 {
-	t_arena	arena[AT_COUNT];
-	char  	*read_line;
 	t_env	env;
+	t_arena	arena[AT_COUNT];
+	char	*read_line;
+	int		return_status;
 }	t_ctx;
 
 void	print_arena(t_arena *arena);
 void	print_token(t_ctx *c, size_t token_idx);
-void	poison_sentinel(t_arena *arena);
-void	print_arena(t_arena *arena);
+void	poison_stride(t_arena *arena);
 
 #endif
