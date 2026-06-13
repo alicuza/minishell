@@ -6,12 +6,16 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 17:19:38 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/13 09:24:03 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
+/*
+PWD from env if he value is an absolute pathname of the current working directory that is no longer than {PATH_MAX} bytes including the terminating null byte, and the value does not contain any components that are dot or dot-dot
+otherwice  pwd -P
+, if there is insufficient permission on the current working directory, or on any parent of that directory, to determine what that pathname would be, the value of PWD is unspecified. Assignments to this variable may be ignored. If an application sets or unsets the value of PWD , the behaviors of the cd and pwd utilities are unspecified.
+*/
 static t_ctx	init_ctx(char **envp)
 {
 	t_ctx	c;
@@ -21,7 +25,8 @@ static t_ctx	init_ctx(char **envp)
 	c.arena[AT_PROMPT] = arena_init(ARENA_SIZE, sizeof(char));
 	c.arena[AT_STACK] = arena_init(ARENA_SIZE, sizeof(t_symbol));
 //	c.arena[AT_CMD] = arena_init(ARENA_SIZE, sizeof(t_cmd));
-	c.env = init_env(c.env, envp);
+	if (init_env(&c.env, envp))
+		printf("Error init_env");
 	return (c);
 }
 

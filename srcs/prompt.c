@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:41:14 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/05 19:58:28 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/13 10:14:05 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ char	*get_prompt(t_ctx *c, bool with_cwd)
 	init_prompt(prompt);
 	if (with_cwd && !add_cwd_to_prompt(c))
 		return (get_prompt(c, NO_CWD));
-	end_prompt(prompt, c->return_status);
+	end_prompt(prompt, c->exit_status);
 	return ((char *)get_arena_ptr(prompt, prompt->stride));
 }
 

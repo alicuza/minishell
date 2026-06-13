@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 16:48:17 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/13 10:12:26 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ uint64_t		get_idx_from_offset(t_arena *arena, uint64_t offset);
 uint64_t		get_offset_from_idx(t_arena *arena, uint64_t idx);
 t_symbol		*get_symbol_from_offset(t_arena *arena, uint64_t offset);
 t_symbol		*get_symbol_from_idx(t_arena *arena, uint64_t idx);
-char			*get_token_content(t_ctx *c, t_symbol *symbol);
+char			*get_token_content(t_ctx *c, uint64_t offset);
 
 /* -------- lex_tokens.c ---------------------------------------------------- */
 void			start_lex_token(t_lexer_state *lex, t_symbol_type type);
@@ -118,20 +118,28 @@ bool			is_name_body(char c);
 bool			is_expansion_start(char *buffer, uint64_t idx);
 uint64_t		get_expansion_len(char *expansion);
 
-/* -------- env_utils.c ----------------------------------------------------- */
-t_env			init_env(t_env env, char **envp);
+/* -------- parse_input.c --------------------------------------------------- */
+t_parser_state	parse_input(t_ctx *c);
+
+/* -------- parser_utils.c -------------------------------------------------- */
+void			shift_symbol(t_ctx *c, t_parser_state *parse);
 
 /* -------- token_processor.c ----------------------------------------------- */
 int				process_token(t_ctx *c, t_token *token);
 void			exec_stack(t_ctx *c, t_parser_state *parse);
 
 /* -------- env.c ----------------------------------------------------------- */
-void			env(t_ctx *c);
+int				env(t_ctx *c);
 
-/* -------- parse_input.c --------------------------------------------------- */
-t_parser_state	parse_input(t_ctx *c);
+/* -------- env_utils.c ----------------------------------------------------- */
+int				init_env(t_env *env, char **envp);
+char			*search(t_env *env, char *key);
 
-/* -------- parser_utils.c -------------------------------------------------- */
-void			shift_symbol(t_ctx *c, t_parser_state *parse);
+/* -------- ft_split_key_value.c -------------------------------------------- */
+char			**ft_split_key_value(const char *s, char c);
+
+/* -------- pwd.c ----------------------------------------------------------- */
+int				pwd(t_ctx *c);
+char		 	*get_cwd_safely();
 
 #endif

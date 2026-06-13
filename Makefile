@@ -35,9 +35,6 @@ SRCS        = \
 			main.c \
 			prompt.c \
 			input.c \
-			token_processor/token_processor.c \
-			parser/parse_input.c \
-			parser/parser_utils.c \
 			lexer/lookahead.c \
 			lexer/lex_tokens.c \
 			lexer/lex_utils.c \
@@ -45,8 +42,13 @@ SRCS        = \
 			lexer/token_transform_utils.c \
 			lexer/string_utils.c \
 			lexer/expand_utils.c \
+			parser/parse_input.c \
+			parser/parser_utils.c \
+			token_processor/token_processor.c \
 			builtin/env.c \
-			builtin/env_utils.c
+			builtin/pwd.c \
+			env/env_utils.c \
+			env/ft_split_key_value.c
 
 DEBUG_SRCS  = \
 			debug/debug_utils.c \

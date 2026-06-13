@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/12 10:23:23 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/13 10:03:59 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,13 @@
 
 #define EQUAL 0
 
-static void	map_to_command(t_ctx *c, char *cmd)
+int 	map_to_command(t_ctx *c, char *cmd)
 {
 	if (ft_strncmp(cmd, ENV, 4) == EQUAL)
-		env(c);
+		return (env(c));
+	else if (ft_strncmp(cmd, PWD, 4) == EQUAL)
+		return (pwd(c));
+	return (0);
 }
 
 int	process_token(t_ctx *c, t_token *token)
@@ -27,8 +30,9 @@ int	process_token(t_ctx *c, t_token *token)
 
 	if (token->type == SYM_TOKEN)
 	{
-		content = c->arena[AT_STRING].buf + token->offset;
-		map_to_command(c, content);
+		content = get_token_content(c, token->offset);
+		c->exit_status = map_to_command(c, content);
+		free(content);
 	}
 	return (0);
 }
@@ -41,7 +45,7 @@ void	exec_stack(t_ctx *c, t_parser_state *parse)
 
 	stack = &c->arena[AT_STACK];
 	sym = get_symbol_from_idx(stack, parse->arena_idx);
-	while (1)
+	while (true)
 	{
 		if (sym->type == SYM_TOKEN)
 		{

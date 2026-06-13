@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 09:02:36 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/13 10:13:34 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,15 @@
 
 # include "arena.h"
 
+typedef struct s_env_content
+{
+	char	*key;
+	char	*val;
+}	t_env_content;
+
 typedef struct s_env
 {
-	char **envp;
+	t_list	*vals;
 }	t_env;
 
 typedef enum e_arena_type
@@ -35,7 +41,7 @@ typedef struct s_ctx
 	t_env	env;
 	t_arena	arena[AT_COUNT];
 	char	*read_line;
-	int		return_status;
+	int32_t	exit_status;
 }	t_ctx;
 
 typedef struct s_slice

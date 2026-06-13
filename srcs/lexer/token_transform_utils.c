@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 16:51:36 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 10:30:23 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/13 10:01:44 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ t_symbol	*get_symbol_from_idx(t_arena *arena, uint64_t idx)
 	return ((t_symbol *)(arena->buf + idx * arena->stride));
 }
 
-char	*get_token_content(t_ctx *c, t_symbol *symbol)
+char	*get_token_content(t_ctx *c, uint64_t offset)
 {
-	return (ft_strdup(c->arena[AT_STRING].buf + symbol->offset));
+	return (ft_strdup(c->arena[AT_STRING].buf + offset));
 }
