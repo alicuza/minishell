@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/13 09:24:03 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/13 10:38:06 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ int	main(int argc, char **argv, char **envp)
 	arena_free(&c.arena[AT_STRING]);
 	arena_free(&c.arena[AT_PROMPT]);
 	arena_free(&c.arena[AT_STACK]);
+	free_env(&c.env);
 //	arena_free(&c.arena[AT_CMD]);
-	return (0);
+	return (c.exit_status);
 }

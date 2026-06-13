@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/13 10:03:59 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/13 10:31:31 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ int 	map_to_command(t_ctx *c, char *cmd)
 		return (env(c));
 	else if (ft_strncmp(cmd, PWD, 4) == EQUAL)
 		return (pwd(c));
+	else if (ft_strncmp(cmd, EXIT, 5) == EQUAL)
+		return (builtin_exit(c));
 	return (0);
 }
 
