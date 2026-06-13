@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/05 19:32:32 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/12 16:48:17 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
 # include <stdio.h>				// printf, perror
-# include <string.h>			// sterror
+# include <string.h>			// strerror
 # include <readline/readline.h>	// readline, rl_clear_history, rl_on_new_line,
 								// rl_replace_line, rl_redisplay
 # include <readline/history.h>	// add_history
@@ -31,13 +32,11 @@
 # include <termios.h>			// tcgetattr, tcsetattr
 # include <termcap.h>			// tgetent, tgetflag, tgetnum, tgetstr, tgoto,
 								// tputs
-
 # include <errno.h>				// errno
-# include <limits.h>			// PATH_MAX
-# include <stdint.h>			// TODO: consider for the saner type names
 
 # include "libft.h"
 # include "arena.h"
+# include "types.h"
 
 # ifdef DEBUG
 #  include "debug.h"
@@ -46,8 +45,6 @@
 # ifndef ARENA_SIZE
 #  define ARENA_SIZE 64
 # endif
-
-# define NO_TOKEN 0
 
 # define SHELLNAME "shni"
 
@@ -63,105 +60,78 @@
 # define OPERATOR_SET "<>&|()\n"
 # define BLANK_SET " \t"
 # define QUOTE_SET "\"'"
+# define SPECIAL_PARAM_SET "?"
 
-/* -------- quote types ----------------------------------------------------- */
-// "0b" officially supported by the standard since C23, not sure if we can use it
-/* TODO: probably unnecessary for me. leaving it in for now
- * # define QT_NONE 0,				// 0b00000000
- * # define QT_SQ 1,				// 0b00000001
- * # define QT_DQ 2,				// 0b00000010
- * # define QT_UNENCLOSED_SQ 8,	// 0b00000100
- * # define QT_UNENCLOSED_DQ 16,	// 0b00001000
- */
+/* -------- lexer flags ----------------------------------------------------- */
+# define LEX_HAS_QUOTES			0x01
+# define LEX_HAS_EXPANSION		0x02
+# define LEX_NEEDS_INPUT		0x04
+# define LEX_IS_BUILDING		0x08
+# define LEX_IS_DELIMITED		0x10
 
-# ifndef DEBUG
-typedef enum e_arena_type
-{
-	AT_NONE,					// TODO: should i init arenas as NONE, with everything zeroed out, and then assign arena to the correct type?
-	AT_STRING,
-	AT_PROMPT,
-	AT_TOKEN,
-	AT_STACK,
-	AT_CMD,
-	AT_COUNT,
-}	t_arena_type;
+/* -------- parser flags ---------------------------------------------------- */
+# define PARSE_DONE				0x01
+# define PARSE_HERE_PENDING		0x02
 
-typedef struct s_env
-{
-	char **envp;
-}	t_env;
+/* -------- grammar constants ----------------------------------------------- */
+# define NO_TOKEN 0
+# define MAX_RHS_LEN 4
+# define RULE_COUNT 48
 
-typedef struct s_ctx
-{
-	t_env	env;
-	t_arena	arena[AT_COUNT];
-	char  	*read_line;
-	int		return_status;
-}	t_ctx;
-# endif
+/* -------- prompt.c --------------------------------------------------------- */
+char			*get_prompt(t_ctx *c, bool with_cwd);
 
-typedef struct s_slice
-{
-	size_t	start;
-	size_t	len;
-}	t_slice;
+/* -------- input.c --------------------------------------------------------- */
+char			*get_user_input(t_ctx *c, bool is_continuation);
 
-typedef enum e_token_type
-{
-	TT_NONE,
-	TT_TOKEN,
-	TT_WORD,
-	TT_OPERATOR,
-	TT_COUNT,
-}	t_token_type;
+/* -------- lookahead.c ----------------------------------------------------- */
+t_token			get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l);
 
-typedef struct s_token
-{
-	t_slice			content;
-/* TODO: probably unnecessary, because the expansion will happen directly before
- * passing to execution, so if a '$' is found in a WORD, it will be expanded
- */
-	size_t			next;
-	t_token_type	token_type;
-/* TODO: probably unnecessary, but nice to think about, could make adding
- * features easy and it is the POSIX way to track the delimiter of a TOKEN.
- *///	char			delim_type;
-}	t_token;
+/* -------- quote_utils.c --------------------------------------------------- */
+uint64_t		try_as_quote_pair(t_ctx *c, t_lexer_state *l);
 
-/* -------- main.c ---------------------------------------------------------- */
-char		*get_prompt(t_ctx *c, bool with_cwd);
-size_t		get_user_input(t_ctx *c, bool is_continuation);
+/* -------- token_transform_utils.c ----------------------------------------- */
+uint64_t		get_idx_from_offset(t_arena *arena, uint64_t offset);
+uint64_t		get_offset_from_idx(t_arena *arena, uint64_t idx);
+t_symbol		*get_symbol_from_offset(t_arena *arena, uint64_t offset);
+t_symbol		*get_symbol_from_idx(t_arena *arena, uint64_t idx);
+char			*get_token_content(t_ctx *c, t_symbol *symbol);
 
-/* -------- token.c --------------------------------------------------------- */
-size_t		get_next_token_idx(t_ctx *c);
+/* -------- lex_tokens.c ---------------------------------------------------- */
+void			start_lex_token(t_lexer_state *lex, t_symbol_type type);
+t_token			delimit_lex_token(t_ctx *, t_parser_state *, t_lexer_state *);
+uint64_t		grow_lex_token(t_lexer_state *lex);
 
-/* -------- token_transform.c ----------------------------------------------- */
-size_t		get_idx_from_offset(t_arena *arena, size_t offset);
-size_t		get_offset_from_idx(t_arena *arena, size_t idx);
-t_token		*get_token_from_offset(t_arena *arena, size_t offset);
-t_token		*get_token_from_idx(t_arena *arena, size_t idx);
-char		*get_token_content(t_ctx *c, size_t token_idx);
+/* -------- lex_utils.c ----------------------------------------------------- */
+uint64_t		consume_char(t_lexer_state *lex);
+t_slice			save_lex_token_slice(t_lexer_state *lex);
+void			restore_lex_token_slice(t_lexer_state *lex, t_slice len);
 
-/* -------- token_utils.c --------------------------------------------------- */
-size_t		start_token(t_arena *arena, size_t start, t_token_type type);
-void		grow_token_at_idx(t_arena *arena, size_t idx);
-void		grow_token_times_at_idx(t_arena *arena, size_t idx, size_t len);
-void		grow_token_at_offset(t_arena *arena, size_t offset);
-size_t		save_token_len(t_token *arena);
-void		restore_token_len(t_token *arena, size_t len);
+/* -------- string_utils.c -------------------------------------------------- */
+const char		**get_operator_strs(void);
+bool			is_char_in_set(char c, const char *set);
+bool			is_str_in_set(char *c, const char **set);
+bool			is_name_start(char c);
+bool			is_name_body(char c);
 
-/* -------- token_char.c ---------------------------------------------------- */
-bool		is_char_in_set(char c, const char *set);
-const char	**get_operator_strs(void);
-bool		is_str_in_set(char *c, const char **set);
+/* -------- expand_utils.c -------------------------------------------------- */
+bool			is_expansion_start(char *buffer, uint64_t idx);
+uint64_t		get_expansion_len(char *expansion);
 
-/* --------- env_utils.c ---------------------------------------------------- */
-t_env		init_env(t_env env, char **envp);
+/* -------- env_utils.c ----------------------------------------------------- */
+t_env			init_env(t_env env, char **envp);
 
-/* --------- token_processor.c ---------------------------------------------- */
-int			process_token(t_ctx *c, size_t token_idx);
+/* -------- token_processor.c ----------------------------------------------- */
+int				process_token(t_ctx *c, t_token *token);
+void			exec_stack(t_ctx *c, t_parser_state *parse);
 
-/* --------- env.c ---------------------------------------------------------- */
-void		env(t_ctx *c);
+/* -------- env.c ----------------------------------------------------------- */
+void			env(t_ctx *c);
+
+/* -------- parse_input.c --------------------------------------------------- */
+t_parser_state	parse_input(t_ctx *c);
+
+/* -------- parser_utils.c -------------------------------------------------- */
+void			shift_symbol(t_ctx *c, t_parser_state *parse);
 
 #endif
