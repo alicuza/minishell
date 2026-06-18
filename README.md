@@ -2,304 +2,6 @@ _This project has been created as part of the 42 curriculum by nribakov, sancuta
 
 # minishell
 
-- [Notes](#notes)
-  - [Journal](#journal)
-  - [Structure](#structure)
-  - [Schedule](#schedule)
-  - [TODO](#todo)
-  - [Documentation](#documentation)
-- [TOC](#table-of-contents)
-
-## Notes:
-
-### Journal
-
-#### minishell
-
-**2026.04.26.**
-- read about readline
-- set up the repo
-- drafted minishell.h
-- drafted main.c
-- drafted README.md
-- added documentation on the readline, posix standard, bash manual
-- made todo lists for minishell, longterm
-- added description
-
-**2026.04.27.**
-- read up on how to reopen closed stdin/out/err fds: `open(/dev/tty)`
-- researched the allowed functions to a certain degree
-
-**2026.04.28.**
-- added some documentation for termcap library
-- decided on using github, with feature branches and pull requests
-- heard about interactive mode (when a program waits for inputs)
-
-**2026.04.29.**
-- read from posix: quoting, tokenizing, expansion, redirection
-- tested stuff out, bash seems to closesly follow the posix version on these topics
-
-**2026.04.30.**
-- read from posix: interactive mode, command line editing (vi mode)
-
-**2026.05.01. - 2026.05.04**
-- read from posix: the IFS variable and it's effect on variable expansion
-- read about the difference between env and set, environment and internal shell variables
-
-**2026.05.05**
-- read from posix, [2.3 Token Recognition](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_03):
-
-```
-Once a token is delimited, it is categorized as required by the grammar in 2.10 Shell Grammar.
-
-In situations where the shell parses its input as a program, once a complete_command has been recognized by the grammar (see 2.10 Shell Grammar), the complete_command shall be executed before the next complete_command is tokenized and parsed.
-```
-  - so once a token gets "delimited", you immediately parse it, and a recognized command gets immediatly executed before tokenization continues.
-
-**2026.05.06**
-- fixed UB in `ft_memmove`, comparing pointers that are not necessarily pointing to the same object in memory. Cast to `intptr_t` first.
-- first structure sketched: [Visualisation](https://excalidraw.com/#json=8BAFo2sDfsrJqzire7OOM,YjbRdUHRhwRBObV-QLgAXg)
-  - tokens will reference slices of the input string, maintaining the original information such as type of quotes and expansion characters.
-  - tokens resulting from expansion will be appended to the token arena and relinked through indices to maintain the correct order of operations.
-
-**2026.05.07.**
-- worked on the arena implementation:
-  - added `arena_grow` function
-  - reworked alignment to be a member of the struct: `arena->align` encodes the type of alignment (if the alignment is set to 0, it should be using default dynamic alignment)
-
-**2026.05.12.**
-- `env` has to be a built-in, which it isn't in `bash`
-- added description of token recognition rules
-- added description of shell grammar
-
-**2026.05.13.**
-- created a simple parser with flex and bison
-  - got overwhelmed reading the generated `.c` files
-- wrote makeshift `bnaf` format grammar rules
-
-**2026.05.14. - 2026.05.16.**
-- acquired rene's annotated bash manual pdf.
-  - nice as an overview of what is actually relevant for minishell accoring to rene
-- read from bash manual about execution, [3.7 Executing Commands](https://www.gnu.org/software/bash/manual/bash.html#Executing-Commands):
-  - order of expansion for simple commands: [3.7.1 Simple Command Expansion](https://www.gnu.org/software/bash/manual/bash.html#Simple-Command-Expansion)
-  - order of `PATH` search & command execution: [3.7.2 Command Search and Execution](https://www.gnu.org/software/bash/manual/bash.html#Command-Search-and-Execution)
-  - commands in pipelines are always executed in a child, [3.2.3 Pipelines](https://www.gnu.org/software/bash/manual/bash.html#Pipelines): "Each command in a multi-command pipeline, where pipes are created, is executed in its own subshell, which is a separate process."
-  - the shell has it's own execution environment, that consists of inheritances at invocation (`char **envp`) and modifications through builtins, like `cd` and `export`, or assignments `name=word`
-  - commands other than builtins are executed in their seaprate execution environment (`child process`) with values inherited from the shell's environment ("variables marked for `export`"), everything copied by `fork()` (open fds, file creation mask) (additionally, but not required by the project: assignments before the command name, which are injected temporarily into the env for this one command)
-
-**2026.05.17.**
-- looked through the `makefiles` of people for inspiration (starred on github)
-- used `declare` to see all shell variables listed, which nicely shows what the different attributes of shell variables are
-
-**2026.05.19**
-- read from the readline manual, [2.1 Basic Behavior](https://tiswww.cwru.edu/php/chet/readline/readline.html#Basic-Behavior)
-  - seems pretty straightforward considering the number of functions we are allowed to use. there is another example inf the manual that also handles signals, i still have to look into those more. since the handlers mostly just modify the global variable we're allowed to use, this shouldn't be that hard to implement.
-  - this can be the basis for the entrypoint:
-
-```
-Here is a function which usefully replaces the standard gets() library function, and has the advantage of no static buffer to overflow:
-
-/* A static variable for holding the line. */
-static char *line_read = (char *)NULL;
-
-/* Read a string, and return a pointer to it.
-   Returns NULL on EOF. */
-char *
-rl_gets ()
-{
-  /* If the buffer has already been allocated,
-     return the memory to the free pool. */
-  if (line_read)
-    {
-      free (line_read);
-      line_read = (char *)NULL;
-    }
-
-  /* Get a line from the user. */
-  line_read = readline ("");
-
-  /* If the line has any text in it,
-     save it on the history. */
-  if (line_read && *line_read)
-    add_history (line_read);
-
-  return (line_read);
-}
-```
-
-- added documentation on signals
-
-**2026.05.20.-2026.05.21.**
-- implemented an entrypoint based on the example found in the readline manual
-- implemented a prototype for a prompt that could be extended to be dynamic
-- added arenas to the naive implementation
-  - had to modify arenas to include a member element sized zero initialized memory area at offset 0
-- found out that readline strips the `\n` from the end of the `read_line`, which needs to be reinserted, when the readline is copied to its arena buffer
-- added section for stuff that is not required
-
-**2026.05.22.**
-- massive restructuring of folder structure and makefile
-  - created a separate debug function folder to use for debugging, without including it into the binary otherwise
-- added a way to quickly test different arena sizes, inspired by the tests i did for gnl
-- started on the tokenizer, it seems to create the correct arena entries.
-  - needs more looking at, i forgot how annoying it is to work with indices and arenas. i need to improve the api.
-
-**2026.05.23.**
-- started work on the tokenizer
-- some naming changes, like `env` to `ctx`
-
-**2026.05.25.**
-- mvp tokenizer works.
-- modified and added to the debug function:
-  - `print_arena` now names the type of arena it is
-  - `print_token` and `poison_sentinel` (changes the last byte of the sentinel to `0xff`) are the newest additions.
-- need to decide how to track whether a variable included liteal quote chars, because those don't need to be removed by the subsequent quote removal stage
-
-**2026.05.26.-2026.05.30**
-- finished the tokenizer with all rules
-- some basic testing and refactoring done -> the annoying bugs are waiting in the dark edges of my code for sure.
-- added colour to the prompt so we can differentiate it better from the usual shell
-
-#### personal
-**2026.04.30**
-
-```sh
-# less colors for man pages
-export LESS=-R
-
-export LESS_TERMCAP_mb=$'\e[01;38;5;211m' # begin blinking
-export LESS_TERMCAP_md=$'\e[01;38;5;116m' # begin bold
-export LESS_TERMCAP_me=$'\e[0m'           # end mode
-
-export LESS_TERMCAP_so=$'\e[30;38;5;222m' # begin standout-mode - info box
-export LESS_TERMCAP_se=$'\e[0m'           # end standout-mode
-
-export LESS_TERMCAP_us=$'\e[04;38;5;183m' # begin underline
-export LESS_TERMCAP_ue=$'\e[0m'           # end underline
-```
-
-**documentation**
-- `man console_codes`
-- [ANSI escape code](https://en.wikipedia.org/wiki/ANSI_escape_code)
-
-**2026.05.17.**
-- read about [`trap`](https://www.gnu.org/software/bash/manual/bash.html#index-trap): executes a given command when a given signal is intercepted.
-- learned neat bash trick: `set -e; : ${parameter:?word}` to close the shell if the parameter doesn't exist in the execution environment.
-- read about [`job control`](https://www.gnu.org/software/bash/manual/bash.html#Job-Control)
-
-**2026.05.23.**
-- structs are automatically padded to align with the biggest member type.
-  - for my arenas it is then unnecessary to even align them, since they are automatically aligned by the way sturct are padded
-
-### Structure
-
-*see [2.1 Shell Introduction](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_01)*
-*see [structure sketch](https://excalidraw.com/#json=8BAFo2sDfsrJqzire7OOM,YjbRdUHRhwRBObV-QLgAXg)*
-1. //TODO: write out the whole structure, first as graph, then as high abstraction pseudocode.
-
-### Schedule
-
-- starting on 2026.05.07. Nikita is on vacation until the 2026.05.22.
-
-### TODO
-
-#### minishell
-
-**research & documentation**
-- [p] research built-ins
-- [p] research interactive mode
-- [ ] research `posix sh`
-- [ ] research git workflow for working in a team
-- [x] ~~compile documentation on signals~~
-- [x] ~~research managing memory with multiple arenas, because there are actual multiple lifetimes~~
-- [x] ~~research how to implement the variable content size for tokens in the context of expansion~~
-- [x] ~~research how readline interacts with arenas and if it would even make sense to implement them~~
-- [x] ~~what does a struct pointer dereference to, if its member is another struct. The first element of that struct?~~
-- [-] ~~compile documentation on `flex` and `bison`~~
-- [-] ~~compile documentation on `curses.h` and `term.h`~~
-
-**implementation**
-- [d] add `arena_grow` function to arena library // on phone branch
-- [ ] write a simple `flex` and `bison` based lexer and parser
-- [d] add github remote, and github action workflow
-- [ ] work on arenas - prepare prompt arena for `getcwd`
-- [p] rework makefile to create/use separate folders (`src`, `include`, `bin`, `debug`, `test`)
-- [p] include the additional info in the make section.
-- [p] draft the data structure and core architecture
-- [ ] add github action workflow
-- [ ] add push/pull mirroring on remote
-- [ ] create harness for automatic unit testing (tdd)
-- [ ] consider error handling according to posix
-- [ ] finish writing the readme file
-- [x] ~~add github remote~~
-- [x] ~~write a simple `flex` and `bison` based lexer and parser~~
-
-**questions**
-- [ ] what does this mean in the context of Shell Grammar: "This formal syntax shall take precedence over the preceding text syntax description"
-
-#### longterm
-
-- [ ] test automation for checking the repo before pushing
-- [ ] create a dotfile repo
-- [p] create a resources repo
-- [ ] create a README.md template
-- [ ] create a script to automate initializing a git repo with remotes and templates
-- [ ] create templates for the header(s), main.c and README.md
-- [ ] create project website with git pages
-- [ ] play around with `sh vi mode`
-- [ ] migrate libft to its own repo and extract history from the repos it is in now
-
-### Documentation
-
-#### online
-**readline**
-- [GNU Readline Library](https://tiswww.cwru.edu/php/chet/readline/rltop.html)
-  - [The GNU Readline Library](https://tiswww.cwru.edu/php/chet/readline/readline.html)
-  - [The GNU History Library](https://tiswww.case.edu/php/chet/readline/history.html)
-  - [The GNU Readline User Interface](https://tiswww.case.edu/php/chet/readline/rluserman.html)
-
-**termcap**
-- [The Termcap Manual](https://www.gnu.org/software/termutils/manual/termcap-1.3/html_mono/termcap.html)
-
-**posix**
-- [POSIX.1-2024](https://pubs.opengroup.org/onlinepubs/9799919799/)
-  (same as "IEEE Std 1003.1-2024" and "The Open Group Standard Base Specifications, Issue 8")
-  - [Shell & Utilities](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/toc.html)
-    - [Consequences of Shell Errors](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_08_01)
-  - [sh — shell, the standard command language interpreter](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/sh.html)
-
-**bash**
-- [GNU Bash manual](https://www.gnu.org/software/bash/manual/bash.html)
-
-**general**
-- [Shell (Computing)](https://en.wikipedia.org/wiki/Shell_(computing))
-
-**forgejo & codeberg**
-- [Forgejo - Repository Mirrors](https://forgejo.org/docs/latest/user/repo-mirror)
-- [Codeberg Pages](https://codeberg.page/)
-
-#### local
-**man pages**
-- `man bash`
-- `man readline`
-- `man termios` - `tcgetattr`, `tcsetattr`
-
-- `man 3 signal`
-- `man 3 sigaction`
-- `man 7 signal`
-- `man 7 signal-safety`
-
-- `man chdir`
-
-- `man 5 core`
-
-**pdfs**
-- [Wang - Tutorial Flex Bison](../resources/wang-tutorial_flex_bison.pdf)
-- [Levine - Flex & Bison](../resources/levine-flex&bison.pdf)
-- [Aaby - Compiler Construction using Flex and Bison](../resources/aaby-compiler_construction_using_flex_and_bison.pdf)
-
----
-
 ## Description
 
 `minishell` is a miniature shell with a limited feature set. A shell is a program that manages the interaction between **user** and **system**. In a REPL (read-eval-print loop), the shell prompts the user for input, interprets the commands according to the command language syntax, and handles the output from the system.
@@ -340,12 +42,12 @@ export LESS_TERMCAP_ue=$'\e[0m'           # end underline
 - `make fclean`: additionally removes the binary and libs
 - `make re`: recompiles the entire project from scratch
 - `make debug`: compiles with the `-g` flag for debugging
-- // TODO: complete the description with debugging funtionality;
+- // TODO: complete the description with debugging funtionality
 - // TODO: also add descriptions about the linking of binaries
 
 **Options:**
-- `make ARENA_SIZE=N`: overrides the arena initial capacity (default `64`)
-- `make debug ARENA_SIZE=N`: debug build with custom arena size
+- `make [target] ARENA_SIZE=N`: overrides the arena initial capacity (default `64`)
+// TODO: doesn't recompile with with e different `ARENA_SIZE`
 
 **Dependencies:**
 - libft (bundled)
@@ -373,18 +75,91 @@ export LESS_TERMCAP_ue=$'\e[0m'           # end underline
 
 - stack based parsing, similar to how bash does it, but with hard coded rules.
 
+
 ### Core Data Structure
 
 ```c
 ```
 
+### User Input
+
+
+
 ### Parsing
+
+**possible implementation**
+
+```
+1. call readline with PS1 prompt
+2. tokenize the readline:
+2. a. if a token exists and is delimited -> add token string to the string arena, if WORD token -> append `\0`
+3. process the token (attempt to reduce token sequence according to the shell grammar; order up for debate, need to consult posix):
+3. a. if `cur_token` not empty -> create a command struct with the token type, if there is no command struct that the token can be reduced to; track the "grammar structure" type as the type of this command struct; it gets delimited when the next token is a `control operator` (need to still figure out how this works with parentheses)
+3. b. if processing reduces token to `io_here` (a token sequence of `<<` and `WORD`):
+3. b. i. tokenize rest of line -> do 2.
+3. b. ii. free read_line
+3. b. iii. call readline with PS2 prompt
+3. b. iv. if the current read_line doesn't contain only `delimiter\n` -> create WORD token and copy the whole read_line into the string arena
+3. b. v. else  -> delimit `here-doc` WORD token, if it exists (maybe the conditions in d. and f. could be switched)
+3. b. vi. if other `io_here` in saved tokens -> repeat from b.
+3. b. free read_line
+3. c. process each saved token
+3. d. if `current_token` is empty: there are no more tokens to be processed, current command structure gets delimited, if it exists -> sent to execution
+4. if there are no more command structures -> wait for the status of the execution
+```
+
+relevant rules from [2.10.2 Shell Grammar Rules](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_10_02)
+1. command name: `token` -> `WORD`
+2. redirection to/from filename: expansions according to [2.7. Redirection](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_07)
+3. redirection from here-doc: quote removal on `WORD` -> `delimiter`
+~~4. case state termination: not relevant~~
+~~5. `NAME` in `for`: not relevant~~
+~~6. third word of `for` (`in`, `do`) and `case` (`in`): not relevant~~
+7. assignment preceeding command name:
+7. a. not relevant
+7. b. worth looking into
+~~8. `NAME` in function: not relevant~~
+~~9. Body of function: not relevant~~
 
 #### Token Recognition
 
 Input is read in terms of lines in 2 different circumstances:
 
 **here-doc processing**
+
+	step 1.
+	if
+		`io_here` has been "recognized" (returned)
+	do
+		search for next `\n`-token: corresponding `here-doc` starts on the next line
+		&& non-`\n`-tokens get saved for processing after `here-doc` finished parsing
+
+	step 2.
+	if
+		`\n`-token found
+	do
+		start `here-doc` on the next line
+
+	step 3.
+	if
+		`io-here` was among tokens saved
+	do
+		start corresponding `here-doc` on the line after the `delimiter\n`
+
+	step 4. // TODO: not sure what exactly is meant with processing further, applying the grammar rules?
+	if
+		there are saved tokens
+	do
+		process them further
+
+*see [2.7.4 Here-Document](https://pubs.opengroup.org/onlinepubs/9799919799/)*
+- the `here-doc` is treated as a single word starting after the first `\n`
+- continues until a line containing only the `delimiter` and a `\n`, no `blank`s
+- if there is another `here-doc`, it starts immediately after the `delimiter\n`
+- expansion happens during `redirection evaluation`
+- expansion of `here-doc`s has the same rules as `"`-expansion
+  - except for the `"`, which has no special meaning in a `here-doc`
+- the order of `here-doc`s corresponds to the order of `io_here` tokens
 
 **ordinary token recognition**
 apply the first applicable rule from the list:
@@ -461,6 +236,8 @@ Once delimited, a token gets lexed according to the Shell Grammar.
 
 "In situations where the shell parses its input as a program, once a `complete_command` has been recognized by the grammar (see 2.10 Shell Grammar), the `complete_command` shall be executed before the next `complete_command` is tokenized and parsed."
 
+Tokens that are empty after delimiting get discarded.
+
 #### Grammar
 *see [2.10 Shell Grammar](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_10)*
 
@@ -475,7 +252,7 @@ Lexing happens immediately following the `token` being delimited.
 ```
 
 ```
-2.	if
+2.	if	// we skip this
 		`cur_token` is only `digits`
 		&& `delimiter` is `<` or `>`
 	do
@@ -483,7 +260,15 @@ Lexing happens immediately following the `token` being delimited.
 ```
 
 ```
-3.	do	# actually rule 4, but we do not implement `IO_LOCATION`
+3.	if	// we skip this
+		`cur_token` is `{LOCATION}`
+		&& `delimiter` is `<` or `>`
+	do
+		identify as `IO_LOCATION`
+```
+
+```
+4.	do
 		identify as `TOKEN`
 ```
 

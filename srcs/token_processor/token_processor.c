@@ -6,7 +6,11 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2026/06/07 17:11:26 by nribakov         ###   ########.fr       */
+=======
+/*   Updated: 2026/06/18 18:43:53 by nribakov         ###   ########.fr       */
+>>>>>>> main
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +19,7 @@
 
 #define EQUAL 0
 
-int 	map_to_command(t_ctx *c, char *cmd)
+static int 	map_to_command(t_ctx *c, char *cmd)
 {
 	if (ft_strncmp(cmd, ENV, 4) == EQUAL)
 	{
@@ -31,21 +35,38 @@ int 	map_to_command(t_ctx *c, char *cmd)
 	return 0;
 }
 
-/*
-TODO: When Bash invokes an external command,
-	the variable ‘$_’ is set to the full pathname of the command and passed to that command in its environment.
-*/
-int	process_token(t_ctx *c, size_t token_idx)
+int	process_token(t_ctx *c, t_token *token)
 {
-	t_token	*token;
 	char	*content;
 
-	token = get_token_from_idx(&(c->arena[AT_TOKEN]), token_idx);
-	if (token->type == TT_WORD)
+	if (token->type == SYM_TOKEN)
 	{
-		content = get_token_content(c, token_idx);
-		c->exit_status = map_to_command(c, content);
+		content = c->arena[AT_STRING].buf + token->offset;
+		c->return_status = map_to_command(c, content);
 		free(content);
 	}
 	return (0);
+}
+
+void	exec_stack(t_ctx *c, t_parser_state *parse)
+{
+	t_symbol	*sym;
+	t_token		t;
+	t_arena		*stack;
+
+	stack = &c->arena[AT_STACK];
+	sym = get_symbol_from_idx(stack, parse->arena_idx);
+	while (1)
+	{
+		if (sym->type == SYM_TOKEN)
+		{
+			t.offset = sym->offset;
+			t.type = sym->type;
+			t.flags = sym->flags;
+			process_token(c, &t);
+		}
+		if (!sym->prev_symbol)
+			break;
+		sym = get_symbol_from_idx(stack, sym->prev_symbol);
+	}
 }

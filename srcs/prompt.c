@@ -6,51 +6,122 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:41:14 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/03 19:39:59 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/05 19:58:28 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-#define GREEN "\033[38;5;40m"
-#define RESET "\033[0m"
+#define GREEN "\001\033[38;5;40m\002"
+#define RESET "\001\033[0m\002"
 #define USER "USER"
 #define LOGNAME "LOGNAME"
-#define ANON "anonumus"
+#define ANON "anonymous"
 
-
-static void add_username(t_arena	*prompt)
+static bool	add_hostname_to_prompt(t_arena *prompt)
 {
-	char *user;
-	user = getenv(USER);
-	if(user == NULL)
-		user = getenv(LOGNAME);
-	if (user == NULL)
-		user = ANON;
-	arena_strlcat(prompt, user, ft_strlen(user) + 1);
+	int		fd;
+	size_t	offset;
+	size_t	read_len;
+	size_t	size;
+
+	errno = 0;
+	fd = open("/proc/sys/kernel/hostname", O_RDONLY);
+	if (fd < 0 && errno)
+		return (/* error_log("add_hostname_to_prompt", "read", strerror(errno)), */ false);
+	size = prompt->cap + prompt->stride - prompt->offset;
+	offset = arena_alloc(prompt, size, 1) - 1;
+	read_len = read(fd, prompt->buf + offset, size);
+	while (read_len == size)
+	{
+		if (ft_indchr(prompt->buf + offset, '\n') != -1)
+			break ;
+		size = prompt->cap;
+		offset = arena_alloc(prompt, size, 1) - 1;
+		read_len = read(fd, prompt->buf + offset, size);
+	}
+	close(fd);
+	prompt->offset = prompt->stride
+		+ word_len(prompt->buf + prompt->stride, '\n') + 1;
+	return (true);
 }
 
-char	*get_prompt(t_ctx *c)
+static void	init_prompt(t_arena *prompt)
 {
-	size_t	offset;
-	size_t	tmp_offset;
+	char	*user;
+	size_t	save_offset;
+
+	user = getenv(USER);
+	if(!user)
+		user = getenv(LOGNAME);
+	if (!user)
+		user = ANON;
+	arena_clear(prompt);
+	arena_strlcpy(prompt, GREEN, ft_strlen(GREEN) + 1);
+	arena_strlcat(prompt, user, ft_strlen(user) + 1);
+	save_offset = arena_save(prompt);
+	arena_strlcat(prompt, "@", 2);
+	if (!add_hostname_to_prompt(prompt))
+		arena_restore(prompt, save_offset);
+}
+
+static bool	add_cwd_to_prompt(t_ctx *c)
+{
+	char	*cwd;
 	t_arena	*prompt;
-	char *cwd;
+	size_t	size;
+	size_t	tmp_offset;
 
 	prompt = &(c->arena[AT_PROMPT]);
-	arena_reset(prompt);
-	offset = arena_strlcpy(prompt, GREEN, ft_strlen(GREEN) + 1);
-	add_username(prompt);
-	arena_strlcat(prompt, "@", 2);
-	arena_strlcat(prompt, "shni", 5);
 	arena_strlcat(prompt, ":", 2);
-	tmp_offset = arena_alloc(prompt, CWD_SIZE, 1);
-	cwd = getcwd(prompt->buf + tmp_offset - 1, CWD_SIZE); // TODO: is there a better way of doing this?
-	if(cwd == NULL)
-		printf("Arena to small"); //TODO: make proper error handling
-	prompt->offset =
-		prompt->sentinel + ft_strlen(prompt->buf + prompt->sentinel) + 1;
+	size = prompt->cap + prompt->stride - prompt->offset;
+	tmp_offset = arena_alloc(prompt, size, 1) - 1; // essentially doubling the capacity
+	errno = 0;
+	cwd = getcwd(prompt->buf + tmp_offset, size);
+	while (!cwd && errno)
+	{
+		if (errno != ERANGE)
+					// TODO: implement for error logging
+			return (/* error_log("get_prompt", "get_cwd", strerror(errno)), */ false);
+		size = prompt->cap;
+		init_prompt(prompt);
+		arena_strlcat(prompt, ":", 2);
+		tmp_offset = arena_alloc(prompt, size, 1);
+		errno = 0;
+		cwd = getcwd(prompt->buf + tmp_offset, size);
+	}
+	prompt->offset = prompt->stride
+		+ word_len(prompt->buf + prompt->stride, ' ') + 1;
+	return (true);
+}
+
+static void	end_prompt(t_arena *prompt, int ret)
+{
+	arena_strlcat(prompt, "[", 2);
+	--(prompt->offset);
+	arena_itoa(prompt, ret); // to put the return of the last command
+	arena_strlcat(prompt, "]", 2);
+	arena_strlcat(prompt, SHELLNAME, ft_strlen(SHELLNAME) + 1);
 	arena_strlcat(prompt, "$ ", 3);
 	arena_strlcat(prompt, RESET, ft_strlen(RESET) + 1);
-	return ((char *)get_arena_ptr(prompt, offset));
 }
+
+char	*get_prompt(t_ctx *c, bool with_cwd)
+{
+	t_arena	*prompt;
+
+	prompt = &(c->arena[AT_PROMPT]);
+	init_prompt(prompt);
+	if (with_cwd && !add_cwd_to_prompt(c))
+		return (get_prompt(c, NO_CWD));
+	end_prompt(prompt, c->return_status);
+	return ((char *)get_arena_ptr(prompt, prompt->stride));
+}
+
+/* backup in case of other prompt related problems.
+char	*get_prompt(t_ctx *c, bool with_cwd)
+{
+	(void)c;
+	return ("shni $ ");
+}
+*/

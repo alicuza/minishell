@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/07 17:08:52 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/18 19:12:27 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,10 @@ static t_ctx	init_ctx(char **envp)
 	t_ctx	c;
 
 	ft_memset(&c, 0, sizeof(t_ctx));
-	c.arena[AT_STRING] = arena_init(ARENA_SIZE, STR_SENTINEL_SIZE);
-	c.arena[AT_PROMPT] = arena_init(ARENA_SIZE, STR_SENTINEL_SIZE);
-	c.arena[AT_TOKEN] = arena_init(ARENA_SIZE, sizeof(t_token));
+	c.arena[AT_STRING] = arena_init(ARENA_SIZE, sizeof(char));
+	c.arena[AT_PROMPT] = arena_init(ARENA_SIZE, sizeof(char));
+	c.arena[AT_STACK] = arena_init(ARENA_SIZE, sizeof(t_symbol));
+//	c.arena[AT_CMD] = arena_init(ARENA_SIZE, sizeof(t_cmd));
 	if (init_env(&c.env, envp))
 		printf("Error init_env");
 	return (c);
@@ -31,9 +32,10 @@ static t_ctx	init_ctx(char **envp)
 
 int	cleanup(t_ctx	*c)
 { 
-	arena_free_buf(&(c->arena[AT_STRING]));
-	arena_free_buf(&(c->arena[AT_PROMPT]));
-	arena_free_buf(&(c->arena[AT_TOKEN]));
+	arena_free(&c.arena[AT_STRING]);
+	arena_free(&c.arena[AT_PROMPT]);
+	arena_free(&c.arena[AT_STACK]);
+//	arena_free(&c.arena[AT_CMD]);
 	free_env(&c->env);
 	return 0;
 }
@@ -41,41 +43,36 @@ int	cleanup(t_ctx	*c)
 int	main(int argc, char **argv, char **envp)
 {
 	t_ctx	c;
-	size_t	token_idx;
 
-	(void)argc;
-	(void)argv;
-#ifdef DEBUG
-#endif
+	(void) argc;
+	(void) argv;
 	c = init_ctx(envp);
 	while (true)
 	{
-		if (!get_user_input(&c))
+		if (!get_user_input(&c, INPUT_DEFAULT))
 			break ;
+		if (!*(c.read_line))
+		{
+			free(c.read_line);
+			continue ;
+		}
 #ifdef DEBUG
-		//		print_arena(&c.arena[AT_PROMPT]);
-		print_arena(&c.arena[AT_STRING]);
-		while (true)
-		{
-			token_idx = get_next_token_idx(&c);
-			if (!token_idx)
-				break ;
-			print_token(&c, token_idx);
-			print_arena(&c.arena[AT_TOKEN]);
-			process_token(&c, token_idx);
-		}
-#else
-		while (true)
-		{
-			token_idx = get_next_token_idx(&c);
-			if (!token_idx)
-				break ;
-			process_token(&c, token_idx);
-		}
+		fprintf(stderr, "\n--- read_line ---\n");
+		fprintf(stderr, "%s\n", c.read_line);
+		fprintf(stderr, "\n--- prompt arena after get_prompt ---\n");
+		print_arena(&c.arena[AT_PROMPT]);
 #endif
+		t_parser_state	parse;
+
+		parse = parse_input(&c);
+#ifdef DEBUG
+		print_complete_stack(&c, &parse);
+#endif
+		exec_stack(&c, &parse);
 		arena_reset(&c.arena[AT_STRING]);
-		arena_reset(&c.arena[AT_TOKEN]);
+		arena_reset(&c.arena[AT_STACK]);
+		free(c.read_line);
 	}
 	cleanup(&c);
-	return (c.exit_status);
+	return (c.return_status);
 }

@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/06/07 16:18:42 by nribakov         ###   ########.fr        #
+#    Updated: 2026/06/18 19:03:01 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,25 +35,34 @@ SRCS        = \
 			main.c \
 			prompt.c \
 			input.c \
-			token.c \
-			token_utils.c \
-			token_char.c \
-			token_transform.c \
-			env/env_utils.c \
-			env/ft_split_key_value.c \
 			token_processor/token_processor.c \
+			parser/parse_input.c \
+			parser/parser_utils.c \
+			lexer/lookahead.c \
+			lexer/lex_tokens.c \
+			lexer/lex_utils.c \
+			lexer/quote_utils.c \
+			lexer/token_transform_utils.c \
+			lexer/string_utils.c \
+			lexer/expand_utils.c \
 			builtin/env.c \
+			builtin/env_utils.c \
+			builtin/ft_split_key_value.c \
 			builtin/pwd.c \
 			builtin/builtin_exit.c
-			
-DEBUG_SRCS  = debug_utils.c
+
+DEBUG_SRCS  = \
+			debug/debug_utils.c \
+			debug/debug_arena.c \
+			debug/debug_lex.c \
+			debug/debug_parse.c
 
 RELEASE_OBJS = $(addprefix $(RELEASE_DIR)/, $(SRCS:.c=.o))
 DEBUG_OBJS   = $(addprefix $(DEBUG_DIR)/, $(SRCS:.c=.o)) \
                 $(addprefix $(DEBUG_DIR)/, $(DEBUG_SRCS:.c=.o))
 
 # ---- source lookup ------------------------------------------------------- #
-vpath %.c srcs debug_srcs
+vpath %.c srcs
 
 # ---- build flags --------------------------------------------------------- #
 RELEASE_FLAGS = -O2
