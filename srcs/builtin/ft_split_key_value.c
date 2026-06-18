@@ -39,3 +39,4 @@ char	**ft_split_key_value(const char *s, char c)
 	res[2] = NULL;
 	return (res);
 }
+

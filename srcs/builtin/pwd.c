@@ -40,4 +40,3 @@ int	pwd(t_ctx *c)
 	printf("%s\n", pwd);
 	return 0;
 }
-
