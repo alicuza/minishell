@@ -1,27 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   input.c                                            :+:      :+:    :+:   */
+/*   expand_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/25 12:45:50 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 06:54:35 by sancuta          ###   ########.fr       */
+/*   Created: 2026/06/10 13:32:11 by sancuta           #+#    #+#             */
+/*   Updated: 2026/06/12 17:46:46 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*get_user_input(t_ctx *c, bool is_continuation)
-{
-	char	*prompt;
 
-	if (is_continuation)
-		prompt = "> ";
-	else
-		prompt = get_prompt(c, true);
-	c->read_line = readline(prompt);
-	if (c->read_line && *(c->read_line))
-		add_history(c->read_line);
-	return (c->read_line);
+bool	is_expansion_start(char *buf, uint64_t idx)
+{
+	return (buf[idx] == '$' && (is_name_start(buf[idx + 1])
+			|| is_char_in_set(buf[idx + 1], SPECIAL_PARAM_SET)));
+}
+
+uint64_t	get_expansion_len(char *expansion)
+{
+	uint64_t	i;
+
+	if (is_char_in_set(expansion[1], SPECIAL_PARAM_SET))
+		return (2);
+	i = 2;
+	while (expansion[i] && is_name_body(expansion[i]))
+		++i;
+	return (i);
 }

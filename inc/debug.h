@@ -6,49 +6,26 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/07 15:37:03 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/18 18:30:42 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
-#ifndef DEBUG_H
 # define DEBUG_H
 
 # include "arena.h"
+# include "types.h"
 
-typedef enum e_arena_type
-{
-	AT_NONE,	// TODO: should i init arenas as NONE, with everything zeroed out, and then assign arena to the correct type?
-	AT_STRING,
-	AT_PROMPT,
-	AT_TOKEN,
-	AT_STACK,
-	AT_CMD,
-	AT_COUNT,
-} t_arena_type;
-
-typedef struct s_env_content
-{
-	char *key;
-	char *val;
-}	t_env_content;
-
-typedef struct s_env
-{
-	t_list *vals;
-}	t_env;
-
-typedef struct s_ctx
-{
-	t_arena	arena[AT_COUNT];
-	char  	*read_line;
-	char exit_status;
-	t_env	env;
-}	t_ctx;
-
-void	print_arena(t_arena *arena);
-void	print_token(t_ctx *c, size_t token_idx);
-void	poison_sentinel(t_arena *arena);
-void	print_arena(t_arena *arena);
+const char	*get_arena_name(t_arena *arena);
+const char	*get_flag_name(uint32_t bit);
+const char	*get_symbol_type_name(t_symbol_type type);
+void		poison_stride(t_arena *arena);
+void		print_arena(t_arena *arena);
+void		print_flags(uint32_t flags);
+void		print_token(t_ctx *c, t_token *token);
+void		print_symbol(t_ctx *c, t_symbol *symbol, uint64_t phys);
+void		print_lex_state(t_ctx *c, t_lexer_state *l);
+void		print_complete_stack(t_ctx *c, t_parser_state *parse);
+void		print_char_info(unsigned char ch);
+void		print_escaped_str(const char *str);
 
 #endif

@@ -1,27 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   input.c                                            :+:      :+:    :+:   */
+/*   lex_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/25 12:45:50 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 06:54:35 by sancuta          ###   ########.fr       */
+/*   Created: 2026/05/25 13:03:51 by sancuta           #+#    #+#             */
+/*   Updated: 2026/06/12 16:48:52 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*get_user_input(t_ctx *c, bool is_continuation)
+uint64_t	consume_char(t_lexer_state *lex)
 {
-	char	*prompt;
+	return (++(lex->char_idx));
+}
 
-	if (is_continuation)
-		prompt = "> ";
-	else
-		prompt = get_prompt(c, true);
-	c->read_line = readline(prompt);
-	if (c->read_line && *(c->read_line))
-		add_history(c->read_line);
-	return (c->read_line);
+t_slice	save_lex_token_slice(t_lexer_state *lex)
+{
+	t_slice	save;
+
+	save.pos = lex->char_idx;
+	save.len = lex->token.len;
+	return (save);
+}
+
+void	restore_lex_token_slice(t_lexer_state *lex, t_slice saved)
+{
+	lex->char_idx = saved.pos;
+	lex->token.len = saved.len;
 }
