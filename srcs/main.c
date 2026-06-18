@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 18:40:03 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/18 19:38:02 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,16 @@ static t_ctx	init_ctx(char **envp)
 	if (init_env(&c.env, envp))
 		printf("Error init_env");
 	return (c);
+}
+
+int	cleanup(t_ctx	*c)
+{ 
+	arena_free(&c->arena[AT_STRING]);
+	arena_free(&c->arena[AT_STACK]);
+	arena_free(&c->arena[AT_PROMPT]);
+//	arena_free(&c->arena[AT_CMD]);
+	free_env(&c->env);
+	return 0;
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -63,9 +73,6 @@ int	main(int argc, char **argv, char **envp)
 		arena_reset(&c.arena[AT_STACK]);
 		free(c.read_line);
 	}
-	arena_free(&c.arena[AT_STRING]);
-	arena_free(&c.arena[AT_PROMPT]);
-	arena_free(&c.arena[AT_STACK]);
-//	arena_free(&c.arena[AT_CMD]);
-	return (0);
+	cleanup(&c);
+	return (c.return_status);
 }

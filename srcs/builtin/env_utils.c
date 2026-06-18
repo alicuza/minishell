@@ -45,6 +45,13 @@ void	free_env_content(void *content_void_p)
 	content = (t_env_content*) content_void_p;
 	free(content->key);
 	free(content->val);
+	free(content);
+}
+
+int	free_env(t_env *env)
+{
+	ft_lstclear(&env->vals, &free_env_content);
+	return 0;
 }
 
 int	add(t_env *env, char *key, char *value)
