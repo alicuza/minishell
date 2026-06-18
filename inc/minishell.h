@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 16:48:17 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/18 18:47:30 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,15 +118,23 @@ bool			is_name_body(char c);
 bool			is_expansion_start(char *buffer, uint64_t idx);
 uint64_t		get_expansion_len(char *expansion);
 
-/* -------- env_utils.c ----------------------------------------------------- */
-t_env			init_env(t_env env, char **envp);
+/* -------- env_utils.c ---------------------------------------------------- */
+int	init_env(t_env *env, char **envp);
+char	*search(t_env *env, char *key);
+
+/* -------- ft_split_key_value.c ---------------------------------------------------- */
+char	**ft_split_key_value(const char *s, char c);
 
 /* -------- token_processor.c ----------------------------------------------- */
 int				process_token(t_ctx *c, t_token *token);
 void			exec_stack(t_ctx *c, t_parser_state *parse);
 
-/* -------- env.c ----------------------------------------------------------- */
-void			env(t_ctx *c);
+/* -------- env.c ---------------------------------------------------- */
+int	env(t_ctx *c);
+
+/* -------- pwd.c ---------------------------------------------------- */
+int	pwd(t_ctx *c);
+char *get_cwd_safely();
 
 /* -------- parse_input.c --------------------------------------------------- */
 t_parser_state	parse_input(t_ctx *c);
@@ -135,3 +143,4 @@ t_parser_state	parse_input(t_ctx *c);
 void			shift_symbol(t_ctx *c, t_parser_state *parse);
 
 #endif
+

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/12 10:23:23 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/18 18:43:53 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,16 @@
 
 #define EQUAL 0
 
-static void	map_to_command(t_ctx *c, char *cmd)
+static int 	map_to_command(t_ctx *c, char *cmd)
 {
 	if (ft_strncmp(cmd, ENV, 4) == EQUAL)
-		env(c);
+	{
+		return env(c);
+	} else if (ft_strncmp(cmd, PWD, 4) == EQUAL)
+	{
+		return pwd(c);
+	}
+	return 0;
 }
 
 int	process_token(t_ctx *c, t_token *token)
@@ -28,7 +34,7 @@ int	process_token(t_ctx *c, t_token *token)
 	if (token->type == SYM_TOKEN)
 	{
 		content = c->arena[AT_STRING].buf + token->offset;
-		map_to_command(c, content);
+		c->return_status = map_to_command(c, content);
 	}
 	return (0);
 }

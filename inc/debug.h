@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   debug.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 09:03:06 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/18 18:49:32 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef DEBUG_H
 # define DEBUG_H
 
