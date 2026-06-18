@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 18:37:18 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/18 18:47:30 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,6 @@ t_parser_state	parse_input(t_ctx *c);
 
 /* -------- parser_utils.c -------------------------------------------------- */
 void			shift_symbol(t_ctx *c, t_parser_state *parse);
->>>>>>> main
 
 #endif
 
