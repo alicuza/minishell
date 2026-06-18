@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 19:12:27 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/18 19:38:02 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,10 @@ static t_ctx	init_ctx(char **envp)
 
 int	cleanup(t_ctx	*c)
 { 
-	arena_free(&c.arena[AT_STRING]);
-	arena_free(&c.arena[AT_PROMPT]);
-	arena_free(&c.arena[AT_STACK]);
-//	arena_free(&c.arena[AT_CMD]);
+	arena_free(&c->arena[AT_STRING]);
+	arena_free(&c->arena[AT_STACK]);
+	arena_free(&c->arena[AT_PROMPT]);
+//	arena_free(&c->arena[AT_CMD]);
 	free_env(&c->env);
 	return 0;
 }

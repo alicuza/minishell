@@ -6,11 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2026/06/07 17:11:26 by nribakov         ###   ########.fr       */
-=======
-/*   Updated: 2026/06/18 18:43:53 by nribakov         ###   ########.fr       */
->>>>>>> main
+/*   Updated: 2026/06/18 20:12:16 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +39,6 @@ int	process_token(t_ctx *c, t_token *token)
 	{
 		content = c->arena[AT_STRING].buf + token->offset;
 		c->return_status = map_to_command(c, content);
-		free(content);
 	}
 	return (0);
 }
