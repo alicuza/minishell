@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/18 21:13:16 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/18 21:16:18 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void 	 *match_builtin(char *cmd) //TODO maybe use proper type defenition int (*c
 		return (&env);
 	} else if (ft_strncmp(cmd, PWD, 4) == EQUAL)
 	{
-		return (^pwd);
+		return (&pwd);
 	}
 	else if (ft_strncmp(cmd, EXIT, 4) == EQUAL)
 	{
@@ -75,7 +75,7 @@ int command_search_and_execution(t_ctx *c, char *cmd)
 		}
 	}
 	else
-		execute_non_builtin(c, cmd);
+		return execute_non_builtin(c, cmd);
 }
 
 /*
