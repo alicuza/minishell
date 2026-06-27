@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:37:40 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 14:19:58 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/27 23:37:34 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,19 @@ t_token get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l)
 #ifdef DEBUG
 		print_lex_state(c, l);
 #endif
-		if (!c->read_line[l->char_idx])								// rule 1
+		if (!c->read_line[l->char_idx])										// rule 1
 		{
 #ifdef DEBUG
 			fprintf(stderr, "rule 1\n");
 #endif
 			if (l->flags & LEX_IS_BUILDING)
         		token = delimit_lex_token(c, p, l);
+			else
+				l->flags &= ~LEX_IS_DELIMITED;
 			l->flags |= LEX_NEEDS_INPUT;
 			return (token);
 		}
-		else if ((l->type == SYM_OPERATOR)								// rule 2
+		else if ((l->type == SYM_OPERATOR)									// rule 2
 			&& is_str_in_set(c->read_line + l->char_idx - 1, get_operator_strs()))
 		{
 #ifdef DEBUG
@@ -52,7 +54,7 @@ t_token get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l)
 				return (token);
 			}
 		}
-		else if ((l->type == SYM_OPERATOR)								// rule 3
+		else if ((l->type == SYM_OPERATOR)									// rule 3
 			&& !is_str_in_set(c->read_line + l->char_idx - 1, get_operator_strs()))
 		{
 #ifdef DEBUG
@@ -61,7 +63,7 @@ t_token get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l)
 			token = delimit_lex_token(c, p, l);
 			return (token);
 		}
-		else if (is_char_in_set(c->read_line[l->char_idx], QUOTE_SET))	// rule 4
+		else if (is_char_in_set(c->read_line[l->char_idx], QUOTE_SET))		// rule 4
 		{
 #ifdef DEBUG
 			fprintf(stderr, "rule 4\n");
@@ -72,7 +74,7 @@ t_token get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l)
 				start_lex_token(l, SYM_TOKEN);
 			l->char_idx = try_as_quote_pair(c, l) + 1;
 		}
-		else if (is_expansion_start(c->read_line, l->char_idx))			// rule 5
+		else if (is_expansion_start(c->read_line, l->char_idx))				// rule 5
 		{
 #ifdef DEBUG
 			fprintf(stderr, "rule 5\n");
@@ -101,7 +103,7 @@ t_token get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l)
 			start_lex_token(l, SYM_OPERATOR);
 			consume_char(l);
 		}
-		else if (is_char_in_set(c->read_line[l->char_idx], BLANK_SET))	// rule 7
+		else if (is_char_in_set(c->read_line[l->char_idx], BLANK_SET))		// rule 7
 		{
 #ifdef DEBUG
 			fprintf(stderr, "rule 7\n");
@@ -113,7 +115,7 @@ t_token get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l)
 				return (token);
 			}
 		}
-		else if (l->type == SYM_TOKEN)		// rule 8
+		else if (l->type == SYM_TOKEN)										// rule 8
 		{
 #ifdef DEBUG
 			fprintf(stderr, "rule 8\n");
