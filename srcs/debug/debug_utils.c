@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 16:28:06 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/27 14:39:14 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	print_char_info(unsigned char c)
 		fprintf(stderr, "'.'(%u)", c);
 }
 
-void	print_escaped_str(const char *s)
+void	print_escaped_str(FILE* out, const char *s)
 {
 	unsigned char	c;
 
@@ -61,15 +61,15 @@ void	print_escaped_str(const char *s)
 	{
 		c = (unsigned char)*s;
 		if (c == '\n')
-			fprintf(stderr, "\\n");
+			fprintf(out, "\\n");
 		else if (c == '\\')
-			fputc('\\', stderr);
+			fputc('\\', out);
 		else if (ft_isprint(c))
-			fputc(c, stderr);
+			fputc(c, out);
 		else if (ft_isspace(c))
-			fputc(' ', stderr);
+			fputc(' ', out);
 		else
-			fputc('.', stderr);
+			fputc('.', out);
 		++s;
 	}
 }

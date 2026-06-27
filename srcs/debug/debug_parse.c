@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 11:08:25 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 11:08:25 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/27 17:14:31 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ void	print_symbol(t_ctx *c, t_symbol *symbol, uint64_t phys)
 	fprintf(stderr, "\n--- symbol ---\n");
 	fprintf(stderr, "  [%lu]  %s(", phys,
 		get_symbol_type_name(symbol->type));
-	print_escaped_str(input->buf + symbol->offset);
+	print_escaped_str(stderr, input->buf + symbol->offset);
 	fprintf(stderr, ")  {  offset = %lu"
 		"  state = %u  prev = %lu  flags = ",
 		symbol->offset, symbol->entry_state,
 		symbol->prev_symbol);
-	print_flags(symbol->flags);
+	print_flags(stderr, symbol->flags);
 	fprintf(stderr, "  }\n");
 }
 
@@ -37,12 +37,12 @@ static void	print_stack_entry(t_ctx *c, t_symbol *symbol,
 	input = &c->arena[AT_STRING];
 	fprintf(stderr, "  [%lu] [%lu]  %s(", phys, prev,
 		get_symbol_type_name(symbol->type));
-	print_escaped_str(input->buf + symbol->offset);
+	print_escaped_str(stderr, input->buf + symbol->offset);
 	fprintf(stderr, ")  {  offset = %lu"
 		"  state = %u  prev = %lu  flags = ",
 		symbol->offset, symbol->entry_state,
 		symbol->prev_symbol);
-	print_flags(symbol->flags);
+	print_flags(stderr, symbol->flags);
 	fprintf(stderr, "  }\n");
 }
 

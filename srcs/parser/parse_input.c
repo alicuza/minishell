@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 17:14:19 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 08:28:50 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/27 17:12:17 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ t_parser_state	parse_input(t_ctx *c)
 			break;
 #ifdef DEBUG
 		fprintf(stderr, "\n--- lookahead ---\n");
-		print_token(c, &parse.lookahead);
+		print_token(out, c, &parse.lookahead);
 		print_arena(&c->arena[AT_STRING]);
 #endif
 		shift_symbol(c, &parse);
