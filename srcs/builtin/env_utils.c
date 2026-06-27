@@ -97,6 +97,6 @@ int	init_env(t_env *env, char **envp)
 			i++;
 		}
 	if (search(env, PWD) == NULL)
-		add(env, PWD, get_cwd_safely());
+		add(env, PWD, get_pwd());
 	return (0);
 }

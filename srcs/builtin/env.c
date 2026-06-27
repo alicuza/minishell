@@ -8,12 +8,12 @@ static void	print_val(void *content_void_p)
 	printf("%s=%s\n", (char*) content->key, content->val);
 }
 
-int	env(t_ctx *c)
+int	env(t_ctx *c, char **argv)
 {
 #ifdef DEBUG
 	printf("\nExecuting env:\n");
 #endif
-
+	(void) argv;
 	t_list *env = c->env.vals;
 	if (env)
 	{

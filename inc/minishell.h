@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 22:07:41 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/27 19:44:25 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,11 +131,11 @@ int				process_token(t_ctx *c, t_token *token);
 void			exec_stack(t_ctx *c, t_parser_state *parse);
 
 /* -------- env.c ---------------------------------------------------- */
-int	env(t_ctx *c);
+int	env(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- pwd.c ---------------------------------------------------- */
-int	pwd(t_ctx *c);
-char *get_cwd_safely();
+int	pwd(t_ctx *c, t_command_ctx *command_ctx);
+char *get_pwd();
 
 /* -------- parse_input.c --------------------------------------------------- */
 t_parser_state	parse_input(t_ctx *c);
@@ -143,8 +143,12 @@ t_parser_state	parse_input(t_ctx *c);
 /* -------- parser_utils.c -------------------------------------------------- */
 void			shift_symbol(t_ctx *c, t_parser_state *parse);
 
-/* ------------------------------ builtin_exit.c ------------------------------ */
-int	builtin_exit(t_ctx *c);
+/* -------- builtin_exit.c ------------------------------ */
+int	builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- cd.c ------------------------------ */
+int	cd(t_ctx *c, t_command_ctx *command_ctx);
+
 
 #endif
 

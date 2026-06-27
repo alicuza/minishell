@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 18:34:08 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/27 17:45:13 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,20 @@ typedef struct s_slice
 
 typedef struct s_cmd	// stub
 {
-	char	*argv;
-	char	*envp;
+	char *path;
+	char	**argv;
+	char	**envp;
 }	t_cmd;
+
+
+typedef struct s_command_ctx
+{
+	char *name;
+	uint64_t argc;
+	char	**argv;
+}	t_command_ctx;
+
+typedef int	(*t_command_function)(t_ctx *c, t_command_ctx command_ctx);
 
 typedef enum e_symbol_type
 {

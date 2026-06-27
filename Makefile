@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/06/18 22:02:40 by nribakov         ###   ########.fr        #
+#    Updated: 2026/06/27 17:47:02 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME       = minishell
 
 # ---- compiler / linker --------------------------------------------------- #
 CC         = cc
-CFLAGS     = -Wall -Wextra -Werror -MMD -MP
+CFLAGS     = -g -Wall -Wextra -Werror -MMD -MP
 ARENA_SIZE ?= 64
 CPPFLAGS   = -I inc -I $(LIBFT_DIR) -I $(LIBFT_DIR)/arena -D ARENA_SIZE=$(ARENA_SIZE)
 LDFLAGS    =
@@ -49,7 +49,8 @@ SRCS        = \
 			builtin/env_utils.c \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \
-			builtin/builtin_exit.c
+			builtin/builtin_exit.c \
+			builtin/cd.c
 
 DEBUG_SRCS  = \
 			debug/debug_utils.c \
