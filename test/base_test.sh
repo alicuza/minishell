@@ -19,9 +19,9 @@ $(touch $shni_result);
 echo "$2" | bash > $bash_result;
 echo "$2" | ./minishell > $shni_result;
 
-#Trim prompt line
-sed -i '1d' "$shni_result"
-sed -i '$d' "$shni_result"
+#Trim prompt line - unnecessary since introduction of non-interactive mode
+#sed -i '1d' "$shni_result"
+#sed -i '$d' "$shni_result"
 
 if [ "$#" -eq 3 ]; then
   eval $3
