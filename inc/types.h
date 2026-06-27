@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 18:34:08 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/27 19:48:41 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,11 @@ typedef struct s_ctx
 	t_arena	arena[AT_COUNT];
 	char	*read_line;
 	int		return_status;
+	bool	is_interactive;
+# ifdef DEBUG
+	uint8_t	scope;			// SCOPE_TOKEN | SCOPE_REDUCE | SCOPE_STACK
+	bool	no_exec;		// TODO: do i actually need this?
+# endif
 }	t_ctx;
 
 typedef struct s_slice
@@ -50,7 +55,7 @@ typedef struct s_slice
 	uint64_t	len;
 }	t_slice;
 
-typedef struct s_cmd	// stub
+typedef struct s_cmd		// stub
 {
 	char	*argv;
 	char	*envp;

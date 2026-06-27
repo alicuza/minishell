@@ -73,6 +73,13 @@
 # define PARSE_DONE				0x01
 # define PARSE_HERE_PENDING		0x02
 
+# ifdef DEBUG
+/* -------- test scope flags ------------------------------------------------ */
+#  define SCOPE_TOKEN			0x01
+#  define SCOPE_REDUCE			0x02
+#  define SCOPE_STACK			0x04
+# endif
+
 /* -------- grammar constants ----------------------------------------------- */
 # define NO_TOKEN 0
 # define MAX_RHS_LEN 4
