@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 17:14:19 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/27 17:12:17 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/27 19:24:04 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ t_parser_state	parse_input(t_ctx *c)
 		if (!(lex.flags & LEX_IS_DELIMITED))
 			break;
 #ifdef DEBUG
+		FILE *out = stderr;
+		if (c->scope & SCOPE_TOKEN)
+			out = stdout;
 		fprintf(stderr, "\n--- lookahead ---\n");
 		print_token(out, c, &parse.lookahead);
 		print_arena(&c->arena[AT_STRING]);
