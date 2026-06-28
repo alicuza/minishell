@@ -8,7 +8,7 @@ _assert_run()
 	result=$(printf "\e[200~%s\e[201~\n" "$input" \
 			| ./minishell-debug --no_exec --scope="$scope" 2>/dev/null \
 			| sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
-	delta="$(diff -u <(printf "%s" "$block") <(printf "%s" "$result"))" \
+	delta="$(diff -u <(printf "%s\n" "$block") <(printf "%s\n" "$result"))" \
 		&& echo "OK" || { echo "KO"; echo "$delta"; return 1; }
 }
 
