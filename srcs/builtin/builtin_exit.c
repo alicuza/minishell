@@ -1,9 +1,9 @@
 #include "minishell.h"
 
-int	builtin_exit(t_ctx *c, char **argv)
+int	builtin_exit(t_ctx *c, t_command_ctx *command_ctx)
 {
   (void) c;
-  (void) argv;
+  (void) command_ctx;
   printf("exit\n");
   close(0);
   return 0;

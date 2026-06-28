@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/27 17:51:25 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/28 13:12:38 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ t_command_function	match_builtin(char *cmd_ctx)
 	}
 	else if (ft_strncmp(cmd_ctx, CD, 3) == EQUAL)
 	{
-		return (&builtin_exit);
+		return (&cd);
 	}
 	return (NULL);
 }
@@ -113,7 +113,7 @@ void	build_command(t_ctx *c, t_parser_state *parse)
 		return ;
 	arena_idx = 1;
 	sym = get_symbol_from_idx(stack, arena_idx);
-	while (sym->type == SYM_TOKEN && c->arena[AT_STRING].buf + sym->offset != NULL)
+	while (sym && sym->type == SYM_TOKEN) // && c->arena[AT_STRING].buf + sym->offset != NULL
 {
 		if (command.name == NULL)
 			command.name = c->arena[AT_STRING].buf + sym->offset;

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/27 19:44:25 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/28 09:53:26 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,10 +118,14 @@ bool			is_name_body(char c);
 bool			is_expansion_start(char *buffer, uint64_t idx);
 uint64_t		get_expansion_len(char *expansion);
 
+/* -------- env_update.c ---------------------------------------------------- */
+int	env_update(t_env *env, char *key, char *value);
+
 /* -------- env_utils.c ---------------------------------------------------- */
 int	init_env(t_env *env, char **envp);
 int	free_env(t_env *env);
 char	*search(t_env *env, char *key);
+int	add(t_env *env, char *key, char *value);
 
 /* -------- ft_split_key_value.c ---------------------------------------------------- */
 char	**ft_split_key_value(const char *s, char c);
@@ -135,7 +139,7 @@ int	env(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- pwd.c ---------------------------------------------------- */
 int	pwd(t_ctx *c, t_command_ctx *command_ctx);
-char *get_pwd();
+char *get_pwd(t_ctx *c);
 
 /* -------- parse_input.c --------------------------------------------------- */
 t_parser_state	parse_input(t_ctx *c);

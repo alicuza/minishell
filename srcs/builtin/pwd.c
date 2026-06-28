@@ -13,7 +13,7 @@
 #include "minishell.h"
 #include "env.h"
 
-char *get_pwd()
+char *get_pwd(t_ctx *c)
 {
 	char *pwd;
 	pwd = search(&c->env, PWD);
@@ -28,14 +28,15 @@ char *get_pwd()
 	return pwd;
 }
 
-int	pwd(t_ctx *c, char **argv)
+int	pwd(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char* pwd;
+
 #ifdef DEBUG
 	printf("\nExecuting pwd:\n");
 #endif
-	(void) argv;
-	pwd = get_pwd();
+	(void) command_ctx;
+	pwd = get_pwd(c);
 	if(!pwd)
 		return 1;
 	printf("%s\n", pwd);

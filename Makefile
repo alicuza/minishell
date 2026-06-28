@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/06/27 17:47:02 by nribakov         ###   ########.fr        #
+#    Updated: 2026/06/28 14:51:01 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,6 +45,7 @@ SRCS        = \
 			lexer/token_transform_utils.c \
 			lexer/string_utils.c \
 			lexer/expand_utils.c \
+			environment/env_update.c \
 			builtin/env.c \
 			builtin/env_utils.c \
 			builtin/ft_split_key_value.c \

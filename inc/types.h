@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/27 17:45:13 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/28 09:37:01 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ typedef struct s_command_ctx
 	char	**argv;
 }	t_command_ctx;
 
-typedef int	(*t_command_function)(t_ctx *c, t_command_ctx command_ctx);
+typedef int	(*t_command_function)(t_ctx *c, t_command_ctx *command_ctx);
 
 typedef enum e_symbol_type
 {

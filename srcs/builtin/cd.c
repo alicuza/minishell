@@ -4,23 +4,29 @@
 
 static bool	is_empty(char *str)
 {
-	return (str == NULL || str[0] == "\0");
+	return (str == NULL || str[0] == '\0');
 }
 
-static int	cd_path(void)
+static int	cd_path(t_ctx *c, char	*curpath)
 {
 	int		result;
+	char *oldpwd;
 
 	result = chdir(curpath);
 	if(result == 0)
 	{
-		//set OLDPWD
-		//set PWD
-		rerutn 0;
+		oldpwd = search(&c->env, PWD);
+		if(env_update(&c->env, OLDPWD, oldpwd) || env_update(&c->env, PWD, curpath))
+		{
+			result = chdir(oldpwd);
+			return 1;
+		}
+		return (0);
 	}
 	else
 	{
-		// print error
+		printf("Error during chdir.\n");
+		return (1);
 	}
 }
 
@@ -31,11 +37,11 @@ static int	cd_home(t_ctx *c)
 	home = search(&c->env, HOME);
 	if (is_empty(home))
 	{
-		printf("cd: HOME not set");
+		printf("cd: HOME not set\n");
 		return (1);
 	}
 	else
-		return (cd_path(home));
+		return (cd_path(c, home));
 }
 
 int	cd_oldpwd(t_ctx *c)
@@ -46,12 +52,12 @@ int	cd_oldpwd(t_ctx *c)
 	old_path = search(&c->env, OLDPWD);
 	if (is_empty(old_path))
 	{
-		printf("cd: OLDPWD not set");
+		printf("cd: OLDPWD not set\n");
 		return (1);
 	}
 	else
 	{
-		result = cd_path(old_path);
+		result = cd_path(c, old_path);
 		if (result == 0)
 			printf("%s\n", old_path);
 		return (result);
@@ -63,10 +69,12 @@ static char*	make_canonical_form(char *curpath)
 	size_t size;
 	size_t	i;
 
+	if(curpath == NULL)
+			return NULL;
 	size = ft_strlen(curpath) + 1;
 	canonical_form = malloc(size);
 	if(canonical_form == NULL)
-		return;
+		return NULL;
 	i = 0;
 	while (i < size - 1 && curpath[i])
 	{
@@ -106,9 +114,7 @@ static int cd_dir(t_ctx *c, const char *dir)
 
 	if (dir[0] != '/')
 	{
-		curpath = ft_strjoin(ft_strjoin(get_pwd(), "/"), dir);
-		if(curpath == NULL)
-			return 1;
+		curpath = ft_strjoin(ft_strjoin(get_pwd(c), "/"), dir);
 	}
 	else
 	{
@@ -118,19 +124,22 @@ static int cd_dir(t_ctx *c, const char *dir)
 	if(canonical_form == NULL)
 		result = 1;
 	else 
-		result = cd_path(canonical_form);
+		result = cd_path(c, canonical_form);
 	free(curpath);
 	free(canonical_form);
-	return;
+	return (result);
 }
 
 int	cd(t_ctx *c, t_command_ctx *command_ctx)
 {
-	const char *dir;
+	char *dir;
 	
 	if (command_ctx->argc > 2)
-		printf("cd: too many arguments");
-	dir = command_ctx->argc[1];
+	{
+		printf("cd: too many arguments\n");
+		return 1;
+	}
+	dir = command_ctx->argv[1];
 	if (is_empty(dir))
 		return (cd_home(c));
 	else
