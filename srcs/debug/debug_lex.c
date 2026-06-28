@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 11:08:25 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/27 17:58:38 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/28 02:58:30 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,15 @@ void	print_flags(FILE *out, uint32_t flags)
 	bit = 1;
 	while (!(flags & bit))
 		bit <<= 1;
-	fprintf(out, "%s", get_flag_name(bit));
+	fprintf(out, "%s ", get_flag_name(bit));
 	flags ^= bit;
 	while (flags)
 	{
 		bit <<= 1;
 		if (flags & bit)
 		{
-			fprintf(stderr, " | ");
-			fprintf(out, "%s", get_flag_name(bit));
+			fprintf(stderr, "|");
+			fprintf(out, "%s ", get_flag_name(bit));
 			flags ^= bit;
 		}
 	}
@@ -66,7 +66,8 @@ void	print_token(FILE *out, t_ctx *c, t_token *token)
 	fprintf(out, "  %s(", get_symbol_type_name(token->type));
 	print_escaped_str(out, input->buf + token->offset);
 	fprintf(out, ")");
-	fprintf(stderr, "  {  offset = %lu  flags = ", token->offset);
+	fprintf(stderr, "  {  offset = %lu  flags =", token->offset);
+	fprintf(out, " ");
 	print_flags(out, token->flags);
 	fprintf(stderr, "  }");
 	fprintf(out, "\n");
