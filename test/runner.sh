@@ -6,7 +6,7 @@ _run_functions()
 
 	for func in $(awk '/^test_/ {print $1}' "$1"); do
 		func="${func%()}"
-		echo "  $func"
+		printf "  %-50s " "$func"
 		if "$func"; then
 			((passed++))
 		else
