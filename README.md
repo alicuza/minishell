@@ -37,17 +37,19 @@ _This project has been created as part of the 42 curriculum by nribakov, sancuta
 
 ### Compilation
 
-- `make` or `make all`: compiles `minishell`
-- `make clean`: removes object and dependency files
-- `make fclean`: additionally removes the binary and libs
-- `make re`: recompiles the entire project from scratch
-- `make debug`: compiles with the `-g` flag for debugging
-- // TODO: complete the description with debugging funtionality
-- // TODO: also add descriptions about the linking of binaries
+- `make` or `make all` — compiles `minishell`;
+- `make clean` — removes object and dependency files;
+- `make fclean` — additionally removes the binary, libs, docs, and logs;
+- `make re` — recompiles the entire project from scratch;
+- `make debug` — compiles with `-g -DDEBUG` for debugging;
+- `make run` — builds and runs `./minishell`;
+- `make run-debug` — builds and runs `./minishell-debug`;
+- `make test` — builds both release and debug binaries, then runs the test suite;
+- `make doc` — generates Doxygen man pages in `docs/` (requires `doxygen`);
+- `make compile_flags.txt` — generates a clangd-compatible compilation database;
 
 **Options:**
-- `make [target] ARENA_SIZE=N`: overrides the arena initial capacity (default `64`)
-// TODO: doesn't recompile with with e different `ARENA_SIZE`
+- `make [target] ARENA_SIZE=N` — overrides the arena initial capacity (default `64`);
 
 **Dependencies:**
 - libft (bundled)
@@ -60,12 +62,26 @@ _This project has been created as part of the 42 curriculum by nribakov, sancuta
 
 ### Functionality
 
-```bash
-```
+- readline-based REPL with colored prompt (`user@hostname:cwd[exitcode]shni$ `)
+- POSIX-conformant tokenizer (10 rules, quotes, expansions, operators)
+- shift-only LALR(1) parser (reductions planned)
+- builtins: `env`, `pwd`, `exit` (partial)
+- arena-based memory management (no per-allocation tracking)
+- interactive and non-interactive modes
+- debug mode with `--scope=<flags>` and `--no_exec`
 
 ---
 
 ## Known Limitations
+
+- **Shift-only parser:** the parser stacks tokens (`t_symbol`) but does not perform grammar reductions. No non-terminal nodes (pipeline, command, etc.) are created. `t_rule` table and `t_reduce` function pointers are defined but never populated.
+- **No external commands:** there is no `fork()`/`execve()` loop. Only the builtins `env`, `pwd`, and `exit` are wired; `exit` does not terminate the shell.
+- **No pipelines, redirections, subshells, or chaining:** `|`, `<`, `>`, `<<`, `>>`, `&&`, `||`, `(`, `)` are lexed but never acted upon.
+- **No expansion:** `$NAME`, `$?`, and quoted strings are flagged but never expanded or quote-removed. No field splitting.
+- **No heredoc:** `<<` is tokenized but the heredoc body reader is not implemented.
+- **No signal handling:** `<signal.h>` is included but no handlers are registered. `SIGINT` and `SIGQUIT` are ignored by default.
+- **Incomplete builtins:** only 3 of the 7 required builtins are stubbed. `echo`, `cd`, `export`, `unset` are declared in `builtin.h` but not wired in `map_to_command()`.
+- **`t_cmd` arena:** `AT_CMD` is declared in `t_ctx` but never initialized — no command structs are created.
 
 ---
 
@@ -73,170 +89,140 @@ _This project has been created as part of the 42 curriculum by nribakov, sancuta
 
 ### Architecture Overview
 
-- stack based parsing, similar to how bash does it, but with hard coded rules.
+The program state lives in a single `t_ctx` struct passed by pointer through every stage. Memory is managed through typed arenas — there is no per-allocation tracking or explicit `free` for individual tokens.
+
+```
+t_ctx
+├── t_env          env            — linked list of environment key/value pairs
+├── t_arena[4]     arena          — typed arenas (AT_PROMPT, AT_STRING, AT_STACK, AT_CMD*)
+├── char          *read_line      — readline-allocated input (freed per iteration)
+├── int            return_status  — exit code of the last command
+├── bool           is_interactive — true when STDIN is a tty
+└── (debug)        scope, no_exec — debug flags (only with -DDEBUG)
+```
+
+The parsing pipeline is split into three phases:
+
+1. **Lexer** — character-by-character POSIX tokenizer. Reads from `read_line`, produces `t_token` lookaheads, copies token bodies into `AT_STRING`.
+2. **Parser** — shift-only LALR(1) parser. Stacks `t_symbol` nodes on `AT_STACK` with linked-list links (`prev_symbol`). Grammar reductions are defined in `types.h` (`t_rule`, `t_reduce`, 48 rules) but not yet implemented.
+3. **Token Processor** — flat walk of the symbol stack. Dispatches `SYM_TOKEN` nodes through `map_to_command()`. Only `env`, `pwd`, `exit` are currently recognized.
+
+Arena types use different strides: `AT_PROMPT` and `AT_STRING` are character buffers (stride=1), `AT_STACK` has stride=`sizeof(t_symbol)`, `AT_CMD` is reserved but not initialized.
 
 
 ### Core Data Structure
 
 ```c
+typedef struct s_ctx
+{
+	t_env       env;                 // linked list of key/value pairs
+	t_arena     arena[AT_COUNT];     // 4 arenas (PROMPT, STRING, STACK, CMD [unused])
+	char       *read_line;           // readline-allocated input string
+	int         return_status;       // exit status of last command
+	bool        is_interactive;      // true if STDIN is a tty
+# ifdef DEBUG
+	uint8_t     scope;               // debug scope flags
+	bool        no_exec;             // skip execution when true
+# endif
+}	t_ctx;
+
+typedef struct s_symbol
+{
+	uint64_t      offset;            // offset into AT_STRING arena
+	uint64_t      prev_symbol;       // arena index of logical predecessor
+	uint64_t      next_frame;        // subshell chain (future use)
+	uint64_t      next_pipeline;     // pipeline chain (future use)
+	uint64_t      next_redir;        // command redirect chain (future use)
+	uint64_t      next_arg;          // command arg chain (future use)
+	uint64_t      next_cmd;          // pipeline level (future use)
+	uint32_t      entry_state;       // parser state before this symbol
+	uint32_t      flags;             // LEX_HAS_EXPANSION | LEX_HAS_QUOTES
+	t_symbol_type type;              // SYM_TOKEN, SYM_OPERATOR, ...
+}	t_symbol;
+
+typedef struct s_parser_state
+{
+	uint32_t  cur_state;             // current parser state (always 0 — no reductions)
+	uint64_t  arena_idx;             // physical index of most recently shifted symbol
+	uint64_t  stack_idx;             // logical index (currently == arena_idx)
+	t_token   lookahead;             // the current lookahead token
+	uint8_t   flags;                 // PARSE_HERE_PENDING | PARSE_DONE (unused)
+}	t_parser_state;
+
+typedef struct s_lexer_state
+{
+	t_slice       token;             // position+length of token being built
+	uint64_t      char_idx;          // index into read_line
+	t_symbol_type type;              // SYM_TOKEN or SYM_OPERATOR
+	uint8_t       flags;             // LEX_HAS_EXPANSION | LEX_HAS_QUOTES | ...
+}	t_lexer_state;
+
+typedef struct s_token
+{
+	uint64_t      offset;            // offset into AT_STRING arena
+	uint32_t      flags;             // same flags as lexer_state
+	t_symbol_type type;              // SYM_TOKEN, SYM_OPERATOR, etc.
+}	t_token;
 ```
 
 ### User Input
 
+Input is handled by a readline wrapper in `srcs/input.c`:
 
+- **Interactive mode:** `isatty(STDIN_FILENO)` is checked once at startup. The prompt is built in the `AT_PROMPT` arena and includes color, user, hostname, cwd, and exit status: `\033[38;5;40muser@hostname:cwd[0]shni$ \033[0m`. Escape sequences are wrapped in `\001`/`\002` to prevent readline redisplay corruption.
+- **Continuation prompt:** when `is_continuation` is true, a simple `"> "` is used (hardcoded, not `PS2`).
+- **Non-interactive mode:** `prompt` is set to `NULL` and `rl_outstream` is redirected to `stderr` so readline does not mirror input to stdout.
+- **History:** non-empty lines are added to readline history via `add_history()` in interactive mode. History is not persisted between sessions.
 
 ### Parsing
 
-**possible implementation**
+Parsing follows a two-stage pipeline: **tokenization** (lexer) and **syntax analysis** (parser). The lexer reads characters from `read_line` and produces delimited tokens. The parser shifts those tokens onto a stack as `t_symbol` nodes.
+
+#### Tokenization
+
+The lexer in `srcs/lexer/` implements the POSIX token recognition rules from Section 2.3 of the Shell & Utilities volume. It is a character-by-character state machine:
 
 ```
-1. call readline with PS1 prompt
-2. tokenize the readline:
-2. a. if a token exists and is delimited -> add token string to the string arena, if WORD token -> append `\0`
-3. process the token (attempt to reduce token sequence according to the shell grammar; order up for debate, need to consult posix):
-3. a. if `cur_token` not empty -> create a command struct with the token type, if there is no command struct that the token can be reduced to; track the "grammar structure" type as the type of this command struct; it gets delimited when the next token is a `control operator` (need to still figure out how this works with parentheses)
-3. b. if processing reduces token to `io_here` (a token sequence of `<<` and `WORD`):
-3. b. i. tokenize rest of line -> do 2.
-3. b. ii. free read_line
-3. b. iii. call readline with PS2 prompt
-3. b. iv. if the current read_line doesn't contain only `delimiter\n` -> create WORD token and copy the whole read_line into the string arena
-3. b. v. else  -> delimit `here-doc` WORD token, if it exists (maybe the conditions in d. and f. could be switched)
-3. b. vi. if other `io_here` in saved tokens -> repeat from b.
-3. b. free read_line
-3. c. process each saved token
-3. d. if `current_token` is empty: there are no more tokens to be processed, current command structure gets delimited, if it exists -> sent to execution
-4. if there are no more command structures -> wait for the status of the execution
+Lexer state tracks:
+  token:      t_slice {pos, len}     current extent in read_line
+  char_idx:   uint64_t               current read position
+  type:       SYM_TOKEN / SYM_OPERATOR
+  flags:      LEX_HAS_EXPANSION      token contains $ expansion
+              LEX_HAS_QUOTES         token contains ' or " quotes
+              LEX_IS_BUILDING        currently accumulating token
+              LEX_IS_DELIMITED       token is complete, ready to shift
+              LEX_NEEDS_INPUT        consumed all input, need more
 ```
 
-relevant rules from [2.10.2 Shell Grammar Rules](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_10_02)
-1. command name: `token` -> `WORD`
-2. redirection to/from filename: expansions according to [2.7. Redirection](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_07)
-3. redirection from here-doc: quote removal on `WORD` -> `delimiter`
-~~4. case state termination: not relevant~~
-~~5. `NAME` in `for`: not relevant~~
-~~6. third word of `for` (`in`, `do`) and `case` (`in`): not relevant~~
-7. assignment preceeding command name:
-7. a. not relevant
-7. b. worth looking into
-~~8. `NAME` in function: not relevant~~
-~~9. Body of function: not relevant~~
+The rules are applied in order (see POSIX 2.3 Token Recognition):
 
-#### Token Recognition
+1. **EOI/EOF** — delimit current token if one exists
+2. **Operator continuation** — if `prev_char` + `cur_char` form a longer operator (e.g. `<` + `<` → `<<`), extend the token
+3. **Operator break** — if `prev_char` was an operator but `cur_char` cannot extend it, delimit the operator token
+4. **Quotes** — `'` or `"` starts a quoted region; characters are added verbatim until the matching close quote
+5. **Expansion** — `$` starts a variable reference; following valid `name_chars` are consumed
+6. **Operator start** — unquoted `|`, `<`, `>`, `&`, `;`, `(`, `)` start a new operator token; delimit any existing token first
+7. **Blank** — ` ` or `\t` delimits an existing token and is discarded
+8. **Word continuation** — any other character extends a word token
+9. **Comment** — `#` (when not quoted) discards until end of line (not required, optionally compiled)
+10. **Default** — start a new word token
 
-Input is read in terms of lines in 2 different circumstances:
+On delimiting, the token body is copied into `AT_STRING` arena and a `t_token` is produced as the lookahead.
 
-**here-doc processing**
+#### Syntax Analysis
 
-	step 1.
-	if
-		`io_here` has been "recognized" (returned)
-	do
-		search for next `\n`-token: corresponding `here-doc` starts on the next line
-		&& non-`\n`-tokens get saved for processing after `here-doc` finished parsing
+The parser in `srcs/parser/` is a **shift-only LALR(1) parser**. The main loop in `parse_input()`:
 
-	step 2.
-	if
-		`\n`-token found
-	do
-		start `here-doc` on the next line
+1. Create a zeroed `t_parser_state` and `t_lexer_state`
+2. Set `parse.arena_idx = 1` (index 0 is the sentinel guard element)
+3. Loop:
+   - Call `get_lookahead()` — runs the lexer until a token is delimited
+   - When a token is ready (`LEX_IS_DELIMITED`), call `shift_symbol()`
+   - `shift_symbol()` allocates a `t_symbol` on `AT_STACK`, sets its offset, type, flags, entry_state (always 0), and `prev_symbol` pointing to the previous symbol
+   - Update `stack_idx` and `arena_idx`
+   - Repeat until EOF
 
-	step 3.
-	if
-		`io-here` was among tokens saved
-	do
-		start corresponding `here-doc` on the line after the `delimiter\n`
-
-	step 4. // TODO: not sure what exactly is meant with processing further, applying the grammar rules?
-	if
-		there are saved tokens
-	do
-		process them further
-
-*see [2.7.4 Here-Document](https://pubs.opengroup.org/onlinepubs/9799919799/)*
-- the `here-doc` is treated as a single word starting after the first `\n`
-- continues until a line containing only the `delimiter` and a `\n`, no `blank`s
-- if there is another `here-doc`, it starts immediately after the `delimiter\n`
-- expansion happens during `redirection evaluation`
-- expansion of `here-doc`s has the same rules as `"`-expansion
-  - except for the `"`, which has no special meaning in a `here-doc`
-- the order of `here-doc`s corresponds to the order of `io_here` tokens
-
-**ordinary token recognition**
-apply the first applicable rule from the list:
-
-	rule 1.
-	if
-		`cur_char` is `EOI`/`EOF`
-	do
-		delimit `cur_token`, if it exists
-
-	rule 2.
-	if
-		`prev_char` is part of `operator`
-		&& `cur_char` is unquoted
-		&& `cur_char` can be used with the `prev_char` to form an `operator`
-	do
-		add `cur_char` to the `cur_token`
-
-	rule 3.
-	if
-		`prev_char` is part of `operator`
-		&& `cur_char` cannot be used with the `prev_char` to form an `operator`
-	do
-		delimit the `cur_token`
-
-	rule 4.
-	if
-		`cur_char` is a `quote_char`(`'`, `"`)
-	do
-		add `cur_char` to the `cur_token`
-		&& add following `char`s to the `cur_token` unmodified until the closing `quote_char` was found
-		&& DO NOT DELIMIT `cur_token`
-
-	rule 5.
-	if
-		`cur_char` is unquoted
-		&& `cur_char` is beginning of variable expansion (`$`)
-	do
-		add `cur_char` to the `cur_token`
-		&& add following `char`s to the `cur_token` unmodified while valid `name_chars`
-
-	rule 6.
-	if
-		`cur_char` is unquoted
-		&& `cur_char` is start of an `operator`
-	do	
-		delimit `cur_token` if it exists
-
-	rule 7.
-	if
-		`cur_char` is unquoted
-		&& `cur_char` is `blank` (` `, `\t`)
-	do
-		delimit `cur_token`
-		&& discrad `cur_char`
-
-	rule 8.
-	if
-		`prev_char` is part of `word_token`
-	do	
-		add `cur_char` to the `cur_token`/`word_token`
-
-	rule 9.	// we skip rule 9 for now
-		`cur_char` is `comment_char` (`#`)
-	do
-		discard `cur_char`
-		&& discrad `chars` until `\n`
-
-	rule 10.
-	do
-		`cur_char` is used as the start of a new `word_token`
-
-Once delimited, a token gets lexed according to the Shell Grammar.
-
-"In situations where the shell parses its input as a program, once a `complete_command` has been recognized by the grammar (see 2.10 Shell Grammar), the `complete_command` shall be executed before the next `complete_command` is tokenized and parsed."
-
-Tokens that are empty after delimiting get discarded.
+No reductions are performed. The grammar rules (`t_rule[RULE_COUNT]`) and reduce function pointers (`t_reduce`) are defined in `types.h` but never populated. The parser creates a flat linked list of symbols — no non-terminal nodes (pipeline, command, etc.) are synthesized.
 
 #### Grammar
 *see [2.10 Shell Grammar](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_10)*
@@ -368,9 +354,26 @@ the following chars don't have an explicit token they get assigned to in the gra
 
 ### Execution
 
+Execution is limited to a flat walk of the symbol stack in `token_processor.c`:
+
+- `exec_stack()` traverses the linked list of `t_symbol` nodes from top to bottom via `prev_symbol`.
+- For each `SYM_TOKEN` node, `process_token()` extracts the token string from `AT_STRING` and dispatches through `map_to_command()`.
+- `map_to_command()` compares against known builtins by name. Currently recognizes: `env`, `pwd`, `exit`.
+- Unknown commands return 0 silently — no `fork()`/`execve()`, no PATH lookup, no child process.
+- No pipelines (`pipe()`), no redirections (`dup2()`), no subshells, no `&&`/`||` chaining.
+
 ### Signals
 
+No signal handlers are currently registered. `<signal.h>` is included in `minishell.h` and the research phase covered signal handling (readline's `rl_set_signals()`, async-safe patterns), but wiring them to the parser/execution loop is not yet done. `SIGINT` and `SIGQUIT` are left at their system defaults.
+
 ### Error Handling and Cleanup
+
+Cleanup is arena-based and centralized in `main.c`:
+
+- On exit, `cleanup()` calls `arena_free()` on `AT_STRING`, `AT_STACK`, and `AT_PROMPT` arenas, then `free_env()` to clear the environment list.
+- Per iteration, `arena_reset()` reinitializes the `AT_STRING` and `AT_STACK` arenas (frees and reallocates buffers), and `free(c->read_line)` releases the readline-allocated input.
+- The prompt arena (`AT_PROMPT`) is reused within an iteration via `arena_clear()` (resets offset, keeps buffer).
+- No systematic error propagation — most functions return `int` but callers often ignore the value. `errno`-based retry is only used in the prompt `getcwd()` logic.
 
 ## Deviation from bash
 
