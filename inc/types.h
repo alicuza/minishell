@@ -44,8 +44,8 @@ typedef struct s_ctx
 	int		return_status;
 	bool	is_interactive;
 # ifdef DEBUG
-	uint8_t	scope;			// SCOPE_TOKEN | SCOPE_REDUCE | SCOPE_STACK
-	bool	no_exec;		// TODO: do i actually need this?
+	uint8_t	scope;		/* SCOPE_TOKEN | SCOPE_SYMBOLS | SCOPE_STACK | SCOPE_COMMAND */
+	bool	no_exec;	/* TODO: do i actually need this? */
 # endif
 }	t_ctx;
 
@@ -55,7 +55,7 @@ typedef struct s_slice
 	uint64_t	len;
 }	t_slice;
 
-typedef struct s_cmd		// stub
+typedef struct s_cmd	// stub
 {
 	char	*argv;
 	char	*envp;
@@ -137,8 +137,8 @@ typedef struct s_symbol
 typedef struct s_parser_state
 {
 	uint32_t	cur_state;
-	uint64_t	arena_idx;
-	uint64_t	stack_idx;
+	uint64_t	arena_idx;			/* check what is necessary, physical? */
+	uint64_t	stack_idx;			/* check what is necessary, logical? */
 	t_token		lookahead;
 	uint8_t		flags;				/* PARSE_HERE_PENDING | PARSE_DONE */
 }	t_parser_state;

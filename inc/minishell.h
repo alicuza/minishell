@@ -75,9 +75,10 @@
 
 # ifdef DEBUG
 /* -------- test scope flags ------------------------------------------------ */
-#  define SCOPE_TOKEN			0x01
-#  define SCOPE_REDUCE			0x02
+#  define SCOPE_TOKENS			0x01
+#  define SCOPE_SYMBOLS			0x02
 #  define SCOPE_STACK			0x04
+#  define SCOPE_COMMAND			0x08
 # endif
 
 /* -------- grammar constants ----------------------------------------------- */

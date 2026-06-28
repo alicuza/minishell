@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/27 21:36:01 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/28 05:33:44 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	parse_debug_args(int argc, char **argv, t_ctx *c)
 		else if (len > 8 && !ft_strncmp(argv[i], "--scope=", 8))
 		{
 			if (ft_strnstr(argv[i], "tokens", ft_strlen(argv[i])))
-				c->scope |= SCOPE_TOKEN;
+				c->scope |= SCOPE_TOKENS;
 /*	TODO: to add when appropriate functions have been written and need testing.
  *			if (ft_strnstr(argv[i], "reducer", ft_strlen(argv[i])))
  *				c->scope |= SCOPE_REDUCER;
