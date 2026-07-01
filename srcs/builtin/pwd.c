@@ -16,7 +16,7 @@
 char *get_pwd(t_ctx *c)
 {
 	char *pwd;
-	pwd = search(&c->env, PWD);
+	pwd = env_get(&c->env, PWD);
 	if(!pwd)
 		pwd = getcwd(NULL,0);
 #ifdef DEBUG
@@ -40,5 +40,6 @@ int	pwd(t_ctx *c, t_command_ctx *command_ctx)
 	if(!pwd)
 		return 1;
 	printf("%s\n", pwd);
+	free(pwd);
 	return 0;
 }

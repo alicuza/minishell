@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/28 09:53:26 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/01 23:45:58 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,10 +121,12 @@ uint64_t		get_expansion_len(char *expansion);
 /* -------- env_update.c ---------------------------------------------------- */
 int	env_update(t_env *env, char *key, char *value);
 
+/* -------- env_get.c ------------------------------------------------------- */
+char	*env_get(t_env *env, char *key);
+
 /* -------- env_utils.c ---------------------------------------------------- */
 int	init_env(t_env *env, char **envp);
 int	free_env(t_env *env);
-char	*search(t_env *env, char *key);
 int	add(t_env *env, char *key, char *value);
 
 /* -------- ft_split_key_value.c ---------------------------------------------------- */

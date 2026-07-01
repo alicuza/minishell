@@ -1,24 +1,5 @@
 #include "env.h"
 #include "minishell.h"
-#define EQUAL 0
-
-char	*search(t_env *env, char *key)
-{
-	t_list *vals;
-	size_t key_len;
-
-	vals = env->vals;
-	key_len = ft_strlen(key);
-	if (vals)
-		while (vals)
-		{
-			if (ft_strncmp(((t_env_content*) vals->content)->key, key,
-					key_len) == EQUAL)
-				return (((t_env_content*) vals->content)->val);
-			vals = vals->next;
-		}
-	return (NULL);
-}
 
 static t_list	*get_new_list_node(char *key, char *value)
 {
@@ -53,6 +34,8 @@ int	add(t_env *env, char *key, char *value)
 	t_list **vals;
 	t_list *new_node;
 
+	if (key == NULL || value ==NULL)
+		return (1);
 	vals = &env->vals;
 	new_node = get_new_list_node(key, value);
 	if (!new_node)
@@ -69,6 +52,14 @@ int	free_env(t_env *env)
 	return 0;
 }
 
+void add_default(t_env *env)
+{
+	char	*pwd;
+	pwd = env_get(env, PWD);
+	if ( pwd == NULL)
+		add(env, ft_strdup(PWD), getcwd(NULL,0));
+	free(pwd);
+}
 
 /*
 //TODO nik: set mininal required enviroment var
@@ -96,7 +87,6 @@ int	init_env(t_env *env, char **envp)
 			free(tmp);
 			i++;
 		}
-	if (search(env, PWD) == NULL)
-		add(env, PWD, getcwd(NULL,0));
+	add_default(env);
 	return (0);
 }
