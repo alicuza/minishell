@@ -24,12 +24,12 @@ int	env_update(t_env *env, char *key, char *value)
 	t_list *node;
 	char* value_copy;
 
+	node = search_node(env, key);
+	if(node == NULL)
+		return(add(env, ft_strdup(key), ft_strdup(value)));
 	value_copy = ft_strdup(value);
 	if(value_copy == NULL)
 		return (-1);
-	node = search_node(env, key);
-	if(node == NULL)
-		return(add(env, key, value_copy));
 	free(((t_env_content*) node->content)->val);
 	((t_env_content*) node->content)->val = value_copy;
 	return (0);
