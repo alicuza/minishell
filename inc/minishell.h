@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/01 23:45:58 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/04 12:13:14 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,7 @@ int	builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- cd.c ------------------------------ */
 int	cd(t_ctx *c, t_command_ctx *command_ctx);
+char *get_path_canonical_form(char *curpath, size_t len);
 
 
 #endif

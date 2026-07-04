@@ -8,17 +8,17 @@ static bool	is_empty(char *str)
 	return (str == NULL || str[0] == '\0');
 }
 
-static int	cd_path(t_ctx *c, char	*curpath)
+static int	cd_path(t_ctx *c, char *curpath)
 {
 	int		result;
-	char *oldpwd;
+	char	*oldpwd;
 
 	result = chdir(curpath);
-	if(result == 0)
+	if (result == 0)
 	{
 		oldpwd = env_get(&c->env, PWD);
-		if(env_update(&c->env, OLDPWD, oldpwd) == FAILED 
-			|| env_update(&c->env, PWD, curpath) == FAILED)
+		if (env_update(&c->env, OLDPWD, oldpwd) == FAILED || env_update(&c->env,
+				PWD, curpath) == FAILED)
 		{
 			result = chdir(oldpwd);
 			result = -1;
@@ -52,7 +52,7 @@ static int	cd_home(t_ctx *c)
 		result = cd_path(c, home);
 	}
 	free(home);
-	return(result);
+	return (result);
 }
 
 int	cd_oldpwd(t_ctx *c)
@@ -75,53 +75,11 @@ int	cd_oldpwd(t_ctx *c)
 	free(old_path);
 	return (result);
 }
-static char*	make_canonical_form(char *curpath)
-{
-	char *canonical_form;
-	size_t size;
-	size_t	i;
 
-	if(curpath == NULL)
-			return NULL;
-	size = ft_strlen(curpath) + 1;
-	canonical_form = malloc(size);
-	if(canonical_form == NULL)
-		return NULL;
-	i = 0;
-	while (i < size - 1 && curpath[i])
-	{
-		canonical_form[i] = curpath[i];
-		i++;
-	}
-	canonical_form[i] = '\0';
-	return (canonical_form);
-	// Dot components and any<slash> characters that separate them from the next component shall be deleted.
-	// 	For each dot -
-	// 	dot component,
-	// 	if there is a preceding component and it is neither root nor dot - dot,
-	// 	then :
-	// 	If the preceding component does not refer(in the context of pathname resolution with symbolic links followed) to a directory,
-	// 	then the cd utility shall display an appropriate error message and
-	// 		no further steps shall be taken.
-	// 		The preceding component,
-	// 	all<slash> characters separating the preceding component from dot - dot,
-	// 	dot - dot,
-	// 	and all<slash> characters separating dot -
-	// 		dot from the following component(if any) shall be deleted.
-	// 		An implementation may further simplify curpath by removing any trailing<slash>
-	// 			characters that are not also leading<slash> characters,
-	// 	replacing multiple non
-	// 		- leading consecutive<slash> characters with a single<slash>,
-	// 	and replacing three or more leading<slash> characters with a single<slash>.If,
-	// 	as a result of this canonicalization,
-	// 	the curpath variable is null,
-	// 	no further steps shall be taken.
-}
-
-char *add_pwd_prefix(t_ctx *c, const char *dir)
+char	*add_pwd_prefix(t_ctx *c, const char *dir)
 {
-	char *tmp;
-	char *tmp1;
+	char	*tmp;
+	char	*tmp1;
 
 	tmp = get_pwd(c);
 	tmp1 = ft_strjoin(tmp, "/");
@@ -131,25 +89,27 @@ char *add_pwd_prefix(t_ctx *c, const char *dir)
 	return (tmp);
 }
 
-static int cd_dir(t_ctx *c, const char *dir)
+static int	cd_dir(t_ctx *c, const char *dir)
 {
-	char *curpath;
-	char *canonical_form;
+	char	*curpath;
+	char	*canonical_form;
 	int		result;
 
+	canonical_form = NULL;
 	if (dir[0] != '/')
-	{
 		curpath = add_pwd_prefix(c, dir);
-	}
+	else
+		curpath = ft_strdup(dir);
+	if (curpath == NULL)
+		result = -1;
 	else
 	{
-		curpath = ft_strdup(dir);
+		canonical_form = get_path_canonical_form(curpath, ft_strlen(curpath));
+		if (canonical_form == NULL)
+			result = -1;
+		else
+			result = cd_path(c, canonical_form);
 	}
-	canonical_form = make_canonical_form(curpath);
-	if(canonical_form == NULL)
-		result = -1;
-	else 
-		result = cd_path(c, canonical_form);
 	free(curpath);
 	free(canonical_form);
 	return (result);
@@ -157,8 +117,8 @@ static int cd_dir(t_ctx *c, const char *dir)
 
 int	cd(t_ctx *c, t_command_ctx *command_ctx)
 {
-	char *dir;
-	
+	char	*dir;
+
 	if (command_ctx->argc > 2)
 	{
 		printf("cd: too many arguments\n");
@@ -175,5 +135,3 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 			return (cd_dir(c, dir));
 	}
 }
-
-

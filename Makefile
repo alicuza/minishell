@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/07/02 00:01:53 by nribakov         ###   ########.fr        #
+#    Updated: 2026/07/04 12:19:02 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,7 +52,8 @@ SRCS        = \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \
 			builtin/builtin_exit.c \
-			builtin/cd.c
+			builtin/cd.c \
+			builtin/get_path_canonical_form.c 
 
 DEBUG_SRCS  = \
 			debug/debug_utils.c \
