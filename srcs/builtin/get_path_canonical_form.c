@@ -1,4 +1,7 @@
-#include "minishell.h"
+// #include "minishell.h"
+# include <stdlib.h> 
+# include "../../libs/libft/libft.h"
+#include <stdio.h>
 
 typedef struct s_builder
 {
@@ -69,4 +72,18 @@ char	*get_path_canonical_form(char *curpath, size_t len)
 	}
 	canonical_form[b.i_orig] = '\0';
 	return (canonical_form);
+}
+
+int main(int ac, char* av[])
+{
+	char * new= get_path_canonical_form(av[1], ft_strlen(av[1]));
+	printf("Was: %s\n", av[1]);
+	printf("New: %s\n", new);
+	printf("Comper: %i\n", ft_strncmp(av[2], new, ft_strlen(av[2])));
+	if(ft_strncmp(av[2], new, ft_strlen(av[2])) != 0)
+		printf("KO\n");
+	else
+		printf("OK\n");
+	free(new);
+	return 0;
 }
