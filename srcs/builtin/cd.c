@@ -30,7 +30,7 @@ static int	cd_path(t_ctx *c, char *curpath)
 	}
 	else
 	{
-		printf("Error during chdir.\n");
+		printf("cd: Error during chdir\n");
 		return (-1);
 	}
 }
@@ -106,7 +106,10 @@ static int	cd_dir(t_ctx *c, const char *dir)
 	{
 		canonical_form = get_path_canonical_form(curpath, ft_strlen(curpath));
 		if (canonical_form == NULL)
+		{
+			printf("cd: %s: No such file or directory\n", dir);
 			result = -1;
+		}
 		else
 			result = cd_path(c, canonical_form);
 	}
