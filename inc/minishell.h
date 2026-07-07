@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/05 21:15:40 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/07 22:05:18 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,7 @@ void	env_delete(t_env *env, char *key);
 
 /* -------- env_utils.c ---------------------------------------------------- */
 int	init_env(t_env *env, char **envp);
+void	free_env_content(void *content_void_p);
 int	free_env(t_env *env);
 int	add(t_env *env, char *key, char *value);
 
