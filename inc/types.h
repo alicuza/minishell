@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 18:34:08 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/27 19:48:41 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,11 @@ typedef struct s_ctx
 	t_arena	arena[AT_COUNT];
 	char	*read_line;
 	int		return_status;
+	bool	is_interactive;
+# ifdef DEBUG
+	uint8_t	scope;		/* SCOPE_TOKEN | SCOPE_SYMBOLS | SCOPE_STACK | SCOPE_COMMAND */
+	bool	no_exec;	/* TODO: do i actually need this? */
+# endif
 }	t_ctx;
 
 typedef struct s_slice
@@ -132,8 +137,8 @@ typedef struct s_symbol
 typedef struct s_parser_state
 {
 	uint32_t	cur_state;
-	uint64_t	arena_idx;
-	uint64_t	stack_idx;
+	uint64_t	arena_idx;			/* check what is necessary, physical? */
+	uint64_t	stack_idx;			/* check what is necessary, logical? */
 	t_token		lookahead;
 	uint8_t		flags;				/* PARSE_HERE_PENDING | PARSE_DONE */
 }	t_parser_state;

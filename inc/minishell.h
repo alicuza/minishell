@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 19:22:35 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/27 16:23:56 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,14 @@
 # define PARSE_DONE				0x01
 # define PARSE_HERE_PENDING		0x02
 
+# ifdef DEBUG
+/* -------- test scope flags ------------------------------------------------ */
+#  define SCOPE_TOKENS			0x01
+#  define SCOPE_SYMBOLS			0x02
+#  define SCOPE_STACK			0x04
+#  define SCOPE_COMMAND			0x08
+# endif
+
 /* -------- grammar constants ----------------------------------------------- */
 # define NO_TOKEN 0
 # define MAX_RHS_LEN 4
@@ -119,26 +127,26 @@ bool			is_expansion_start(char *buffer, uint64_t idx);
 uint64_t		get_expansion_len(char *expansion);
 
 /* -------- env_utils.c ---------------------------------------------------- */
-int	init_env(t_env *env, char **envp);
-int	free_env(t_env *env);
-char	*search(t_env *env, char *key);
+int				init_env(t_env *env, char **envp);
+int				free_env(t_env *env);
+char			*search(t_env *env, char *key);
 
 /* -------- ft_split_key_value.c ---------------------------------------------------- */
-char	**ft_split_key_value(const char *s, char c);
+char			**ft_split_key_value(const char *s, char c);
 
 /* -------- token_processor.c ----------------------------------------------- */
 int				process_token(t_ctx *c, t_token *token);
 void			exec_stack(t_ctx *c, t_parser_state *parse);
 
 /* -------- env.c ---------------------------------------------------- */
-int	env(t_ctx *c);
+int				env(t_ctx *c);
 
 /* -------- pwd.c ---------------------------------------------------- */
-int	pwd(t_ctx *c);
-char *get_cwd_safely();
+int				pwd(t_ctx *c);
+char			*get_cwd_safely();
 
 /* -------- builtin_exit.c ---------------------------------------------------- */
-int	builtin_exit(t_ctx *c);
+int				builtin_exit(t_ctx *c);
 
 /* -------- parse_input.c --------------------------------------------------- */
 t_parser_state	parse_input(t_ctx *c);

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 19:38:02 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/06/27 22:44:07 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ static t_ctx	init_ctx(char **envp)
 //	c.arena[AT_CMD] = arena_init(ARENA_SIZE, sizeof(t_cmd));
 	if (init_env(&c.env, envp))
 		printf("Error init_env");
+	if (isatty(STDIN_FILENO))
+		c.is_interactive = true;
 	return (c);
 }
 
@@ -43,10 +45,14 @@ int	cleanup(t_ctx	*c)
 int	main(int argc, char **argv, char **envp)
 {
 	t_ctx	c;
+	t_parser_state	parse;
 
-	(void) argc;
-	(void) argv;
+	(void)argc;
+	(void)argv;
 	c = init_ctx(envp);
+#ifdef DEBUG
+	parse_debug_args(argc, argv, &c);
+#endif
 	while (true)
 	{
 		if (!get_user_input(&c, INPUT_DEFAULT))
@@ -62,13 +68,12 @@ int	main(int argc, char **argv, char **envp)
 		fprintf(stderr, "\n--- prompt arena after get_prompt ---\n");
 		print_arena(&c.arena[AT_PROMPT]);
 #endif
-		t_parser_state	parse;
-
 		parse = parse_input(&c);
 #ifdef DEBUG
 		print_complete_stack(&c, &parse);
+		if (!c.no_exec)
 #endif
-		exec_stack(&c, &parse);
+			exec_stack(&c, &parse);
 		arena_reset(&c.arena[AT_STRING]);
 		arena_reset(&c.arena[AT_STACK]);
 		free(c.read_line);
