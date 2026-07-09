@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:37:40 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/27 23:37:34 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/06/28 18:52:13 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,11 @@ t_token get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l)
 			if (!(l->flags & LEX_IS_BUILDING))
 			{
 				start_lex_token(l, SYM_TOKEN);
-				--len;
+				l->token.len += len - 1;
 			}
-			l->token.len += len;
-			l->char_idx += len + 1;
+			else 
+				l->token.len += len;
+			l->char_idx += len;
 			l->flags |= LEX_HAS_EXPANSION;
 		}
 		else if (is_char_in_set(c->read_line[l->char_idx], OPERATOR_SET)	// rule 6

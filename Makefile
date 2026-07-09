@@ -130,7 +130,7 @@ compile_flags.txt:
 		echo $$flag >> $@ ; \
 	done
 
-test: $(NAME)
+test: $(NAME) $(NAME)-debug
 	./test/runner.sh
 
 clean:

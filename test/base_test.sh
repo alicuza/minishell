@@ -1,7 +1,6 @@
 #!/bin/bash
 
 function compare_bash_shni(){
-echo Running: $1
 
 #Create file
 file_name_prefix="./log/${1}"

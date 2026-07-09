@@ -196,6 +196,79 @@ Applications may indicate that the prompt contains characters that take up no ph
 - fixed `arena_alloc` OOM corruption with `arena_grow_error_handler` because checking for the return of the sentinel node is used for other cases (in the lexer for instance)
 - following: adding reduce functions & sparse goto/action tables, expansion (+ field splitting & quote removal)
 
+**2026.06.13.**
+- massive refactoring to extract types into separate headers under `inc/`
+  - types.h broken into builtin.h, lexer.h, parser.h, token_processor.h
+  - doc comment blocks added to every header
+- replaced the token system: `t_token` is now only used for lookahead
+  - `t_symbol` struct lives on `AT_STACK` arena, carries offset, prev_symbol (linked list), type, flags
+  - the parser stack is a linked list of symbols indexed by arena position
+  - index 0 (offset 0) is the sentinel guard element, never used
+- implemented a proper POSIX tokenizer/lexer in `srcs/lexer/`
+  - character-by-character state machine following the 10 POSIX rules exactly
+  - lexer state tracks: token slice (pos+len), char_idx, symbol type, flags (LEX_HAS_EXPANSION, LEX_HAS_QUOTES, LEX_IS_BUILDING, LEX_IS_DELIMITED, LEX_NEEDS_INPUT)
+  - on delimiting, token body is copied into `AT_STRING` arena
+  - operators recognized: `|`, `<`, `>`, `<<`, `>>`, `&&`, `||`, `(`, `)`
+- barebones parser in `srcs/parser/`
+  - `parse_input()` creates a zeroed parser state and lexer state
+  - main loop: `get_lookahead()` → tokenize one token → `shift_symbol()` → repeat
+  - `shift_symbol()` allocates a `t_symbol` on `AT_STACK`, wires prev_symbol
+  - `cur_state` stays 0 — no reductions yet, just shifting tokens onto the stack
+  - `t_rule` struct and `t_reduce` typedef defined in types.h, 48 rules planned
+- debug system refactored:
+  - `--scope=<flags>` to filter debug output (SCOPE_TOKEN, SCOPE_SYMBOLS, SCOPE_STACK, SCOPE_COMMAND)
+  - `--no_exec` flag to skip execution when testing lexer/parser
+  - separate debug source files, only compiled with `-DDEBUG`
+- prompt reworked: colored, dynamic with `user@hostname:cwd[exitcode]`
+  - uses `AT_PROMPT` arena with `arena_clear()` per iteration
+  - escape sequences wrapped in `\001`/`\002` to prevent readline redisplay corruption
+- user input in `srcs/input.c`: readline wrapper with non-interactive mode detection
+  - `is_interactive` checked via `isatty(STDIN_FILENO)`
+  - non-interactive: prompt=NULL, `rl_outstream=stderr`
+  - continuation prompt: `"> "` hardcoded
+- `env` builtin working with linked list of key/val pairs
+- exec_stack: flat walk of symbols, dispatches `SYM_TOKEN` through `map_to_command`
+  - only `env`/`pwd`/`exit` wired in `map_to_command`
+  - builtin_exit just prints "exit" and closes fd 0
+- refactored init flow: `init_ctx()` initializes 3 arenas (PROMPT, STRING, STACK), env, return_status, is_interactive
+  - `AT_CMD` declared but init commented out — not used yet
+
+**2026.06.24.**
+- did an audit of the current codebase to verify what claims we can make about it
+  - checked 15 specific claims against the actual code
+  - 13 verified, 2 corrected (file naming: builtin_exit.c not exit.c, SCOPE_TOKENS plural)
+  - found 8 issues in the codebase:
+    - 4 actionable (AT_CMD init commented out, exec_stack duplicate index, builtin_exit doesn't exit, no malloc fail handling in shift_symbol)
+    - 4 blocking (no signal handlers, no heredoc execution, no fork/execve, incomplete exec_stack)
+  - documented implementation phases going forward:
+    1. parser reductions (grammar tables + reduce functions)
+    2. expansion (variable expansion + field splitting + quote removal)
+    3. execution (fork/execve + pipelines + redirections)
+    4. builtins (echo, cd, export, unset)
+    5. signals + heredocs
+  - decided scratch notes in minishell_notes/ will not stay in repo
+  - design docs with no implementation are not referenced in README
+  - README should reflect current codebase state, journal documents process
+
+**2026.06.26. - 2026.06.28**
+- discovered a problem in how my lexer sets flags
+  - i can either have a hacky additional check for `$` in the quote unnecessary
+  - refactor the tokenizer to use flags on encountering certain chars, like expansions and quotes.
+  - i might still simplify the redirection operators as well
+  - but i will probably just hack it together for now as a special case in `try_as_quote`
+- built out the test infrastructure:
+  - `test/runner.sh`: discovers and runs `test_*.sh` files
+  - `test/base_test.sh`: `compare_bash_shni()` function to diff minishell vs bash output
+  - `test/helpers.sh`: `assert_shell()` with scope markers and `--scope`/`--no_exec`
+  - `test/test_parse.sh`: 25 parser tokenizer tests covering commands, args, redirects, operators, whitespace, flags, edge cases
+  - `test/test_builtin_env.sh`: env output comparison with sorted env cleaned
+  - `test/test_builtin_pwd.sh`: pwd output comparison
+  - `make test` target wired: builds release+debug binaries, runs runner.sh
+- implemented non-interactive mode: `fstat(STDIN_FILENO)` check, NULL prompt, `rl_outstream=stderr`
+- refactored debug output to use `FILE *out` throughout instead of hardcoded stderr
+- added `parse_debug_args()` to handle `--scope` and `--no_exec` flags
+- fixed the libft submodule: committed the gitlink entry so the submodule is properly tracked
+
 #### personal
 
 **2026.04.30**
