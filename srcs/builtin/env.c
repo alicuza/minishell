@@ -11,7 +11,7 @@ static void	print_val(void *content_void_p)
 int	env(t_ctx *c, t_command_ctx *command_ctx)
 {
 #ifdef DEBUG
-	printf("\nExecuting env:\n");
+	fprintf(stderr, "\nExecuting env:\n");
 #endif
 	(void) command_ctx;
 	t_list *env = c->env.vals;

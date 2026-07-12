@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 22:09:36 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/12 23:06:00 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static t_ctx	init_ctx(char **envp)
 	c.arena[AT_STACK] = arena_init(ARENA_SIZE, sizeof(t_symbol));
 //	c.arena[AT_CMD] = arena_init(ARENA_SIZE, sizeof(t_cmd));
 	if (init_env(&c.env, envp))
-		printf("Error init_env");
+		perror("Error init_env");
 	return (c);
 }
 

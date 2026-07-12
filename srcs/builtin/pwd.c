@@ -33,7 +33,7 @@ int	pwd(t_ctx *c, t_command_ctx *command_ctx)
 	char* pwd;
 
 #ifdef DEBUG
-	printf("\nExecuting pwd:\n");
+	fprintf(stderr, "\nExecuting pwd:\n");
 #endif
 	(void) command_ctx;
 	pwd = get_pwd(c);

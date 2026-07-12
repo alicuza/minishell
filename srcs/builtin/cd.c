@@ -30,8 +30,8 @@ static int	cd_path(t_ctx *c, char *curpath)
 	}
 	else
 	{
-		printf("cd: Error during chdir\n");
-		return (-1);
+		perror("cd: Error during chdir\n");
+		return (errno);
 	}
 }
 
@@ -44,7 +44,7 @@ static int	cd_home(t_ctx *c)
 	home = env_get(&c->env, HOME);
 	if (is_empty(home))
 	{
-		printf("cd: HOME not set\n");
+		perror("cd: HOME not set\n"); //TODO do i need to set errno
 		result = -1;
 	}
 	else
@@ -63,7 +63,7 @@ int	cd_oldpwd(t_ctx *c)
 	old_path = env_get(&c->env, OLDPWD);
 	if (is_empty(old_path))
 	{
-		printf("cd: OLDPWD not set\n");
+		perror("cd: OLDPWD not set\n"); //TODO do i need to set errno
 		return (-1);
 	}
 	else
@@ -107,7 +107,7 @@ static int	cd_dir(t_ctx *c, const char *dir)
 		canonical_form = get_path_canonical_form(curpath, ft_strlen(curpath));
 		if (canonical_form == NULL)
 		{
-			printf("cd: %s: No such file or directory\n", dir);
+			perror("cd: %s: No such file or directory\n", dir); //TODO do i need to set errno
 			result = -1;
 		}
 		else
@@ -124,7 +124,7 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 
 	if (command_ctx->argc > 2)
 	{
-		printf("cd: too many arguments\n");
+		perror("cd: too many arguments\n"); //TODO do i need to set errno
 		return (-1);
 	}
 	dir = command_ctx->argv[1];
