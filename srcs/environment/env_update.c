@@ -4,15 +4,15 @@
 static t_list	*search_node(t_env *env, char *key)
 {
 	t_list *vals;
-	size_t key_len;
+	size_t key_size;
 
 	vals = env->vals;
-	key_len = ft_strlen(key);
+	key_size = ft_strlen(key) + 1;
 	if (vals)
 		while (vals)
 		{
 			if (ft_strncmp(((t_env_content*) vals->content)->key, key,
-					key_len) == EQUAL)
+					key_size) == EQUAL)
 				return (vals);
 			vals = vals->next;
 		}

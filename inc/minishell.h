@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/07 22:05:18 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/08 13:49:49 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,11 +162,14 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx);
 /* -------- get_path_canonical_form.c ------------------------------ */
 char *get_path_canonical_form(char *curpath, size_t len);
 
-/* -------- export.c ------------------------------ */
+/* -------- builtin_export.c ------------------------------ */
 int	builtin_export(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- unset.c ------------------------------ */
 int	unset(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- echi.c ------------------------------ */
+int	echo(t_ctx *c, t_command_ctx *command_ctx);
 
 #endif
 

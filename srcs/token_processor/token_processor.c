@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/28 13:12:38 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/12 22:56:32 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,25 +16,23 @@
 #define EQUAL 0
 
 t_command_function	match_builtin(char *cmd_ctx)
-// TODO maybe use proper type defenition int (*command)(t_ctx *c);
 {
 	if (ft_strncmp(cmd_ctx, ENV, 4) == EQUAL)
-	{
 		return (&env);
-	}
 	else if (ft_strncmp(cmd_ctx, PWD, 4) == EQUAL)
-	{
 		return (&pwd);
-	}
-	else if (ft_strncmp(cmd_ctx, EXIT, 4) == EQUAL)
-	{
+	else if (ft_strncmp(cmd_ctx, EXIT, 5) == EQUAL)
 		return (&builtin_exit);
-	}
 	else if (ft_strncmp(cmd_ctx, CD, 3) == EQUAL)
-	{
 		return (&cd);
-	}
-	return (NULL);
+	else if (ft_strncmp(cmd_ctx, EXPORT, 7) == EQUAL)
+		return (&builtin_export);
+	else if (ft_strncmp(cmd_ctx, UNSET, 6) == EQUAL)
+		return (&unset);
+	else if (ft_strncmp(cmd_ctx, B_ECHO, 7) == EQUAL)
+		return (&echo);
+	else
+		return (NULL);
 }
 
 void	*search_in_path(char *cmd_ctx)
