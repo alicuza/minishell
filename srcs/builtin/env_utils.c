@@ -23,7 +23,7 @@ void	free_env_content(void *content_void_p)
 {
 	t_env_content *content;
 
-	content = (t_env_content*) content_void_p;
+	content = (t_env_content *)content_void_p;
 	free(content->key);
 	free(content->val);
 	free(content);
@@ -34,31 +34,32 @@ int	add(t_env *env, char *key, char *value)
 	t_list **vals;
 	t_list *new_node;
 
-	if (key == NULL || value ==NULL)
-		return (1);
+	if (key == NULL || value == NULL)
+		return (EXIT_FAILURE);
 	vals = &env->vals;
 	new_node = get_new_list_node(key, value);
 	if (!new_node)
 	{
 		ft_lstclear(vals, &free_env_content);
-		return (1);
+		return (EXIT_FAILURE);
 	}
 	ft_lstadd_back(vals, new_node);
-	return (0);
+	return (EXIT_SUCCESS);
 }
 int	free_env(t_env *env)
 {
 	ft_lstclear(&env->vals, &free_env_content);
-	return 0;
+	return (EXIT_SUCCESS);
 }
 
-void add_default(t_env *env)
+int	add_default(t_env *env)
 {
-	char	*pwd;
+	char *pwd;
 	pwd = env_get(env, PWD);
-	if ( pwd == NULL)
-		add(env, ft_strdup(PWD), getcwd(NULL,0));
+	if (pwd == NULL)
+		return (add(env, ft_strdup(PWD), getcwd(NULL, 0)));
 	free(pwd);
+	return (EXIT_SUCCESS);
 }
 
 /*
@@ -69,7 +70,7 @@ PATH=/home/nikit/.local/funcheck/host:/home/nikit/.local/funcheck/host:/usr/loca
 _=/usr/bin/env*/
 int	init_env(t_env *env, char **envp)
 {
-	char	**tmp;
+	char **tmp;
 	int i;
 	int result_code;
 
@@ -79,11 +80,11 @@ int	init_env(t_env *env, char **envp)
 		while (envp[i])
 		{
 			tmp = ft_split_key_value(envp[i], '=');
-			if(tmp == NULL)
-				return 1;
+			if (tmp == NULL)
+				return (EXIT_FAILURE);
 			result_code = add(env, tmp[0], tmp[1]);
-			if(result_code)
-				return result_code;
+			if (result_code)
+				return (result_code);
 			free(tmp);
 			i++;
 		}

@@ -11,7 +11,7 @@ int	builtin_export(t_ctx *c, t_command_ctx *command_ctx)
 	{
 		tmp = ft_split_key_value(command_ctx->argv[i], '=');
 		if(tmp == NULL)
-			return 1;
+			return EXIT_FAILURE;
 		//TODO add validation
 		result_code = add(&c->env, tmp[0], tmp[1]);
 		if(result_code)

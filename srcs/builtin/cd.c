@@ -1,7 +1,6 @@
 
 #include "env.h"
 #include "minishell.h"
-#define FAILED -1
 
 static bool	is_empty(char *str)
 {
@@ -14,17 +13,17 @@ static int	cd_path(t_ctx *c, char *curpath)
 	char	*oldpwd;
 
 	result = chdir(curpath);
-	if (result == 0)
+	if (result == EXIT_SUCCESS)
 	{
 		oldpwd = env_get(&c->env, PWD);
-		if (env_update(&c->env, OLDPWD, oldpwd) == FAILED || env_update(&c->env,
-				PWD, curpath) == FAILED)
+		if (env_update(&c->env, OLDPWD, oldpwd) == EXIT_FAILURE || env_update(&c->env,
+				PWD, curpath) == EXIT_FAILURE)
 		{
 			result = chdir(oldpwd);
-			result = -1;
+			result = EXIT_FAILURE;
 		}
 		else
-			result = 0;
+			result = EXIT_SUCCESS;
 		free(oldpwd);
 		return (result);
 	}
@@ -40,12 +39,12 @@ static int	cd_home(t_ctx *c)
 	char	*home;
 	int		result;
 
-	result = 0;
+	result = EXIT_SUCCESS;
 	home = env_get(&c->env, HOME);
 	if (is_empty(home))
 	{
 		perror("cd: HOME not set\n"); //TODO do i need to set errno
-		result = -1;
+		result = EXIT_FAILURE;
 	}
 	else
 	{
@@ -64,12 +63,12 @@ int	cd_oldpwd(t_ctx *c)
 	if (is_empty(old_path))
 	{
 		perror("cd: OLDPWD not set\n"); //TODO do i need to set errno
-		return (-1);
+		return (EXIT_FAILURE);
 	}
 	else
 	{
 		result = cd_path(c, old_path);
-		if (result == 0)
+		if (result == EXIT_SUCCESS)
 			printf("%s\n", old_path);
 	}
 	free(old_path);
@@ -101,14 +100,14 @@ static int	cd_dir(t_ctx *c, const char *dir)
 	else
 		curpath = ft_strdup(dir);
 	if (curpath == NULL)
-		result = -1;
+		result = EXIT_FAILURE;
 	else
 	{
 		canonical_form = get_path_canonical_form(curpath, ft_strlen(curpath));
 		if (canonical_form == NULL)
 		{
 			perror("cd: %s: No such file or directory\n", dir); //TODO do i need to set errno
-			result = -1;
+			result = EXIT_FAILURE;
 		}
 		else
 			result = cd_path(c, canonical_form);
@@ -125,7 +124,7 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 	if (command_ctx->argc > 2)
 	{
 		perror("cd: too many arguments\n"); //TODO do i need to set errno
-		return (-1);
+		return (EXIT_FAILURE);
 	}
 	dir = command_ctx->argv[1];
 	if (is_empty(dir))

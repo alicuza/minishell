@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/12 22:56:32 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/14 12:19:13 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,9 @@ int	init_command(t_command_ctx *command, uint64_t argc)
 	command->argc = argc;
 	command->argv = malloc(sizeof(char *) * (argc + 1));
 	if (command->argv == NULL)
-		return (1);
+		return (EXIT_FAILURE);
 	command->argv[argc] = NULL;
-	return (0);
+	return ();
 }
 
 void	build_command(t_ctx *c, t_parser_state *parse)

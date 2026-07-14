@@ -33,7 +33,7 @@ static int	process_dot(char *curpath, char *canonical_form, t_builder *b)
 	else if (curpath[b->i_orig + 1] == '.')
 	{
 		if (curpath[b->i_orig + 2] == '.')
-			return (-1);
+			return (EXIT_FAILURE);
 		if (b->i_new - 1 != 0)
 			canonical_form[b->i_new - 1] = 0;
 		b->i_new = ft_strrchr(canonical_form, '/') - canonical_form + 1;
@@ -64,7 +64,7 @@ char	*get_path_canonical_form(char *curpath, size_t len)
 			process_slash(curpath, len, &b);
 		else if (curpath[b.i_orig] == '.')
 		{
-			if (process_dot(curpath, canonical_form, &b))
+			if (process_dot(curpath, canonical_form, &b) == EXIT_FAILURE)
 				return (NULL);
 			continue ;
 		}
