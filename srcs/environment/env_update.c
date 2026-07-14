@@ -26,10 +26,10 @@ int	env_update(t_env *env, char *key, char *value)
 
 	node = search_node(env, key);
 	if(node == NULL)
-		return(add(env, ft_strdup(key), ft_strdup(value)));
+		return(env_add(env, ft_strdup(key), ft_strdup(value)));
 	value_copy = ft_strdup(value);
 	if(value_copy == NULL)
-		return (EXIT_FAILURE);
+		return (exit_mem_issue());
 	free(((t_env_content*) node->content)->val);
 	((t_env_content*) node->content)->val = value_copy;
 	return (0);

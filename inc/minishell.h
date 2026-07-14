@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/08 13:49:49 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/14 14:33:40 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,9 @@ bool			is_name_body(char c);
 bool			is_expansion_start(char *buffer, uint64_t idx);
 uint64_t		get_expansion_len(char *expansion);
 
+/* -------- env_add.c ---------------------------------------------------- */
+int	env_add(t_env *env, char *key, char *value);
+
 /* -------- env_update.c ---------------------------------------------------- */
 int	env_update(t_env *env, char *key, char *value);
 
@@ -131,7 +134,6 @@ void	env_delete(t_env *env, char *key);
 int	init_env(t_env *env, char **envp);
 void	free_env_content(void *content_void_p);
 int	free_env(t_env *env);
-int	add(t_env *env, char *key, char *value);
 
 /* -------- ft_split_key_value.c ---------------------------------------------------- */
 char	**ft_split_key_value(const char *s, char c);
@@ -155,6 +157,8 @@ void			shift_symbol(t_ctx *c, t_parser_state *parse);
 
 /* -------- builtin_exit.c ------------------------------ */
 int	builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
+
+int exit_mem_issue();
 
 /* -------- cd.c ------------------------------ */
 int	cd(t_ctx *c, t_command_ctx *command_ctx);

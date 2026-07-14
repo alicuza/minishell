@@ -1,6 +1,7 @@
 #include "env.h"
 #include "minishell.h"
 
+
 static t_list	*get_new_list_node(char *key, char *value)
 {
 	t_list *new_node;
@@ -29,23 +30,6 @@ void	free_env_content(void *content_void_p)
 	free(content);
 }
 
-int	add(t_env *env, char *key, char *value)
-{
-	t_list **vals;
-	t_list *new_node;
-
-	if (key == NULL || value == NULL)
-		return (EXIT_FAILURE);
-	vals = &env->vals;
-	new_node = get_new_list_node(key, value);
-	if (!new_node)
-	{
-		ft_lstclear(vals, &free_env_content);
-		return (EXIT_FAILURE);
-	}
-	ft_lstadd_back(vals, new_node);
-	return (EXIT_SUCCESS);
-}
 int	free_env(t_env *env)
 {
 	ft_lstclear(&env->vals, &free_env_content);
@@ -57,7 +41,7 @@ int	add_default(t_env *env)
 	char *pwd;
 	pwd = env_get(env, PWD);
 	if (pwd == NULL)
-		return (add(env, ft_strdup(PWD), getcwd(NULL, 0)));
+		return (env_add(env, ft_strdup(PWD), getcwd(NULL, 0)));
 	free(pwd);
 	return (EXIT_SUCCESS);
 }
@@ -82,9 +66,12 @@ int	init_env(t_env *env, char **envp)
 			tmp = ft_split_key_value(envp[i], '=');
 			if (tmp == NULL)
 				return (EXIT_FAILURE);
-			result_code = add(env, tmp[0], tmp[1]);
+			result_code = env_add(env, tmp[0], tmp[1]);
 			if (result_code)
+			{
+				free(tmp);
 				return (result_code);
+			}
 			free(tmp);
 			i++;
 		}
