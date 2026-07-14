@@ -1,5 +1,23 @@
 #include "minishell.h"
 
+static t_list	*get_new_list_node(char *key, char *value)
+{
+	t_list *new_node;
+	t_env_content *content;
+	content = malloc(sizeof(t_env_content));
+	if (!content)
+		return (NULL);
+	content->key = key;
+	content->val = value;
+	new_node = ft_lstnew(content);
+	if (!new_node)
+	{
+		free(content);
+		return (NULL);
+	}
+	return (new_node);
+}
+
 int	env_add(t_env *env, char *key, char *value)
 {
 	t_list **vals;

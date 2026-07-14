@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/07/14 14:32:10 by nribakov         ###   ########.fr        #
+#    Updated: 2026/07/14 22:04:39 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,8 +49,9 @@ SRCS        = \
 			environment/env_update.c \
 			environment/env_get.c \
 			environment/env_delete.c \
+			environment/free_env.c \
+			environment/init_env.c \
 			builtin/env.c \
-			builtin/env_utils.c \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \
 			builtin/builtin_exit.c \

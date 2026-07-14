@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/14 12:19:13 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/14 21:53:11 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,12 +94,12 @@ int	init_command(t_command_ctx *command, uint64_t argc)
 	command->argc = argc;
 	command->argv = malloc(sizeof(char *) * (argc + 1));
 	if (command->argv == NULL)
-		return (EXIT_FAILURE);
+		return (exit_mem_issue());
 	command->argv[argc] = NULL;
-	return ();
+	return (EXIT_SUCCESS);
 }
 
-void	build_command(t_ctx *c, t_parser_state *parse)
+int	build_command(t_ctx *c, t_parser_state *parse)
 {
 	t_symbol	*sym;
 	uint64_t	arena_idx;
@@ -108,7 +108,7 @@ void	build_command(t_ctx *c, t_parser_state *parse)
 
 	stack = &c->arena[AT_STACK];
 	if (init_command(&command, parse->arena_idx))
-		return ;
+		return (EXIT_FAILURE);
 	arena_idx = 1;
 	sym = get_symbol_from_idx(stack, arena_idx);
 	while (sym && sym->type == SYM_TOKEN) // && c->arena[AT_STRING].buf + sym->offset != NULL
@@ -121,6 +121,7 @@ void	build_command(t_ctx *c, t_parser_state *parse)
 	}
 	c->return_status = command_search_and_execution(c, &command);
 	free(command.argv);
+	return (EXIT_SUCCESS);
 }
 
 void	exec_stack(t_ctx *c, t_parser_state *parse)

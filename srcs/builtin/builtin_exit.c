@@ -4,7 +4,7 @@ int exit_mem_issue()
 {
 	perror("Memory allocation error");
 	close(0);
-	return EXIT_SUCCESS;
+	return EXIT_FAILURE;
 }
 
 int	builtin_exit(t_ctx *c, t_command_ctx *command_ctx)

@@ -1,42 +1,7 @@
 #include "env.h"
 #include "minishell.h"
 
-
-static t_list	*get_new_list_node(char *key, char *value)
-{
-	t_list *new_node;
-	t_env_content *content;
-	content = malloc(sizeof(t_env_content));
-	if (!content)
-		return (NULL);
-	content->key = key;
-	content->val = value;
-	new_node = ft_lstnew(content);
-	if (!new_node)
-	{
-		free(content);
-		return (NULL);
-	}
-	return (new_node);
-}
-
-void	free_env_content(void *content_void_p)
-{
-	t_env_content *content;
-
-	content = (t_env_content *)content_void_p;
-	free(content->key);
-	free(content->val);
-	free(content);
-}
-
-int	free_env(t_env *env)
-{
-	ft_lstclear(&env->vals, &free_env_content);
-	return (EXIT_SUCCESS);
-}
-
-int	add_default(t_env *env)
+static int	add_default(t_env *env)
 {
 	char *pwd;
 	pwd = env_get(env, PWD);

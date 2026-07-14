@@ -106,7 +106,9 @@ static int	cd_dir(t_ctx *c, const char *dir)
 		canonical_form = get_path_canonical_form(curpath, ft_strlen(curpath));
 		if (canonical_form == NULL)
 		{
-			perror("cd: %s: No such file or directory\n", dir); //TODO do i need to set errno
+			ft_putstr_fd("cd: ", STDERR_FILENO);
+			ft_putstr_fd((char *) dir, STDERR_FILENO);
+			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO); //TODO do i need to set errno
 			result = EXIT_FAILURE;
 		}
 		else

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/14 14:33:40 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/14 22:04:43 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,10 +130,12 @@ char	*env_get(t_env *env, char *key);
 /* -------- env_delete.c ------------------------------------------------------- */
 void	env_delete(t_env *env, char *key);
 
-/* -------- env_utils.c ---------------------------------------------------- */
-int	init_env(t_env *env, char **envp);
+/* -------- free_env.c ------------------------------------------------------- */
 void	free_env_content(void *content_void_p);
-int	free_env(t_env *env);
+void	free_env(t_env *env);
+
+/* -------- init_env.c ---------------------------------------------------- */
+int	init_env(t_env *env, char **envp);
 
 /* -------- ft_split_key_value.c ---------------------------------------------------- */
 char	**ft_split_key_value(const char *s, char c);
