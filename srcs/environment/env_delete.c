@@ -1,6 +1,7 @@
 #include "minishell.h"
 #define EQUAL 0
 
+
 void	env_delete(t_env *env, char *key)
 {
 	t_list *prev_node;
@@ -12,14 +13,15 @@ void	env_delete(t_env *env, char *key)
 	key_size = ft_strlen(key) + 1;
 	while (vals)
 	{
-		if(ft_strncmp(((t_env_content *)vals->content)->key, key, key_size) == EQUAL)
+		if (ft_strncmp(((t_env_content *)vals->content)->key, key,
+				key_size) == EQUAL)
 		{
-			if(prev_node)
-				prev_node->next=vals->next;
+			if (prev_node)
+				prev_node->next = vals->next;
 			else
-				env->vals = NULL;
+				env->vals = env->vals->next;
 			ft_lstdelone(vals, &free_env_content);
-			return;
+			return ;
 		}
 		prev_node = vals;
 		vals = vals->next;
