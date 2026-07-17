@@ -11,9 +11,16 @@ static void	print_val(void *content_void_p)
 		printf("declare -x %s=\"%s\"\n", (char *)content->key, content->val);
 }
 
-static bool	is_valid_name(char *name)
-		// TODO accept the empty values; add to env init
+static bool	is_empty(char *str)
 {
+	return (str == NULL || str[0] == '\0');
+}
+
+static bool	is_valid_name(char *name)
+// TODO add to env init
+{
+	if (is_empty(name))
+		return (true);
 	if (!ft_isalpha(*name) && *name != '_')
 		return (false);
 	name++;
@@ -26,6 +33,47 @@ static bool	is_valid_name(char *name)
 	return (true);
 }
 
+static void	free_2d_arr(char **val)
+{
+	int	i;
+
+	i = 0;
+	while (val[i] != NULL)
+	{
+		free(val[i]);
+		i++;
+	}
+	free(val);
+}
+
+int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
+{
+	char		**tmp;
+	uint64_t	i;
+
+	i = 1;
+	while (i < command_ctx->argc)
+	{
+		tmp = ft_split_key_value(command_ctx->argv[i], '=');
+		if (tmp == NULL)
+			return (exit_mem_issue());
+		if (is_valid_name(tmp[0]) == false)
+		{
+			free_2d_arr(tmp);
+			i++;
+			continue ;
+		}
+		if (env_add(&c->env, tmp[0], tmp[1]))
+		{
+			free(tmp);
+			return (EXIT_FAILURE);
+		}
+		free(tmp);
+		i++;
+	}
+	return (EXIT_SUCCESS);
+}
+
 /*
 All values undergo tilde expansion, parameter and variable expansion,
 	command substitution, arithmetic expansion,
@@ -34,37 +82,11 @@ All values undergo tilde expansion, parameter and variable expansion,
 */
 int	builtin_export(t_ctx *c, t_command_ctx *command_ctx)
 {
-	char		**tmp;
-	uint64_t	i;
-	int			result_code;
-
-	i = 1;
 	if (command_ctx->argc == 1)
 	{
 		ft_lstiter(c->env.vals, &print_val);
 		return (EXIT_SUCCESS);
 	}
-	while (i < command_ctx->argc)
-	{
-		tmp = ft_split_key_value(command_ctx->argv[i], '=');
-		if (tmp == NULL)
-			return (exit_mem_issue());
-		if (is_valid_name(tmp[0]) == false)
-		{
-			free(tmp[0]);
-			free(tmp[1]);
-			free(tmp);
-			i++;
-			continue ;
-		}
-		result_code = env_add(&c->env, tmp[0], tmp[1]);
-		if (result_code)
-		{
-			free(tmp);
-			return (result_code);
-		}
-		free(tmp);
-		i++;
-	}
-	return (EXIT_SUCCESS);
+	else
+		return (add_args_to_env(C, command_ctx));
 }
