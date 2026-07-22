@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/27 19:53:41 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/22 09:53:40 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 const char	*get_arena_name(t_arena *arena);
 const char	*get_flag_name(uint32_t bit);
 const char	*get_symbol_type_name(t_symbol_type type);
+const char	*get_token_type_name(t_token_type type);
 void		parse_debug_args(int argc, char **argv, t_ctx *c);
 void		poison_stride(t_arena *arena);
 void		print_arena(t_arena *arena);

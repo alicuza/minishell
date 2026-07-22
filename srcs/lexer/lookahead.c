@@ -6,141 +6,186 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:37:40 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/28 18:52:13 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/22 09:40:19 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_token get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l)
+bool	apply_rule_1(t_ctx *c, t_lexer_state *lex)
+{
+#ifdef DEBUG
+	fprintf(stderr, "rule 1\n");
+#endif
+	lex->flags |= LEX_NEEDS_INPUT;
+	if (lex->flags & LEX_IS_BUILDING)
+	{
+		delimit_lex_token(c, lex);
+		return (true);
+	}
+	return (false);
+}
+
+bool	apply_rule_2(t_ctx *c, t_lexer_state *lex)
+{
+#ifdef DEBUG
+	fprintf(stderr, "rule 2\n");
+#endif
+	if(lex->flags & LEX_IS_BUILDING)
+	{
+		consume_char(lex, 1);
+		grow_lex_token(lex, 1);
+		delimit_lex_token(c, lex);
+		return (true);
+	}
+	return (false);
+}
+
+bool	apply_rule_3(t_ctx *c, t_lexer_state *lex)
+{
+#ifdef DEBUG
+	fprintf(stderr, "rule 3\n");
+#endif
+	delimit_lex_token(c, lex);
+	return (true);
+}
+
+bool	apply_rule_4(t_ctx *c, t_lexer_state *lex)
+{
+#ifdef DEBUG
+	fprintf(stderr, "rule 4\n");
+#endif
+	if (lex->flags & LEX_IS_BUILDING)
+		grow_lex_token(lex, 1);
+	else
+		start_lex_token(lex, TKN_WORD);
+	lex->pair.open = c->read_line[lex->char_idx];
+	lex->pair.close = matching_close(lex->pair.open);
+	
+	return (false);
+}
+
+bool	apply_rule_5(t_ctx *c, t_lexer_state *lex)
 {
 	uint64_t	len;
-	t_token		token;
+#ifdef DEBUG
+	fprintf(stderr, "rule 5\n");
+#endif
+	len = get_expansion_len(c->read_line + lex->char_idx);
+	if (!(lex->flags & LEX_IS_BUILDING))
+	{
+		start_lex_token(lex, TKN_WORD);
+		grow_lex_token(lex, len - 1);
+	}
+	else
+		grow_lex_token(lex, len);
+	consume_char(lex, len);
+	lex->flags |= TKN_HAS_EXPANSION;
+	return (false);
+}
 
-	token = (t_token){0};
-	if (l->flags & LEX_NEEDS_INPUT)
+bool	apply_rule_6(t_ctx *c, t_lexer_state *lex)
+{
+#ifdef DEBUG
+	fprintf(stderr, "rule 6\n");
+#endif
+	if (lex->flags & LEX_IS_BUILDING)
 	{
-		ft_memset(l, 0, sizeof(t_lexer_state));
-		return (token);
+		delimit_lex_token(c, lex);
+		return (true);
 	}
-	while (!(l->flags & LEX_NEEDS_INPUT))
+	start_lex_token(lex, TKN_OPERATOR);
+	consume_char(lex, 1);
+	return (false);
+}
+
+bool	apply_rule_7(t_ctx *c, t_lexer_state *lex)
+{
+#ifdef DEBUG
+	fprintf(stderr, "rule 7\n");
+#endif
+	consume_char(lex, 1);
+	if(lex->flags & LEX_IS_BUILDING)
 	{
-#ifdef DEBUG
-		print_lex_state(c, l);
-#endif
-		if (!c->read_line[l->char_idx])										// rule 1
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 1\n");
-#endif
-			if (l->flags & LEX_IS_BUILDING)
-        		token = delimit_lex_token(c, p, l);
-			else
-				l->flags &= ~LEX_IS_DELIMITED;
-			l->flags |= LEX_NEEDS_INPUT;
-			return (token);
-		}
-		else if ((l->type == SYM_OPERATOR)									// rule 2
-			&& is_str_in_set(c->read_line + l->char_idx - 1, get_operator_strs()))
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 2\n");
-#endif
-			if(l->flags & LEX_IS_BUILDING)
-			{
-				consume_char(l);
-				grow_lex_token(l);
-				token = delimit_lex_token(c, p, l);
-				return (token);
-			}
-		}
-		else if ((l->type == SYM_OPERATOR)									// rule 3
-			&& !is_str_in_set(c->read_line + l->char_idx - 1, get_operator_strs()))
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 3\n");
-#endif
-			token = delimit_lex_token(c, p, l);
-			return (token);
-		}
-		else if (is_char_in_set(c->read_line[l->char_idx], QUOTE_SET))		// rule 4
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 4\n");
-#endif
-			if (l->flags & LEX_IS_BUILDING)
-				grow_lex_token(l);
-			else
-				start_lex_token(l, SYM_TOKEN);
-			l->char_idx = try_as_quote_pair(c, l) + 1;
-		}
-		else if (is_expansion_start(c->read_line, l->char_idx))				// rule 5
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 5\n");
-#endif
-			len = get_expansion_len(c->read_line + l->char_idx);
-			if (!(l->flags & LEX_IS_BUILDING))
-			{
-				start_lex_token(l, SYM_TOKEN);
-				l->token.len += len - 1;
-			}
-			else 
-				l->token.len += len;
-			l->char_idx += len;
-			l->flags |= LEX_HAS_EXPANSION;
-		}
-		else if (is_char_in_set(c->read_line[l->char_idx], OPERATOR_SET)	// rule 6
-			&& (c->read_line[l->char_idx] != '&' || c->read_line[l->char_idx + 1] == '&'))
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 6\n");
-#endif
-			if (l->flags & LEX_IS_BUILDING)
-			{
-				token = delimit_lex_token(c, p, l);
-				return (token);
-			}
-			start_lex_token(l, SYM_OPERATOR);
-			consume_char(l);
-		}
-		else if (is_char_in_set(c->read_line[l->char_idx], BLANK_SET))		// rule 7
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 7\n");
-#endif
-			consume_char(l);
-			if(l->flags & LEX_IS_BUILDING)
-			{
-				token = delimit_lex_token(c, p, l);
-				return (token);
-			}
-		}
-		else if (l->type == SYM_TOKEN)										// rule 8
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 8\n");
-#endif
-			grow_lex_token(l);
-			consume_char(l);
-		}
-		else if (c->read_line[l->char_idx] == '#')		// rule 9
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 9\n");
-#endif
-			while (c->read_line[l->char_idx] && c->read_line[l->char_idx] != '\n')
-				consume_char(l);
-		}
-		else		// rule 10
-		{
-#ifdef DEBUG
-			fprintf(stderr, "rule 10\n");
-#endif
-			start_lex_token(l, SYM_TOKEN);
-			consume_char(l);
-		}
+		delimit_lex_token(c, lex);
+		return (true);
 	}
-	token.type = SYM_NONE;
-	return (token);
+	return (false);
+}
+
+bool	apply_rule_8(t_lexer_state *lex)
+{
+#ifdef DEBUG
+	fprintf(stderr, "rule 8\n");
+#endif
+	grow_lex_token(lex, 1);
+	consume_char(lex, 1);
+	return (false);
+}
+
+bool	apply_rule_9(t_ctx *c, t_lexer_state *lex)
+{
+#ifdef DEBUG
+	fprintf(stderr, "rule 9\n");
+#endif
+	while (c->read_line[lex->char_idx] && c->read_line[lex->char_idx] != '\n')
+		consume_char(lex, 1);
+	return (false);
+}
+
+bool	apply_rule_10(t_lexer_state *lex)
+{
+#ifdef DEBUG
+	fprintf(stderr, "rule 10\n");
+#endif
+	start_lex_token(lex, TKN_WORD);
+	consume_char(lex, 1);
+	return (false);
+}
+
+bool	lex_token(t_ctx *c, t_lexer_state *lex)
+{
+#ifdef DEBUG
+		print_lex_state(c, lex);
+#endif
+	if (!c->read_line[lex->char_idx])										// rule 1
+		return (apply_rule_1(c, lex));
+	else if (lex->type == TKN_OPERATOR)										// rule 2 & 3
+	{
+		if (is_str_in_set(c->read_line + lex->char_idx - 1, get_operator_strs()))
+			return (apply_rule_2(c, lex));
+		else
+			return (apply_rule_3(c, lex));
+	}
+	else if (is_char_in_set(c->read_line[lex->char_idx], QUOTE_SET))		// rule 4
+		return (apply_rule_4(c, lex));
+	else if (is_expansion_start(c->read_line, lex->char_idx))				// rule 5
+		return (apply_rule_5(c, lex));
+	else if (is_char_in_set(c->read_line[lex->char_idx], OPERATOR_SET)		// rule 6
+			&& (c->read_line[lex->char_idx] != '&'
+			|| c->read_line[lex->char_idx + 1] == '&'))
+		return (apply_rule_6(c, lex));
+	else if (is_char_in_set(c->read_line[lex->char_idx], BLANK_SET))		// rule 7
+		return (apply_rule_7(c, lex));
+	else if (lex->type == TKN_WORD)											// rule 8
+		return (apply_rule_8(lex));
+	else if (c->read_line[lex->char_idx] == '#')							// rule 9
+		return (apply_rule_9(c, lex));
+	else																	// rule 10
+		return (apply_rule_10(lex));
+}
+
+bool	get_lookahead(t_ctx *c, t_lexer_state *lex)
+{
+	while (true)
+	{
+		if (lex->flags & LEX_NEEDS_INPUT)
+		{
+			ft_memset(lex, 0, sizeof(t_lexer_state));
+			if (!get_user_input(c, false))
+				return (false);												// eof reached
+		}
+		if (lex_token(c, lex))
+			return (true);
+	}
 }

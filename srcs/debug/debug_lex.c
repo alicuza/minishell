@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 11:08:25 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/28 02:58:30 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/22 09:53:17 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	print_lex_state(t_ctx *c, t_lexer_state *l)
 	fprintf(stderr, "\n--- lex ---\n");
 	fprintf(stderr, "  [%lu] ", l->char_idx);
 	print_char_info(ch);
-	fprintf(stderr, "  %s", get_symbol_type_name(l->type));
+	fprintf(stderr, "  %s", get_token_type_name(l->type));
 	if (l->flags & LEX_IS_BUILDING)
 		fprintf(stderr, "(%.*s)", (int)l->token.len,
 			c->read_line + l->token.pos);
@@ -63,7 +63,7 @@ void	print_token(FILE *out, t_ctx *c, t_token *token)
 
 	input = &(c->arena[AT_STRING]);
 	fprintf(stderr, "\n--- token ---\n");
-	fprintf(out, "  %s(", get_symbol_type_name(token->type));
+	fprintf(out, "  %s(", get_token_type_name(token->type));
 	print_escaped_str(out, input->buf + token->offset);
 	fprintf(out, ")");
 	fprintf(stderr, "  {  offset = %lu  flags =", token->offset);
