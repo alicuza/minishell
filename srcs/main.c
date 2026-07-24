@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/22 08:28:47 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/22 12:40:53 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,8 @@ int	main(int argc, char **argv, char **envp)
 #ifdef DEBUG
 		print_complete_stack(&c, &parse);
 		if (!c.no_exec)
-			exec_stack(&c, &parse);
 #endif
-		exec_stack(&c, &parse);
+			exec_stack(&c, &parse);
 		clear_arenas(&c);
 		free(c.read_line);
 	}

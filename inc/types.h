@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/22 09:52:28 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/23 20:14:29 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,6 +185,7 @@ typedef struct s_parser_state
 	uint32_t	cur_state;
 	uint64_t	stack_idx;			/* current top symbol on the stack */
 	uint64_t	token_idx;			/* current lookahead token in AT_TOKENS */
+	uint64_t	parsed_cnt;			/* incremented by shift_symbol, cursor of what was parsed */ //TODO: 
 	uint64_t	arg_head;			/* argument list head in AT_COMMAND */
 	uint64_t	redir_head;			/* redirection list head in AT_COMMAND */
 	uint8_t		flags;				/* PARSE_HERE_PENDING | PARSE_DONE | PARSE_ERROR */
@@ -196,6 +197,14 @@ typedef struct s_pair_state			// TODO: consider whether i want to reference or s
 	char	close;					/* SQUOTE, DQUOTE, CPAR */
 	uint8_t	flags;					/* TKN_HAS_EXPANSION | TKN_HAS_QUOTES */
 }	t_pair_state;
+
+typedef struct s_here_state			// TODO: consider whether i want to reference or save the char
+{
+	uint64_t	delim_idx;			/* heredoc delimiter WORD in AT_TOKENS */
+	uint64_t	body_idx;			/* heredoc body WORD in AT_TOKENS */
+	uint64_t	cur_line;			/* offset of the current heredoc body line in AT_STRING */
+	uint8_t		flags;				/* DELIM_QUOTED */
+}	t_here_state;
 
 typedef struct s_lexer_state
 {

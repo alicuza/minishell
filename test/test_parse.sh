@@ -47,7 +47,8 @@ test_cmd_bare()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(ls)
+			TKN_WORD(ls)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -63,7 +64,8 @@ test_cmd_abs()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(/bin/pwd)
+			TKN_WORD(/bin/pwd)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -79,7 +81,8 @@ test_cmd_rel()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(./minishell)
+			TKN_WORD(./minishell)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -97,9 +100,10 @@ test_args_bare()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN(hello)
-			SYM_TOKEN(world)
+			TKN_WORD(echo)
+			TKN_WORD(hello)
+			TKN_WORD(world)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -115,8 +119,9 @@ test_args_abs()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(/bin/echo)
-			SYM_TOKEN(hello)
+			TKN_WORD(/bin/echo)
+			TKN_WORD(hello)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -132,9 +137,10 @@ test_args_rel()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(./script.sh)
-			SYM_TOKEN(-a)
-			SYM_TOKEN(foo)
+			TKN_WORD(./script.sh)
+			TKN_WORD(-a)
+			TKN_WORD(foo)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -152,9 +158,10 @@ test_redir_input()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(cat)
-			SYM_OPERATOR(<)
-			SYM_TOKEN(file)
+			TKN_WORD(cat)
+			TKN_OPERATOR(<)
+			TKN_WORD(file)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -172,11 +179,14 @@ test_redir_heredoc()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(cat)
-			SYM_OPERATOR(<<)
-			SYM_TOKEN(EOF)
-			SYM_TOKEN(hello)
-			SYM_TOKEN(EOF)
+			TKN_WORD(cat)
+			TKN_OPERATOR(<<)
+			TKN_WORD(EOF)
+			TKN_OPERATOR(\n)
+			TKN_WORD(hello)
+			TKN_OPERATOR(\n)
+			TKN_WORD(EOF)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -192,9 +202,10 @@ test_redir_output()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_OPERATOR(>)
-			SYM_TOKEN(file)
+			TKN_WORD(echo)
+			TKN_OPERATOR(>)
+			TKN_WORD(file)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -210,9 +221,10 @@ test_redir_append()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_OPERATOR(>>)
-			SYM_TOKEN(file)
+			TKN_WORD(echo)
+			TKN_OPERATOR(>>)
+			TKN_WORD(file)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -228,11 +240,12 @@ test_redir_multiple()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(cat)
-			SYM_OPERATOR(<)
-			SYM_TOKEN(in)
-			SYM_OPERATOR(>)
-			SYM_TOKEN(out)
+			TKN_WORD(cat)
+			TKN_OPERATOR(<)
+			TKN_WORD(in)
+			TKN_OPERATOR(>)
+			TKN_WORD(out)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -248,9 +261,10 @@ test_redir_adjacent()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_OPERATOR(>)
-			SYM_TOKEN(file)
+			TKN_WORD(echo)
+			TKN_OPERATOR(>)
+			TKN_WORD(file)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -268,9 +282,10 @@ test_op_pipe()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(ls)
-			SYM_OPERATOR(|)
-			SYM_TOKEN(wc)
+			TKN_WORD(ls)
+			TKN_OPERATOR(|)
+			TKN_WORD(wc)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -286,11 +301,12 @@ test_op_and()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN(a)
-			SYM_OPERATOR(&&)
-			SYM_TOKEN(echo)
-			SYM_TOKEN(b)
+			TKN_WORD(echo)
+			TKN_WORD(a)
+			TKN_OPERATOR(&&)
+			TKN_WORD(echo)
+			TKN_WORD(b)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -306,11 +322,12 @@ test_op_or()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN(a)
-			SYM_OPERATOR(||)
-			SYM_TOKEN(echo)
-			SYM_TOKEN(b)
+			TKN_WORD(echo)
+			TKN_WORD(a)
+			TKN_OPERATOR(||)
+			TKN_WORD(echo)
+			TKN_WORD(b)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -326,11 +343,12 @@ test_op_pipe_chain()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(ls)
-			SYM_OPERATOR(|)
-			SYM_TOKEN(wc)
-			SYM_OPERATOR(|)
-			SYM_TOKEN(cat)
+			TKN_WORD(ls)
+			TKN_OPERATOR(|)
+			TKN_WORD(wc)
+			TKN_OPERATOR(|)
+			TKN_WORD(cat)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -346,11 +364,12 @@ test_op_mixed()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(ls)
-			SYM_OPERATOR(|)
-			SYM_TOKEN(wc)
-			SYM_OPERATOR(&&)
-			SYM_TOKEN(env)
+			TKN_WORD(ls)
+			TKN_OPERATOR(|)
+			TKN_WORD(wc)
+			TKN_OPERATOR(&&)
+			TKN_WORD(env)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -368,8 +387,9 @@ test_whitespace_tab()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN(hello)
+			TKN_WORD(echo)
+			TKN_WORD(hello)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -387,8 +407,9 @@ test_flag_quotes()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN("hello") LEX_HAS_QUOTES
+			TKN_WORD(echo)
+			TKN_WORD("hello") TKN_HAS_QUOTES
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -404,8 +425,9 @@ test_flag_expansion()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN($HOME) LEX_HAS_EXPANSION
+			TKN_WORD(echo)
+			TKN_WORD($HOME) TKN_HAS_EXPANSION
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -421,8 +443,9 @@ test_flag_both()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN("$HOME") LEX_HAS_QUOTES LEX_HAS_EXPANSION
+			TKN_WORD(echo)
+			TKN_WORD("$HOME") TKN_HAS_QUOTES TKN_HAS_EXPANSION
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -438,8 +461,9 @@ test_flag_empty_quotes()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN("") LEX_HAS_QUOTES
+			TKN_WORD(echo)
+			TKN_WORD("") TKN_HAS_QUOTES
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -455,8 +479,9 @@ test_flag_special_param()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN($?) LEX_HAS_EXPANSION
+			TKN_WORD(echo)
+			TKN_WORD($?) TKN_HAS_EXPANSION
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -472,8 +497,9 @@ test_flag_quote_concat()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN("foo"bar) LEX_HAS_QUOTES
+			TKN_WORD(echo)
+			TKN_WORD("foo"bar) TKN_HAS_QUOTES
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -489,8 +515,9 @@ test_flag_mid_word_expansion()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN(love$HOME) LEX_HAS_EXPANSION
+			TKN_WORD(echo)
+			TKN_WORD(love$HOME) TKN_HAS_EXPANSION
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -506,8 +533,9 @@ test_flag_single_quotes()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN('hello') LEX_HAS_QUOTES
+			TKN_WORD(echo)
+			TKN_WORD('hello') TKN_HAS_QUOTES
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -525,6 +553,7 @@ test_empty_input()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -540,6 +569,7 @@ test_only_spaces()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -555,8 +585,9 @@ test_unclosed_double_quote()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN("foo)
+			TKN_WORD(echo)
+			TKN_WORD("foo)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -572,8 +603,9 @@ test_unclosed_single_quote()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN('foo)
+			TKN_WORD(echo)
+			TKN_WORD('foo)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -589,6 +621,7 @@ test_comment_only()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"
@@ -604,8 +637,9 @@ test_comment_after_cmd()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-			SYM_TOKEN(echo)
-			SYM_TOKEN(hi)
+			TKN_WORD(echo)
+			TKN_WORD(hi)
+			TKN_OPERATOR(\n)
 		eof
 	)"
 	assert_shell "$input" "$expected"

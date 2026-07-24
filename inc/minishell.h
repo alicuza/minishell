@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/22 09:37:00 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/24 11:06:47 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,13 @@
 # define TKN_HAS_QUOTES			0x01
 # define TKN_HAS_EXPANSION		0x02
 # define LEX_IS_BUILDING		0x04
-# define LEX_NEEDS_INPUT		0x08
+# define LEX_AT_EOI				0x08
 
 /* -------- parser flags ---------------------------------------------------- */
 # define PARSE_DONE				0x01
-# define PARSE_HERE_PENDING		0x02
+# define PARSE_SAVE_TOKENS		0x02
+# define PARSE_HERE_PENDING		0x04
+# define PARSE_HERE_BODY		0x08
 
 /* -------- node flags ------------------------------------------------------ */
 # define FLAG_AND_IF			0x01
@@ -113,11 +115,12 @@ char			*get_prompt(t_ctx *c, bool with_cwd);
 char			*get_user_input(t_ctx *c, bool is_continuation);
 
 /* -------- lookahead.c ----------------------------------------------------- */
-bool			get_lookahead(t_ctx *c, t_lexer_state *l);
+bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l);
+bool			line_is_delim(t_ctx *c, t_here_state *h);
 
 /* -------- pair_utils.c --------------------------------------------------- */
 char			matching_close(char open);
-uint64_t		find_matched_pair(t_ctx *c, t_lexer_state *lex);
+bool			find_matched_pair(t_ctx *c, t_lexer_state *lex);
 
 /* -------- token_transform_utils.c ----------------------------------------- */
 uint64_t		get_idx_from_offset(t_arena *arena, uint64_t offset);

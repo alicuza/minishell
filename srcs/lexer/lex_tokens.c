@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:03:51 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/22 09:41:11 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/23 20:26:08 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ void	delimit_lex_token(t_ctx *c, t_lexer_state *lex)
 	lex->type = TKN_NONE;
 	token->offset =
 		arena_strlcpy(strings, c->read_line + lex->token.pos, lex->token.len + 1);
-	token->flags = lex->flags & ~(LEX_IS_BUILDING | LEX_NEEDS_INPUT);
+	token->flags = lex->flags & ~(LEX_IS_BUILDING | LEX_AT_EOI);
+	lex->flags &= ~LEX_IS_BUILDING;
 }
 
 uint64_t	grow_lex_token(t_lexer_state *lex, uint64_t len)

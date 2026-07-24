@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 19:59:39 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/22 09:42:12 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/22 13:17:37 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ char	matching_close(char open)
 	return (close);
 }
 
-uint64_t	find_matched_pair(t_ctx *c, t_lexer_state *lex)
+bool	find_matched_pair(t_ctx *c, t_lexer_state *lex)
 {
     t_slice	save;
 
@@ -39,9 +39,10 @@ uint64_t	find_matched_pair(t_ctx *c, t_lexer_state *lex)
     if (!c->read_line[lex->char_idx])
     {
 		restore_lex_token_slice(lex, save);
-        return (lex->char_idx);
+        return (false);
     }
     grow_lex_token(lex, 1);
+	consume_char(lex, 1);
 	lex->flags |= TKN_HAS_QUOTES;
-    return (lex->char_idx);
+    return (true);
 }

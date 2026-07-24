@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:37:40 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/22 09:40:19 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/24 11:37:25 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ bool	apply_rule_1(t_ctx *c, t_lexer_state *lex)
 #ifdef DEBUG
 	fprintf(stderr, "rule 1\n");
 #endif
-	lex->flags |= LEX_NEEDS_INPUT;
+	lex->flags |= LEX_AT_EOI;
 	if (lex->flags & LEX_IS_BUILDING)
 	{
 		delimit_lex_token(c, lex);
@@ -61,7 +61,12 @@ bool	apply_rule_4(t_ctx *c, t_lexer_state *lex)
 		start_lex_token(lex, TKN_WORD);
 	lex->pair.open = c->read_line[lex->char_idx];
 	lex->pair.close = matching_close(lex->pair.open);
-	
+	if (!find_matched_pair(c, lex))
+	{
+		lex->pair.open = 0;
+		lex->pair.close = 0;
+		consume_char(lex, 1);
+	}
 	return (false);
 }
 
@@ -175,17 +180,69 @@ bool	lex_token(t_ctx *c, t_lexer_state *lex)
 		return (apply_rule_10(lex));
 }
 
-bool	get_lookahead(t_ctx *c, t_lexer_state *lex)
+bool	get_next_token(t_ctx *c, t_parser_state *parse, t_lexer_state *lex) // TODO: modify to make this the dispatch function for lex with different flags, for normal parsing and here_doc
 {
 	while (true)
 	{
-		if (lex->flags & LEX_NEEDS_INPUT)
+		if (lex->flags & LEX_AT_EOI)
 		{
 			ft_memset(lex, 0, sizeof(t_lexer_state));
-			if (!get_user_input(c, false))
 				return (false);												// eof reached
 		}
 		if (lex_token(c, lex))
+		{
+			++parse->token_idx;
 			return (true);
+		}
+	}
+}
+
+void	save_tokens(t_ctx *c, t_lexer_state *lex)
+{
+	while (c->read_line[lex->char_idx] != '\n')
+		lex_token(c, lex);
+	lex_token(c, lex);
+}
+
+// TODO: the here_state is created during reduction of io_here, not done yet
+bool	line_is_delim(t_ctx *c, t_here_state *here)
+{
+	t_arena		*strings;
+	t_arena		*tokens;
+	t_token		*line;
+	t_token		*delim;
+	uint64_t	delim_len;
+
+	strings = &c->arena[AT_STRING];
+	tokens = &c->arena[AT_TOKENS];
+	line = (t_token *)get_ptr_from_offset(tokens, here->cur_line);
+	delim = (t_token *)get_ptr_from_offset(tokens, here->delim_idx);
+	delim_len = ft_strlen(strings->buf + delim->offset);
+	if (!ft_strncmp(strings->buf + line->offset, strings->buf + delim->offset, delim_len)
+		&& strings->buf[line->offset + delim_len + 1] == '\n')
+		return (true);
+	return (false);
+}
+
+bool	get_here_doc(t_ctx *c, t_lexer_state *lex, t_here_state *here)
+{
+	t_token		*here_line;
+	char		*here_line_body;
+	uint64_t	len;
+
+	start_lex_token(lex, TKN_WORD);
+	here_line = get_ptr_from_offset(&c->arena[AT_TOKENS], here->cur_line);
+	here_line_body = get_ptr_from_offset(&c->arena[AT_STRING], here_line->offset);
+	len = ft_strlen(here_line_body);
+	while (true)
+	{
+		if (!here_line_body)
+			return (false);
+		if (line_is_delim(c, here))
+			return (true);
+		if (!c->read_line[lex->char_idx])
+			return (false);
+		consume_char(lex, len);
+		grow_lex_token(lex, len);
 	}
 }
