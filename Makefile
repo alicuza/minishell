@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/07/17 14:06:08 by nribakov         ###   ########.fr        #
+#    Updated: 2026/07/24 14:53:53 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,7 @@ SRCS        = \
 			lexer/lookahead.c \
 			lexer/lex_tokens.c \
 			lexer/lex_utils.c \
-			lexer/quote_utils.c \
+			lexer/pair_utils.c \
 			lexer/token_transform_utils.c \
 			lexer/string_utils.c \
 			lexer/expand_utils.c \
@@ -63,6 +63,7 @@ SRCS        = \
 
 DEBUG_SRCS  = \
 			debug/debug_utils.c \
+			debug/debug_names.c \
 			debug/debug_arena.c \
 			debug/debug_lex.c \
 			debug/debug_parse.c
@@ -140,7 +141,7 @@ compile_flags.txt:
 		echo $$flag >> $@ ; \
 	done
 
-test: $(NAME)
+test: $(NAME) $(NAME)-debug
 	./test/runner.sh
 
 clean:

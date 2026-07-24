@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:29 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/18 22:08:03 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/24 14:59:43 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,16 @@
 const char	*get_arena_name(t_arena *arena);
 const char	*get_flag_name(uint32_t bit);
 const char	*get_symbol_type_name(t_symbol_type type);
+const char	*get_token_type_name(t_token_type type);
+void		parse_debug_args(int argc, char **argv, t_ctx *c);
 void		poison_stride(t_arena *arena);
 void		print_arena(t_arena *arena);
-void		print_flags(uint32_t flags);
-void		print_token(t_ctx *c, t_token *token);
+void		print_flags(FILE *out, uint32_t flags);
+void		print_token(FILE *out, t_ctx *c, t_token *token);
 void		print_symbol(t_ctx *c, t_symbol *symbol, uint64_t phys);
 void		print_lex_state(t_ctx *c, t_lexer_state *l);
 void		print_complete_stack(t_ctx *c, t_parser_state *parse);
 void		print_char_info(unsigned char ch);
-void		print_escaped_str(const char *str);
+void		print_escaped_str(FILE *out, const char *str);
 
 #endif

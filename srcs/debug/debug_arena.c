@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 11:08:25 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 15:20:18 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/22 09:50:43 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,11 @@ const char	*get_arena_name(t_arena *arena)
 {
 	if (arena->stride == 1)
 		return ("string/prompt arena");
+	else if (arena->stride == sizeof(t_token))
+	{
+		poison_stride(arena);
+		return ("token arena");
+	}
 	else if (arena->stride == sizeof(t_symbol))
 	{
 		poison_stride(arena);

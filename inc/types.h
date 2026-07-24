@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/28 09:37:01 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/24 14:59:23 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,11 @@ typedef struct s_env
 
 typedef enum e_arena_type
 {
-	AT_NONE,
 	AT_PROMPT,
 	AT_STRING,
+	AT_TOKENS,
 	AT_STACK,
-	AT_CMD,
+	AT_COMMAND,
 	AT_COUNT,
 }	t_arena_type;
 
@@ -42,6 +42,11 @@ typedef struct s_ctx
 	t_arena	arena[AT_COUNT];
 	char	*read_line;
 	int		return_status;
+	bool	is_interactive;
+# ifdef DEBUG
+	uint8_t	scope;		/* SCOPE_TOKEN | SCOPE_SYMBOLS | SCOPE_STACK | SCOPE_COMMAND */
+	bool	no_exec;	/* TODO: do i actually need this? */
+# endif
 }	t_ctx;
 
 typedef struct s_slice
@@ -57,7 +62,6 @@ typedef struct s_cmd	// stub
 	char	**envp;
 }	t_cmd;
 
-
 typedef struct s_command_ctx
 {
 	char *name;
@@ -67,94 +71,158 @@ typedef struct s_command_ctx
 
 typedef int	(*t_command_function)(t_ctx *c, t_command_ctx *command_ctx);
 
+typedef enum e_token_type
+{
+	TKN_NONE,
+	TKN_EOF,
+	TKN_WORD,
+	TKN_OPERATOR,
+}	t_token_type;
+
 typedef enum e_symbol_type
 {
-/* -------- no token -------------------------------------------------------- */
-	SYM_NONE,
+/* -------- eof token ------------------------------------------------------- */
+	SYM_EOF = 0,
 /* -------- lexical tokens -------------------------------------------------- */
-	SYM_TOKEN,
-	SYM_OPERATOR,
-	SYM_NEWLINE,
-	SYM_PIPE,
-	SYM_LESS,
-	SYM_GREAT,
-	SYM_DLESS,
-	SYM_DGREAT,
-	SYM_AND_IF,
-	SYM_OR_IF,
-	SYM_OPAR,
-	SYM_CPAR,
+	SYM_WORD = 3,
+	SYM_NEWLINE = 4,
+	SYM_PIPE = 5,
+	SYM_LESS = 6,
+	SYM_GREAT = 7,
+	SYM_DLESS = 8,
+	SYM_DGREAT = 9,
+	SYM_AND_IF = 10,
+	SYM_OR_IF = 11,
+	SYM_OPAR = 12,
+	SYM_CPAR = 13,
+	SYM_ACCEPT = 14,
 /* -------- entrypoint ------------------------------------------------------ */
-	SYM_COMPLETE_COMMAND,
+	SYM_COMPLETE_COMMANDS = 15,
 /* -------- list constructs ------------------------------------------------- */
-	SYM_LIST,
-	SYM_AND_OR,
-	SYM_TERM,
+	SYM_LIST = 16,
 /* -------- pipeline constructs --------------------------------------------- */
-	SYM_PIPELINE,
-	SYM_PIPE_SEQUENCE,
+	SYM_PIPELINE = 17,
 /* -------- command constructs ---------------------------------------------- */
-	SYM_COMMAND,
-	SYM_COMPOUND_COMMAND,
-	SYM_SIMPLE_COMMAND,
-	SYM_COMPOUND_LIST,
-	SYM_SUBSHELL,
+	SYM_COMMAND = 18,
+	SYM_SUBSHELL = 19,
+	SYM_COMPOUND_LIST = 20,
+	SYM_TERM = 21,							/* actually also a list construct */
+	SYM_SIMPLE_COMMAND = 22,
 /* -------- simple_command constructs --------------------------------------- */
-	SYM_CMD_PREFIX,
-	SYM_CMD_NAME,
-	SYM_CMD_WORD,
-	SYM_CMD_SUFFIX,
+	SYM_CMD_NAME = 23,
+	SYM_CMD_WORD = 24,
+	SYM_CMD_PREFIX = 25,
+	SYM_CMD_SUFFIX = 26,
 /* -------- redirection constructs ------------------------------------------ */
-	SYM_IO_REDIRECT,
-	SYM_IO_FILE,
-	SYM_IO_HERE,
-	SYM_FILENAME,
-	SYM_HERE_END,
-/* -------- intermediate contructs ------------------------------------------ */
-	SYM_NEWLINE_LIST,
-	SYM_LINEBREAK,
-	SYM_SEPARATOR,
-	SYM_REDIRECT_LIST,
-/* -------- count ----------------------------------------------------------- */
-	SYM_COUNT,
+	SYM_REDIRECT_LIST = 27,
+	SYM_IO_REDIRECT = 28,
+	SYM_IO_FILE = 29,
+	SYM_FILENAME = 30,
+	SYM_IO_HERE = 31,
+	SYM_HERE_END = 32,
+/* -------- separation contructs -------------------------------------------- */
+	SYM_SEPARATOR = 33,
+	SYM_LINEBREAK = 34,
 }	t_symbol_type;
+
+typedef enum e_node_type
+{
+	NODE_NONE,
+	NODE_PIPELINE,
+	NODE_COMMAND,
+	NODE_ARG,
+	NODE_REDIR,
+}	t_node_type;
 
 typedef struct s_token
 {
-	uint64_t		offset;
-	uint32_t		flags;
-	t_symbol_type	type;
+	uint64_t		offset;			/* into AT_STRING */
+	t_token_type	type;
+	uint8_t			flags;			/* TKN_HAS_QUOTES | TKN_HAS_EXPANSION */
 }	t_token;
 
 typedef struct s_symbol
 {
-	uint64_t		offset;			/* offset into string arena */
-	uint64_t		prev_symbol;	/* arena index of logical predecessor */
-	uint64_t		next_frame;		/* subshell chain */
-	uint64_t		next_pipeline;	/* list level pipeline chain */
-	uint64_t		next_redir;		/* command level redirection chain */
-	uint64_t		next_arg;		/* command level arguments chain */
-	uint64_t		next_cmd;		/* pipeline level */
-	uint32_t		entry_state;	/* parser state before this symbol */
-	uint32_t		flags;			/* LEX_HAS_EXPANSION | LEX_HAS_QUOTES */
+	uint64_t		node_idx;		/* current node in AT_COMMAND*/
+	uint64_t		token_idx;		/* current token in AT_TOKENS */
+	uint32_t		entry_state;	/* */
 	t_symbol_type	type;
 }	t_symbol;
+
+typedef struct s_node_pipeline
+{
+	uint64_t	command_head;
+	uint64_t	next;
+}	t_node_pipeline;
+
+typedef struct s_node_command
+{
+	uint64_t	arg_head;
+	uint64_t	redir_head;
+	uint64_t	next;
+}	t_node_command;
+
+typedef struct s_node_arg
+{
+	uint64_t	arena_idx;
+	uint64_t	next;
+}	t_node_arg;
+
+typedef struct s_node_redir
+{
+	uint64_t	arena_idx;
+	uint64_t	next;
+	int32_t		fd;					// NOTE: only for heredocs?
+}	t_node_redir;
+
+typedef union u_node_data
+{
+	t_node_pipeline pipeline;
+	t_node_command	command;
+	t_node_arg		arg;
+	t_node_redir	redir;
+}	t_node_data;
+
+typedef struct s_node				/* tagged union */
+{
+	t_node_data	data;
+	t_node_type	type;
+	uint8_t	flags;					/* FLAG_AND_IF | FLAG_OR_IF | FLAG_SUBSHELL | REDIR_IN | REDIR_OUT | REDIR_HERE | REDIR_APPEND */
+}	t_node;
 
 typedef struct s_parser_state
 {
 	uint32_t	cur_state;
-	uint64_t	arena_idx;
-	uint64_t	stack_idx;
-	t_token		lookahead;
-	uint8_t		flags;				/* PARSE_HERE_PENDING | PARSE_DONE */
+	uint64_t	stack_idx;			/* current top symbol on the stack */
+	uint64_t	token_idx;			/* current lookahead token in AT_TOKENS */
+	uint64_t	parsed_cnt;			/* incremented by shift_symbol, cursor of what was parsed */ //TODO: 
+	uint64_t	arg_head;			/* argument list head in AT_COMMAND */
+	uint64_t	redir_head;			/* redirection list head in AT_COMMAND */
+	uint8_t		flags;				/* PARSE_HERE_PENDING | PARSE_DONE | PARSE_ERROR */
 }	t_parser_state;
+
+typedef struct s_pair_state			// TODO: consider whether i want to reference or save the char
+{
+	char	open;					/* SQUOTE, DQUOTE, OPAR */
+	char	close;					/* SQUOTE, DQUOTE, CPAR */
+	uint8_t	flags;					/* TKN_HAS_EXPANSION | TKN_HAS_QUOTES */
+}	t_pair_state;
+
+typedef struct s_here_state			// TODO: consider whether i want to reference or save the char
+{
+	uint64_t	delim_idx;			/* heredoc delimiter WORD in AT_TOKENS */
+	uint64_t	body_idx;			/* heredoc body WORD in AT_TOKENS */
+	uint64_t	cur_line;			/* offset of the current heredoc body line in AT_STRING */
+	uint8_t		flags;				/* DELIM_QUOTED */
+}	t_here_state;
 
 typedef struct s_lexer_state
 {
+	t_pair_state	pair;			/* for use in find_matched_pair */
 	t_slice			token;			/* tracks the position and length of the current token being built */
-	uint64_t		char_idx;
-	t_symbol_type	type;
-	uint8_t			flags;			/* LEX_HAS_EXPANSION | LEX_HAS_QUOTES | LEX_IS_BUILDING | LEX_IS_DELIMITED | LEX_NEW_INPUT */
+	uint64_t		char_idx;		/* offset into the input string */
+	t_token_type	type;
+	uint8_t			flags;			/* TKN_HAS_EXPANSION | TKN_HAS_QUOTES | LEX_IS_BUILDING | LEX_NEW_INPUT */
 }	t_lexer_state;
 
 typedef struct s_split_state
@@ -168,9 +236,9 @@ typedef void	(*t_reduce)(t_ctx *, t_parser_state *, uint64_t);
 
 typedef struct s_rule
 {
-	t_reduce		reduce;			/* pointer to the corresponding reduce function */
+	t_reduce		reduce;			/* pointer to handler function */
 	uint32_t		rhs_len;		/* number of rhs symbols in rule */
-	t_symbol_type	lhs_type;
+	t_symbol_type	lhs_type;		/* type of lhs in rule */
 }	t_rule;
 
 #endif

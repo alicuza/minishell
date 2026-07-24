@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:41:14 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/05 19:58:28 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/04 09:23:55 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ static bool	add_cwd_to_prompt(t_ctx *c)
 		size = prompt->cap;
 		init_prompt(prompt);
 		arena_strlcat(prompt, ":", 2);
-		tmp_offset = arena_alloc(prompt, size, 1);
+		tmp_offset = arena_alloc(prompt, size, 1) - 1;
 		errno = 0;
 		cwd = getcwd(prompt->buf + tmp_offset, size);
 	}
