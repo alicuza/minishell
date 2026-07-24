@@ -68,10 +68,8 @@ int	init_env(t_env *env, char **envp)
 {
 	char **tmp;
 	int i;
-	int result_code;
 
 	i = 0;
-	result_code = 0;
 	if (envp)
 		while (envp[i])
 		{
@@ -93,5 +91,5 @@ int	init_env(t_env *env, char **envp)
 			i++;
 		}
 	add_default(env);
-	return (0);
+	return (EXIT_SUCCESS);
 }
