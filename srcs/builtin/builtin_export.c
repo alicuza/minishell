@@ -62,7 +62,7 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 			i++;
 			continue ;
 		}
-		if (env_add(&c->env, tmp[0], tmp[1]))
+		if (env_update(&c->env, tmp[0], tmp[1]))
 		{
 			free(tmp);
 			return (EXIT_FAILURE);

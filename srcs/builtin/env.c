@@ -5,7 +5,8 @@ static void	print_val(void *content_void_p)
 	t_env_content *content;
 
 	content = (t_env_content *)content_void_p;
-	printf("%s=%s\n", (char *)content->key, content->val);
+	if (content->val != NULL)
+		printf("%s=%s\n", (char *)content->key, content->val);
 }
 
 int	env(t_ctx *c, t_command_ctx *command_ctx)
@@ -13,6 +14,7 @@ int	env(t_ctx *c, t_command_ctx *command_ctx)
 #ifdef DEBUG
 	fprintf(stderr, "\nExecuting env:\n");
 #endif
+
 
 	(void)command_ctx;
 	t_list *env = c->env.vals;

@@ -1,14 +1,61 @@
 #include "env.h"
 #include "minishell.h"
 
+
 static int	add_default(t_env *env)
 {
 	char *pwd;
+	char *key;
+	char *value;
 	pwd = env_get(env, PWD);
 	if (pwd == NULL)
-		return (env_add(env, ft_strdup(PWD), getcwd(NULL, 0)));
+	{
+		key = ft_strdup(PWD);
+		value = getcwd(NULL, 0);
+		if (key == NULL || value == NULL)
+		{
+			free(key);
+			free(value);
+			return (exit_mem_issue());
+		}
+		return (env_add(env, key, value));
+	}
 	free(pwd);
 	return (EXIT_SUCCESS);
+}
+
+static void	free_2d_arr(char **val)
+{
+	int i;
+
+	i = 0;
+	while (val[i] != NULL)
+	{
+		free(val[i]);
+		i++;
+	}
+	free(val);
+}
+
+static bool	is_empty(char *str)
+{
+	return (str == NULL || str[0] == '\0');
+}
+
+static bool	is_valid_name(char *name)
+{
+	if (is_empty(name))
+		return (true);
+	if (!ft_isalpha(*name) && *name != '_')
+		return (false);
+	name++;
+	while (*name != '\0')
+	{
+		if (!ft_isalnum(*name) && *name != '_')
+			return (false);
+		name++;
+	}
+	return (true);
 }
 
 /*
@@ -31,11 +78,16 @@ int	init_env(t_env *env, char **envp)
 			tmp = ft_split_key_value(envp[i], '=');
 			if (tmp == NULL)
 				return (EXIT_FAILURE);
-			result_code = env_add(env, tmp[0], tmp[1]);
-			if (result_code)
+			if (is_valid_name(tmp[0]) == false)
+			{
+				free_2d_arr(tmp);
+				i++;
+				continue ;
+			}
+			if (env_add(env, tmp[0], tmp[1]))
 			{
 				free(tmp);
-				return (result_code);
+				return (EXIT_FAILURE);
 			}
 			free(tmp);
 			i++;

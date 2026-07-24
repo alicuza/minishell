@@ -16,7 +16,7 @@ static int	cd_path(t_ctx *c, char *curpath)
 	if (result == EXIT_SUCCESS)
 	{
 		oldpwd = env_get(&c->env, PWD);
-		if (env_update(&c->env, OLDPWD, oldpwd) == EXIT_FAILURE || env_update(&c->env,
+		if (env_update_with_copy(&c->env, OLDPWD, oldpwd) == EXIT_FAILURE || env_update_with_copy(&c->env,
 				PWD, curpath) == EXIT_FAILURE)
 		{
 			result = chdir(oldpwd);

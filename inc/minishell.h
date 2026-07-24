@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/14 22:04:43 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/24 14:21:10 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ int	env_add(t_env *env, char *key, char *value);
 
 /* -------- env_update.c ---------------------------------------------------- */
 int	env_update(t_env *env, char *key, char *value);
+int	env_update_with_copy(t_env *env, char *key, char *value);
 
 /* -------- env_get.c ------------------------------------------------------- */
 char	*env_get(t_env *env, char *key);

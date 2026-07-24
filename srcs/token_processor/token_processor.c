@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/14 21:53:11 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/24 14:48:22 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	init_command(t_command_ctx *command, uint64_t argc)
 	return (EXIT_SUCCESS);
 }
 
-int	build_command(t_ctx *c, t_parser_state *parse)
+int	build_command(t_ctx *c, t_parser_state *parse) //TODO "export " will create env with empty key
 {
 	t_symbol	*sym;
 	uint64_t	arena_idx;
@@ -111,7 +111,7 @@ int	build_command(t_ctx *c, t_parser_state *parse)
 		return (EXIT_FAILURE);
 	arena_idx = 1;
 	sym = get_symbol_from_idx(stack, arena_idx);
-	while (sym && sym->type == SYM_TOKEN) // && c->arena[AT_STRING].buf + sym->offset != NULL
+	while (sym && sym->type == SYM_TOKEN) // && c->arena[AT_STRING].buf + sym->offset != NULL 
 {
 		if (command.name == NULL)
 			command.name = c->arena[AT_STRING].buf + sym->offset;
