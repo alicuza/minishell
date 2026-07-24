@@ -17,7 +17,6 @@ static bool	is_empty(char *str)
 }
 
 static bool	is_valid_name(char *name)
-// TODO add to env init
 {
 	if (is_empty(name))
 		return (true);
@@ -88,5 +87,5 @@ int	builtin_export(t_ctx *c, t_command_ctx *command_ctx)
 		return (EXIT_SUCCESS);
 	}
 	else
-		return (add_args_to_env(C, command_ctx));
+		return (add_args_to_env(c, command_ctx));
 }
