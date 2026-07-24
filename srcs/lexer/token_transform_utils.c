@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 16:51:36 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 10:30:23 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/22 09:43:06 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,17 @@ uint64_t	get_offset_from_idx(t_arena *arena, uint64_t idx)
 	return (idx * arena->stride);
 }
 
-t_symbol	*get_symbol_from_offset(t_arena *arena, uint64_t offset)
+void	*get_ptr_from_offset(t_arena *arena, uint64_t offset)
 {
-	return ((t_symbol *)(arena->buf + offset));
+	return ((arena->buf + offset));
 }
 
-t_symbol	*get_symbol_from_idx(t_arena *arena, uint64_t idx)
+void	*get_ptr_from_idx(t_arena *arena, uint64_t idx)
 {
-	return ((t_symbol *)(arena->buf + idx * arena->stride));
+	return ((arena->buf + idx * arena->stride));
 }
 
-char	*get_token_content(t_ctx *c, t_symbol *symbol)
+char	*get_token_content(t_ctx *c, t_token *token)
 {
-	return (ft_strdup(c->arena[AT_STRING].buf + symbol->offset));
+	return (ft_strdup(c->arena[AT_STRING].buf + token->offset));
 }

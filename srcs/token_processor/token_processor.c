@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/06/18 20:12:16 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/22 08:41:33 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	process_token(t_ctx *c, t_token *token)
 {
 	char	*content;
 
-	if (token->type == SYM_TOKEN)
+	if (token->type == TKN_WORD)
 	{
 		content = c->arena[AT_STRING].buf + token->offset;
 		c->return_status = map_to_command(c, content);
@@ -45,23 +45,21 @@ int	process_token(t_ctx *c, t_token *token)
 
 void	exec_stack(t_ctx *c, t_parser_state *parse)
 {
-	t_symbol	*sym;
-	t_token		t;
-	t_arena		*stack;
+	t_symbol	*symbol;
+	t_token	*token;
+	t_arena	*stack;
+	t_arena	*tokens;
 
 	stack = &c->arena[AT_STACK];
-	sym = get_symbol_from_idx(stack, parse->arena_idx);
-	while (1)
+	tokens = &c->arena[AT_TOKENS];
+	while (parse->stack_idx)
 	{
-		if (sym->type == SYM_TOKEN)
+		symbol = get_ptr_from_idx(stack, parse->stack_idx);
+		if (symbol->type == SYM_WORD)
 		{
-			t.offset = sym->offset;
-			t.type = sym->type;
-			t.flags = sym->flags;
-			process_token(c, &t);
+			token = get_ptr_from_idx(tokens, symbol->token_idx);
+			process_token(c, token);
 		}
-		if (!sym->prev_symbol)
-			break;
-		sym = get_symbol_from_idx(stack, sym->prev_symbol);
+		--parse->stack_idx;
 	}
 }

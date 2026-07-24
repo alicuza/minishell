@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/27 16:23:56 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/24 11:06:47 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,18 @@
 # define INPUT_DEFAULT 0
 # define INPUT_CONTINUATION 1
 
+/* -------- operators ------------------------------------------------------- */
+# define NL			"\n"
+# define PIPE		"|"
+# define LESS		"<"
+# define GREAT		">"
+# define DLESS		"<<"
+# define DGREAT		">>"
+# define AND_IF		"&&"
+# define OR_IF		"||"
+# define OPAR		"("
+# define CPAR		")"
+
 /* -------- sets ------------------------------------------------------------ */
 # define OPERATOR_SET "<>&|()\n"
 # define BLANK_SET " \t"
@@ -63,15 +75,25 @@
 # define SPECIAL_PARAM_SET "?"
 
 /* -------- lexer flags ----------------------------------------------------- */
-# define LEX_HAS_QUOTES			0x01
-# define LEX_HAS_EXPANSION		0x02
-# define LEX_NEEDS_INPUT		0x04
-# define LEX_IS_BUILDING		0x08
-# define LEX_IS_DELIMITED		0x10
+# define TKN_HAS_QUOTES			0x01
+# define TKN_HAS_EXPANSION		0x02
+# define LEX_IS_BUILDING		0x04
+# define LEX_AT_EOI				0x08
 
 /* -------- parser flags ---------------------------------------------------- */
 # define PARSE_DONE				0x01
-# define PARSE_HERE_PENDING		0x02
+# define PARSE_SAVE_TOKENS		0x02
+# define PARSE_HERE_PENDING		0x04
+# define PARSE_HERE_BODY		0x08
+
+/* -------- node flags ------------------------------------------------------ */
+# define FLAG_AND_IF			0x01
+# define FLAG_OR_IF				0x02
+# define FLAG_SUBSHELL			0x04
+# define REDIR_IN				0x08
+# define REDIR_OUT				0x10
+# define REDIR_HERE				0x20
+# define REDIR_APPEND			0x40
 
 # ifdef DEBUG
 /* -------- test scope flags ------------------------------------------------ */
@@ -93,25 +115,27 @@ char			*get_prompt(t_ctx *c, bool with_cwd);
 char			*get_user_input(t_ctx *c, bool is_continuation);
 
 /* -------- lookahead.c ----------------------------------------------------- */
-t_token			get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l);
+bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l);
+bool			line_is_delim(t_ctx *c, t_here_state *h);
 
-/* -------- quote_utils.c --------------------------------------------------- */
-uint64_t		try_as_quote_pair(t_ctx *c, t_lexer_state *l);
+/* -------- pair_utils.c --------------------------------------------------- */
+char			matching_close(char open);
+bool			find_matched_pair(t_ctx *c, t_lexer_state *lex);
 
 /* -------- token_transform_utils.c ----------------------------------------- */
 uint64_t		get_idx_from_offset(t_arena *arena, uint64_t offset);
 uint64_t		get_offset_from_idx(t_arena *arena, uint64_t idx);
-t_symbol		*get_symbol_from_offset(t_arena *arena, uint64_t offset);
-t_symbol		*get_symbol_from_idx(t_arena *arena, uint64_t idx);
-char			*get_token_content(t_ctx *c, t_symbol *symbol);
+void			*get_ptr_from_offset(t_arena *arena, uint64_t offset);
+void			*get_ptr_from_idx(t_arena *arena, uint64_t idx);
+char			*get_token_content(t_ctx *c, t_token *token);
 
 /* -------- lex_tokens.c ---------------------------------------------------- */
-void			start_lex_token(t_lexer_state *lex, t_symbol_type type);
-t_token			delimit_lex_token(t_ctx *, t_parser_state *, t_lexer_state *);
-uint64_t		grow_lex_token(t_lexer_state *lex);
+void			start_lex_token(t_lexer_state *lex, t_token_type type);
+void			delimit_lex_token(t_ctx *c, t_lexer_state *lex);
+uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
 
 /* -------- lex_utils.c ----------------------------------------------------- */
-uint64_t		consume_char(t_lexer_state *lex);
+uint64_t		consume_char(t_lexer_state *lex, uint64_t len);
 t_slice			save_lex_token_slice(t_lexer_state *lex);
 void			restore_lex_token_slice(t_lexer_state *lex, t_slice len);
 
