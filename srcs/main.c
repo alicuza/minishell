@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/27 22:44:07 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/22 12:40:53 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,11 @@ static t_ctx	init_ctx(char **envp)
 	t_ctx	c;
 
 	ft_memset(&c, 0, sizeof(t_ctx));
-	c.arena[AT_STRING] = arena_init(ARENA_SIZE, sizeof(char));
 	c.arena[AT_PROMPT] = arena_init(ARENA_SIZE, sizeof(char));
+	c.arena[AT_STRING] = arena_init(ARENA_SIZE, sizeof(char));
+	c.arena[AT_TOKENS] = arena_init(ARENA_SIZE, sizeof(t_token));
 	c.arena[AT_STACK] = arena_init(ARENA_SIZE, sizeof(t_symbol));
-//	c.arena[AT_CMD] = arena_init(ARENA_SIZE, sizeof(t_cmd));
+	c.arena[AT_COMMAND] = arena_init(ARENA_SIZE, sizeof(t_cmd));
 	if (init_env(&c.env, envp))
 		printf("Error init_env");
 	if (isatty(STDIN_FILENO))
@@ -35,10 +36,21 @@ static t_ctx	init_ctx(char **envp)
 int	cleanup(t_ctx	*c)
 { 
 	arena_free(&c->arena[AT_STRING]);
+	arena_free(&c->arena[AT_TOKENS]);
 	arena_free(&c->arena[AT_STACK]);
 	arena_free(&c->arena[AT_PROMPT]);
-//	arena_free(&c->arena[AT_CMD]);
+	arena_free(&c->arena[AT_COMMAND]);
 	free_env(&c->env);
+	return 0;
+}
+
+int	clear_arenas(t_ctx	*c)
+{ 
+	arena_clear(&c->arena[AT_STRING]);
+	arena_clear(&c->arena[AT_TOKENS]);
+	arena_clear(&c->arena[AT_STACK]);
+	arena_clear(&c->arena[AT_PROMPT]);
+	arena_clear(&c->arena[AT_COMMAND]);
 	return 0;
 }
 
@@ -74,8 +86,7 @@ int	main(int argc, char **argv, char **envp)
 		if (!c.no_exec)
 #endif
 			exec_stack(&c, &parse);
-		arena_reset(&c.arena[AT_STRING]);
-		arena_reset(&c.arena[AT_STACK]);
+		clear_arenas(&c);
 		free(c.read_line);
 	}
 	cleanup(&c);

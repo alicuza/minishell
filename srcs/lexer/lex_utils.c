@@ -6,15 +6,16 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:03:51 by sancuta           #+#    #+#             */
-/*   Updated: 2026/06/12 16:48:52 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/21 19:46:27 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-uint64_t	consume_char(t_lexer_state *lex)
+uint64_t	consume_char(t_lexer_state *lex, uint64_t len)
 {
-	return (++(lex->char_idx));
+	lex->char_idx += len;
+	return (lex->char_idx);
 }
 
 t_slice	save_lex_token_slice(t_lexer_state *lex)
