@@ -1,25 +1,43 @@
 . test/helpers.sh
 
-# ============================================================================
+# ------------------------------------------------------------------------------
 # Parser token tests
-# ============================================================================
+# ------------------------------------------------------------------------------
 #
 # Each test sends a line of input through the `--no_exec --scope=tokens`
 # pipeline and compares the resulting token stream against the expected block.
 #
 # Dimensions used in per-test annotations:
-#   CMD    command name form             bare | abs | rel
-#   ARGS   argument count                0 | 1 | N
-#   REDIR  redirect kind                 none | < | << | > | >>
-#   FLAGS  token flags, space separated  none | quotes | expansion | both
-#   OP     pipeline/chain operator       none | '|' | '&&' | '||'
-#   NCMD   number of commands            1 | 2 | N
 #
-# ============================================================================
+#   CMD     command name form(s)                bare | abs | rel
+#
+#   ARGC    argument count per command          0 | 1 | N
+#
+#   REDIR   kind                                in | heredoc | out | append
+#           + properties                        with_space | no_space | no_escape
+#
+#   EXPAND  type                                question | var
+#           + position                          bare | suffix | enclosed
+#
+#   QUOTES  type                                double | single | unclosed
+#           + position                          bare | prefix
+#
+#   OP      pipeline/chain operator(s)          pipe | and_if | or_if
+#
+#   OTHER   other test attributes               comment
+#
+# Within a brace, `|` separates sub-attributes of a single entity (e.g.
+# REDIR={out|no_space} means kind=out, properties=no_space).
+#
+# Commas within braces separate multiple entities of the same dimension
+# (CMD, ARGC, REDIR, OP) — e.g. CMD={bare, bare},
+# REDIR={in|with_space, out|with_space}.
+#
+# ------------------------------------------------------------------------------
 
-# ===== Command forms ========================================================
+# ----- Command forms ----------------------------------------------------------
 
-# CMD=bare  ARGS=0  REDIR=none  FLAGS=none  OP=none
+# CMD={bare}  ARGC={1}  REDIR={}  EXPAND={}  QUOTES={}  OP={}
 test_cmd_bare()
 {
 	local input expected
@@ -29,13 +47,13 @@ test_cmd_bare()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(ls)
+			SYM_TOKEN(ls)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# CMD=abs  ARGS=0  REDIR=none  FLAGS=none  OP=none
+# CMD={abs}  ARGC={1}  REDIR={}  EXPAND={}  QUOTES={}  OP={}
 test_cmd_abs()
 {
 	local input expected
@@ -45,13 +63,13 @@ test_cmd_abs()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(/bin/pwd)
+			SYM_TOKEN(/bin/pwd)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# CMD=rel  ARGS=0  REDIR=none  FLAGS=none  OP=none
+# CMD={rel}  ARGC={1}  REDIR={}  EXPAND={}  QUOTES={}  OP={}
 test_cmd_rel()
 {
 	local input expected
@@ -61,15 +79,15 @@ test_cmd_rel()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(./minishell)
+			SYM_TOKEN(./minishell)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# ===== Arguments ============================================================
+# ----- Arguments --------------------------------------------------------------
 
-# CMD=bare  ARGS=2  REDIR=none  FLAGS=none  OP=none
+# CMD={bare}  ARGC={3}  REDIR={}  EXPAND={}  QUOTES={}  OP={}
 test_args_bare()
 {
 	local input expected
@@ -79,15 +97,15 @@ test_args_bare()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN(hello)
-		SYM_TOKEN(world)
+			SYM_TOKEN(echo)
+			SYM_TOKEN(hello)
+			SYM_TOKEN(world)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# CMD=abs  ARGS=1  REDIR=none  FLAGS=none  OP=none
+# CMD={abs}  ARGC={2}  REDIR={}  EXPAND={}  QUOTES={}  OP={}
 test_args_abs()
 {
 	local input expected
@@ -97,14 +115,14 @@ test_args_abs()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(/bin/echo)
-		SYM_TOKEN(hello)
+			SYM_TOKEN(/bin/echo)
+			SYM_TOKEN(hello)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# CMD=rel  ARGS=2  REDIR=none  FLAGS=none  OP=none
+# CMD={rel}  ARGC={3}  REDIR={}  EXPAND={}  QUOTES={}  OP={}
 test_args_rel()
 {
 	local input expected
@@ -114,17 +132,17 @@ test_args_rel()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(./script.sh)
-		SYM_TOKEN(-a)
-		SYM_TOKEN(foo)
+			SYM_TOKEN(./script.sh)
+			SYM_TOKEN(-a)
+			SYM_TOKEN(foo)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# ===== Redirects ============================================================
+# ----- Redirects -------------------------------------------------------------
 
-# REDIR=<  FLAGS=none  OP=none
+# CMD={bare}  ARGC={1}  REDIR={in|with_space}  EXPAND={}  QUOTES={}  OP={}
 test_redir_input()
 {
 	local input expected
@@ -134,33 +152,37 @@ test_redir_input()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(cat)
-		SYM_OPERATOR(<)
-		SYM_TOKEN(file)
+			SYM_TOKEN(cat)
+			SYM_OPERATOR(<)
+			SYM_TOKEN(file)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# REDIR=<<  FLAGS=none  OP=none
+# CMD={bare}  ARGC={1}  REDIR={heredoc|with_space|no_escape}  EXPAND={}  QUOTES={}  OP={}
 test_redir_heredoc()
 {
 	local input expected
 	input="$(cat <<- \eof
 		cat << EOF
+			hello
+			EOF
 		eof
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(cat)
-		SYM_OPERATOR(<<)
-		SYM_TOKEN(EOF)
+			SYM_TOKEN(cat)
+			SYM_OPERATOR(<<)
+			SYM_TOKEN(EOF)
+			SYM_TOKEN(hello)
+			SYM_TOKEN(EOF)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# REDIR=>  FLAGS=none  OP=none
+# CMD={bare}  ARGC={1}  REDIR={out|with_space}  EXPAND={}  QUOTES={}  OP={}
 test_redir_output()
 {
 	local input expected
@@ -170,15 +192,15 @@ test_redir_output()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_OPERATOR(>)
-		SYM_TOKEN(file)
+			SYM_TOKEN(echo)
+			SYM_OPERATOR(>)
+			SYM_TOKEN(file)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# REDIR=>>  FLAGS=none  OP=none
+# CMD={bare}  ARGC={1}  REDIR={append|with_space}  EXPAND={}  QUOTES={}  OP={}
 test_redir_append()
 {
 	local input expected
@@ -188,15 +210,15 @@ test_redir_append()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_OPERATOR(>>)
-		SYM_TOKEN(file)
+			SYM_TOKEN(echo)
+			SYM_OPERATOR(>>)
+			SYM_TOKEN(file)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# REDIR=< then >  FLAGS=none  OP=none
+# CMD={bare}  ARGC={1}  REDIR={in|with_space, out|with_space}  EXPAND={}  QUOTES={}  OP={}
 test_redir_multiple()
 {
 	local input expected
@@ -206,17 +228,17 @@ test_redir_multiple()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(cat)
-		SYM_OPERATOR(<)
-		SYM_TOKEN(in)
-		SYM_OPERATOR(>)
-		SYM_TOKEN(out)
+			SYM_TOKEN(cat)
+			SYM_OPERATOR(<)
+			SYM_TOKEN(in)
+			SYM_OPERATOR(>)
+			SYM_TOKEN(out)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# REDIR=>  no surrounding whitespace — operator split mid-word
+# CMD={bare}  ARGC={1}  REDIR={out|no_space}  EXPAND={}  QUOTES={}  OP={}
 test_redir_adjacent()
 {
 	local input expected
@@ -226,35 +248,35 @@ test_redir_adjacent()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_OPERATOR(>)
-		SYM_TOKEN(file)
+			SYM_TOKEN(echo)
+			SYM_OPERATOR(>)
+			SYM_TOKEN(file)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# ===== Operators ============================================================
+# ----- Operators --------------------------------------------------------------
 
-# OP=|  NCMD=2
+# CMD={bare, bare}  ARGC={1, 1}  REDIR={}  EXPAND={}  QUOTES={}  OP={pipe}
 test_op_pipe()
 {
 	local input expected
 	input="$(cat <<- \eof
-		cmd1 | cmd2
+		ls | wc
 		eof
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(cmd1)
-		SYM_OPERATOR(|)
-		SYM_TOKEN(cmd2)
+			SYM_TOKEN(ls)
+			SYM_OPERATOR(|)
+			SYM_TOKEN(wc)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# OP=&&  NCMD=2
+# CMD={bare, bare}  ARGC={2, 2}  REDIR={}  EXPAND={}  QUOTES={}  OP={and_if}
 test_op_and()
 {
 	local input expected
@@ -264,17 +286,17 @@ test_op_and()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN(a)
-		SYM_OPERATOR(&&)
-		SYM_TOKEN(echo)
-		SYM_TOKEN(b)
+			SYM_TOKEN(echo)
+			SYM_TOKEN(a)
+			SYM_OPERATOR(&&)
+			SYM_TOKEN(echo)
+			SYM_TOKEN(b)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# OP=||  NCMD=2
+# CMD={bare, bare}  ARGC={2, 2}  REDIR={}  EXPAND={}  QUOTES={}  OP={or_if}
 test_op_or()
 {
 	local input expected
@@ -284,75 +306,78 @@ test_op_or()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN(a)
-		SYM_OPERATOR(||)
-		SYM_TOKEN(echo)
-		SYM_TOKEN(b)
+			SYM_TOKEN(echo)
+			SYM_TOKEN(a)
+			SYM_OPERATOR(||)
+			SYM_TOKEN(echo)
+			SYM_TOKEN(b)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# OP=|  NCMD=3   chained pipes
+# CMD={bare, bare, bare}  ARGC={1, 1, 1}  REDIR={}  EXPAND={}  QUOTES={}  OP={pipe}
 test_op_pipe_chain()
 {
 	local input expected
 	input="$(cat <<- \eof
-		a | b | c
+		ls | wc | cat
 		eof
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(a)
-		SYM_OPERATOR(|)
-		SYM_TOKEN(b)
-		SYM_OPERATOR(|)
-		SYM_TOKEN(c)
+			SYM_TOKEN(ls)
+			SYM_OPERATOR(|)
+			SYM_TOKEN(wc)
+			SYM_OPERATOR(|)
+			SYM_TOKEN(cat)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# OP=| then &&  NCMD=3   mixed operators
+# CMD={bare, bare, bare}  ARGC={1, 1, 1}  REDIR={}  EXPAND={}  QUOTES={}  OP={pipe, and_if}
 test_op_mixed()
 {
 	local input expected
 	input="$(cat <<- \eof
-		a | b && c
+		ls | wc && env
 		eof
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(a)
-		SYM_OPERATOR(|)
-		SYM_TOKEN(b)
-		SYM_OPERATOR(&&)
-		SYM_TOKEN(c)
+			SYM_TOKEN(ls)
+			SYM_OPERATOR(|)
+			SYM_TOKEN(wc)
+			SYM_OPERATOR(&&)
+			SYM_TOKEN(env)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# ===== Whitespace ===========================================================
+# ----- Whitespace -------------------------------------------------------------
 
-# separator=TAB  (BLANK_SET includes \t but never exercised)
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={}  QUOTES={}  OP={}
 test_whitespace_tab()
 {
 	local input expected
-	input=$'echo\thello'
+	input="$(cat <<- \eof
+		echo	hello
+		eof
+	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN(hello)
+			SYM_TOKEN(echo)
+			SYM_TOKEN(hello)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# ===== Flags ================================================================
+# ----- Flags ------------------------------------------------------------------
 
-# FLAGS=quotes  (double-quoted word)
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={}  QUOTES={double|bare}  OP={}
 test_flag_quotes()
 {
 	local input expected
@@ -362,14 +387,14 @@ test_flag_quotes()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN("hello") LEX_HAS_QUOTES
+			SYM_TOKEN(echo)
+			SYM_TOKEN("hello") LEX_HAS_QUOTES
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# FLAGS=expansion  ($HOME expansion)
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={bare}  QUOTES={}  OP={}
 test_flag_expansion()
 {
 	local input expected
@@ -379,15 +404,14 @@ test_flag_expansion()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN($HOME) LEX_HAS_EXPANSION
+			SYM_TOKEN(echo)
+			SYM_TOKEN($HOME) LEX_HAS_EXPANSION
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# FLAGS=both  (quoted expansion — only LEX_HAS_QUOTES set currently; inner $ is
-#              consumed raw by the quote-pair loop, not the expansion rule)
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={enclosed}  QUOTES={double|bare}  OP={}
 test_flag_both()
 {
 	local input expected
@@ -397,14 +421,14 @@ test_flag_both()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN("$HOME") LEX_HAS_QUOTES LEX_HAS_EXPANSION
+			SYM_TOKEN(echo)
+			SYM_TOKEN("$HOME") LEX_HAS_QUOTES LEX_HAS_EXPANSION
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# FLAGS=quotes  (empty quoted string)
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={}  QUOTES={double|bare}  OP={}
 test_flag_empty_quotes()
 {
 	local input expected
@@ -414,14 +438,14 @@ test_flag_empty_quotes()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN("") LEX_HAS_QUOTES
+			SYM_TOKEN(echo)
+			SYM_TOKEN("") LEX_HAS_QUOTES
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# FLAGS=expansion  ($? special parameter)
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={question|bare}  QUOTES={}  OP={}
 test_flag_special_param()
 {
 	local input expected
@@ -431,15 +455,14 @@ test_flag_special_param()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN($?) LEX_HAS_EXPANSION
+			SYM_TOKEN(echo)
+			SYM_TOKEN($?) LEX_HAS_EXPANSION
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# FLAGS=quotes  (quoted-token concat: "foo"bar — one token; quotes produce no
-#                word split, LEX_HAS_QUOTES marks the whole combined token)
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={}  QUOTES={double|prefix}  OP={}
 test_flag_quote_concat()
 {
 	local input expected
@@ -449,30 +472,31 @@ test_flag_quote_concat()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN("foo"bar) LEX_HAS_QUOTES
+			SYM_TOKEN(echo)
+			SYM_TOKEN("foo"bar) LEX_HAS_QUOTES
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# FLAGS=expansion  ($VAR mid-word, no split)
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={suffix}  QUOTES={}  OP={}
 test_flag_mid_word_expansion()
 {
 	local input expected
 	input="$(cat <<- \eof
-		echo$HOME
+		echo love$HOME
 		eof
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo$HOME) LEX_HAS_EXPANSION
+			SYM_TOKEN(echo)
+			SYM_TOKEN(love$HOME) LEX_HAS_EXPANSION
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# FLAGS=quotes  (single-quoted word — same code path as double quotes)
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={}  QUOTES={single|bare}  OP={}
 test_flag_single_quotes()
 {
 	local input expected
@@ -482,16 +506,17 @@ test_flag_single_quotes()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN('hello') LEX_HAS_QUOTES
+			SYM_TOKEN(echo)
+			SYM_TOKEN('hello') LEX_HAS_QUOTES
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-# ===== Edge cases ===========================================================
+# ----- Miscellaneous cases ----------------------------------------------------
 
-test_edge_empty_input()
+# CMD={}  ARGC={0}  REDIR={}  EXPAND={}  QUOTES={}  OP={}
+test_empty_input()
 {
 	local input expected
 	input="$(cat <<- \eof
@@ -505,11 +530,12 @@ test_edge_empty_input()
 	assert_shell "$input" "$expected"
 }
 
-test_edge_only_spaces()
+# CMD={}  ARGC={0}  REDIR={}  EXPAND={}  QUOTES={}  OP={}
+test_only_spaces()
 {
 	local input expected
 	input="$(cat <<- \eof
-		   
+		  	 	
 		eof
 	)"
 	expected="$(cat <<- \eof
@@ -519,7 +545,8 @@ test_edge_only_spaces()
 	assert_shell "$input" "$expected"
 }
 
-test_edge_unclosed_dquote()
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={}  QUOTES={double|unclosed}  OP={}
+test_unclosed_double_quote()
 {
 	local input expected
 	input="$(cat <<- \eof
@@ -528,14 +555,15 @@ test_edge_unclosed_dquote()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN("foo)
+			SYM_TOKEN(echo)
+			SYM_TOKEN("foo)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-test_edge_unclosed_squote()
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={}  QUOTES={single|unclosed}  OP={}
+test_unclosed_single_quote()
 {
 	local input expected
 	input="$(cat <<- \eof
@@ -544,14 +572,15 @@ test_edge_unclosed_squote()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN('foo)
+			SYM_TOKEN(echo)
+			SYM_TOKEN('foo)
 		eof
 	)"
 	assert_shell "$input" "$expected"
 }
 
-test_edge_comment_only()
+# CMD={}  ARGC={}  REDIR={}  EXPAND={}  QUOTES={}  OP={}  OTHER={comment|bare}
+test_comment_only()
 {
 	local input expected
 	input="$(cat <<- \eof
@@ -565,7 +594,8 @@ test_edge_comment_only()
 	assert_shell "$input" "$expected"
 }
 
-test_edge_comment_after_cmd()
+# CMD={bare}  ARGC={2}  REDIR={}  EXPAND={}  QUOTES={}  OP={}  OTHER={comment|suffix}
+test_comment_after_cmd()
 {
 	local input expected
 	input="$(cat <<- \eof
@@ -574,8 +604,8 @@ test_edge_comment_after_cmd()
 	)"
 	expected="$(cat <<- \eof
 		TOKENS
-		SYM_TOKEN(echo)
-		SYM_TOKEN(hi)
+			SYM_TOKEN(echo)
+			SYM_TOKEN(hi)
 		eof
 	)"
 	assert_shell "$input" "$expected"
