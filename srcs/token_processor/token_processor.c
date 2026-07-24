@@ -6,11 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2026/07/24 14:48:22 by nribakov         ###   ########.fr       */
-=======
-/*   Updated: 2026/07/22 08:41:33 by sancuta          ###   ########.fr       */
->>>>>>> main
+/*   Updated: 2026/07/24 17:58:08 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,22 +102,23 @@ int	init_command(t_command_ctx *command, uint64_t argc)
 int	build_command(t_ctx *c, t_parser_state *parse) //TODO "export " will create env with empty key
 {
 	t_symbol	*sym;
-	uint64_t	arena_idx;
+	uint64_t	stack_idx;
 	t_arena		*stack;
 	t_command_ctx	command;
 
 	stack = &c->arena[AT_STACK];
-	if (init_command(&command, parse->arena_idx))
+	if (init_command(&command, parse->stack_idx - 1)) //TODO we have SYM_NEWLINE as last one, -1 to not cout it into argc
 		return (EXIT_FAILURE);
-	arena_idx = 1;
-	sym = get_symbol_from_idx(stack, arena_idx);
-	while (sym && sym->type == SYM_TOKEN) // && c->arena[AT_STRING].buf + sym->offset != NULL 
-{
+	stack_idx = 1;
+	sym = get_ptr_from_idx(stack, stack_idx);
+	while (sym && sym->type == SYM_WORD) // && c->arena[AT_STRING].buf + token->offset != NULL 
+	{
+		t_token *token = get_ptr_from_idx(&c->arena[AT_TOKENS], sym->token_idx);
 		if (command.name == NULL)
-			command.name = c->arena[AT_STRING].buf + sym->offset;
-		command.argv[arena_idx - 1] = c->arena[AT_STRING].buf + sym->offset;
-		arena_idx++;
-		sym = get_symbol_from_idx(stack, arena_idx);
+			command.name = c->arena[AT_STRING].buf + token->offset;
+		command.argv[stack_idx - 1] = c->arena[AT_STRING].buf + token->offset;
+		stack_idx++;
+		sym = get_ptr_from_idx(stack, stack_idx);
 	}
 	c->return_status = command_search_and_execution(c, &command);
 	free(command.argv);
@@ -135,7 +132,7 @@ void	exec_stack(t_ctx *c, t_parser_state *parse)
 	// t_token		t;
 	// t_arena		*stack;
 	// stack = &c->arena[AT_STACK];
-	// sym = get_symbol_from_idx(stack, parse->arena_idx);
+	// sym = get_ptr_from_idx(stack, parse->stack_idx);
 	// while (1)
 	// {
 	// 	if (sym->type == SYM_TOKEN)
@@ -147,6 +144,6 @@ void	exec_stack(t_ctx *c, t_parser_state *parse)
 	// 	}
 	// 	if (!sym->prev_symbol)
 	// 		break ;
-	// 	sym = get_symbol_from_idx(stack, sym->prev_symbol);
+	// 	sym = get_ptr_from_idx(stack, sym->prev_symbol);
 	// }
 }
