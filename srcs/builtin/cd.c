@@ -43,7 +43,7 @@ static int	cd_home(t_ctx *c)
 	home = env_get(&c->env, HOME);
 	if (is_empty(home))
 	{
-		perror("cd: HOME not set\n"); //TODO do i need to set errno
+		perror("cd: HOME not set\n");
 		result = EXIT_FAILURE;
 	}
 	else
@@ -62,7 +62,7 @@ int	cd_oldpwd(t_ctx *c)
 	old_path = env_get(&c->env, OLDPWD);
 	if (is_empty(old_path))
 	{
-		perror("cd: OLDPWD not set\n"); //TODO do i need to set errno
+		perror("cd: OLDPWD not set\n");
 		return (EXIT_FAILURE);
 	}
 	else
@@ -108,7 +108,7 @@ static int	cd_dir(t_ctx *c, const char *dir)
 		{
 			ft_putstr_fd("cd: ", STDERR_FILENO);
 			ft_putstr_fd((char *) dir, STDERR_FILENO);
-			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO); //TODO do i need to set errno
+			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 			result = EXIT_FAILURE;
 		}
 		else
@@ -125,7 +125,7 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 
 	if (command_ctx->argc > 2)
 	{
-		perror("cd: too many arguments\n"); //TODO do i need to set errno
+		perror("cd: too many arguments\n");
 		return (EXIT_FAILURE);
 	}
 	dir = command_ctx->argv[1];

@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/07/14 22:04:39 by nribakov         ###   ########.fr        #
+#    Updated: 2026/07/17 14:06:08 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME       = minishell
 
 # ---- compiler / linker --------------------------------------------------- #
 CC         = cc
-CFLAGS     = -g -Wall -Wextra -Werror -MMD -MP
+CFLAGS     = -Wall -Wextra -Werror -MMD -MP
 ARENA_SIZE ?= 64
 CPPFLAGS   = -I inc -I $(LIBFT_DIR) -I $(LIBFT_DIR)/arena -D ARENA_SIZE=$(ARENA_SIZE)
 LDFLAGS    =
