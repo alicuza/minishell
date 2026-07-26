@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/07/22 09:41:40 by sancuta          ###   ########.fr        #
+#    Updated: 2026/07/26 13:04:37 by sancuta          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,6 +40,7 @@ SRCS        = \
 			parser/parser_utils.c \
 			lexer/lookahead.c \
 			lexer/lex_tokens.c \
+			lexer/lex_heredoc.c \
 			lexer/lex_utils.c \
 			lexer/pair_utils.c \
 			lexer/token_transform_utils.c \

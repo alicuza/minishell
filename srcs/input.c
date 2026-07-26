@@ -6,11 +6,14 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:45:50 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/24 17:57:34 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/26 18:55:40 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+#define GREEN "\001\033[38;5;40m\002"
+#define RESET "\001\033[0m\002"
 
 char	*get_user_input(t_ctx *c, bool is_continuation)
 {
@@ -26,7 +29,7 @@ char	*get_user_input(t_ctx *c, bool is_continuation)
 		rl_outstream = stderr;			// redirects the readline output to stderr - so it doesn't mirror the input.
 	}
 	else if (is_continuation)
-		prompt = "> ";
+		prompt = GREEN"> "RESET;
 	else
 		prompt = get_prompt(c, true);
 	read_line = readline(prompt);

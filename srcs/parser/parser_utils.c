@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 11:08:25 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/22 09:25:58 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/26 18:48:32 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,6 @@ t_symbol_type	classify_token(t_ctx *c, t_token *token)
 	token_body = get_ptr_from_offset(&c->arena[AT_STRING], token->offset);
 	if (!ft_strncmp(token_body, NL, ft_strlen(NL)))
 		return (SYM_NEWLINE);
-	else if (!ft_strncmp(token_body, PIPE, ft_strlen(PIPE)))
-		return (SYM_PIPE);
-	else if (!ft_strncmp(token_body, LESS, ft_strlen(LESS)))
-		return (SYM_LESS);
-	else if (!ft_strncmp(token_body, GREAT, ft_strlen(GREAT)))
-		return (SYM_GREAT);
 	else if (!ft_strncmp(token_body, DLESS, ft_strlen(DLESS)))
 		return (SYM_DLESS);
 	else if (!ft_strncmp(token_body, DGREAT, ft_strlen(DGREAT)))
@@ -33,6 +27,12 @@ t_symbol_type	classify_token(t_ctx *c, t_token *token)
 		return (SYM_AND_IF);
 	else if (!ft_strncmp(token_body, OR_IF, ft_strlen(OR_IF)))
 		return (SYM_OR_IF);
+	else if (!ft_strncmp(token_body, PIPE, ft_strlen(PIPE)))
+		return (SYM_PIPE);
+	else if (!ft_strncmp(token_body, LESS, ft_strlen(LESS)))
+		return (SYM_LESS);
+	else if (!ft_strncmp(token_body, GREAT, ft_strlen(GREAT)))
+		return (SYM_GREAT);
 	else if (!ft_strncmp(token_body, OPAR, ft_strlen(OPAR)))
 		return (SYM_OPAR);
 	else if (!ft_strncmp(token_body, CPAR, ft_strlen(CPAR)))

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/24 11:06:47 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/26 19:35:57 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,14 +77,16 @@
 /* -------- lexer flags ----------------------------------------------------- */
 # define TKN_HAS_QUOTES			0x01
 # define TKN_HAS_EXPANSION		0x02
-# define LEX_IS_BUILDING		0x04
-# define LEX_AT_EOI				0x08
+# define TKN_IS_HERE_BODY		0x04
+# define LEX_IS_BUILDING		0x08
+# define LEX_AT_EOI				0x10
 
 /* -------- parser flags ---------------------------------------------------- */
 # define PARSE_DONE				0x01
 # define PARSE_SAVE_TOKENS		0x02
-# define PARSE_HERE_PENDING		0x04
-# define PARSE_HERE_BODY		0x08
+# define PARSE_HAS_SAVED_TOKENS	0x04
+# define PARSE_HERE_PENDING		0x08
+# define PARSE_HERE_BODY		0x10
 
 /* -------- node flags ------------------------------------------------------ */
 # define FLAG_AND_IF			0x01
@@ -108,17 +110,17 @@
 # define MAX_RHS_LEN 4
 # define RULE_COUNT 48
 
-/* -------- prompt.c --------------------------------------------------------- */
+/* -------- prompt.c -------------------------------------------------------- */
 char			*get_prompt(t_ctx *c, bool with_cwd);
 
 /* -------- input.c --------------------------------------------------------- */
 char			*get_user_input(t_ctx *c, bool is_continuation);
 
 /* -------- lookahead.c ----------------------------------------------------- */
-bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l);
-bool			line_is_delim(t_ctx *c, t_here_state *h);
+bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l, t_here_state *h);
+bool			lex_token(t_ctx *c, t_lexer_state *lex);
 
-/* -------- pair_utils.c --------------------------------------------------- */
+/* -------- pair_utils.c ---------------------------------------------------- */
 char			matching_close(char open);
 bool			find_matched_pair(t_ctx *c, t_lexer_state *lex);
 
@@ -133,6 +135,13 @@ char			*get_token_content(t_ctx *c, t_token *token);
 void			start_lex_token(t_lexer_state *lex, t_token_type type);
 void			delimit_lex_token(t_ctx *c, t_lexer_state *lex);
 uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
+
+/* -------- lex_heredoc.c --------------------------------------------------- */
+bool			get_here_doc(t_ctx *c, t_lexer_state *l, t_here_state *h);
+bool			is_delim_line(t_ctx *c, t_lexer_state *l, t_here_state *);
+void			delimit_lex_here(t_ctx *c, t_here_state *h);
+bool			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l, t_here_state *h);
+bool			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
 
 /* -------- lex_utils.c ----------------------------------------------------- */
 uint64_t		consume_char(t_lexer_state *lex, uint64_t len);
@@ -150,26 +159,26 @@ bool			is_name_body(char c);
 bool			is_expansion_start(char *buffer, uint64_t idx);
 uint64_t		get_expansion_len(char *expansion);
 
-/* -------- env_utils.c ---------------------------------------------------- */
+/* -------- env_utils.c ----------------------------------------------------- */
 int				init_env(t_env *env, char **envp);
 int				free_env(t_env *env);
 char			*search(t_env *env, char *key);
 
-/* -------- ft_split_key_value.c ---------------------------------------------------- */
+/* -------- ft_split_key_value.c -------------------------------------------- */
 char			**ft_split_key_value(const char *s, char c);
 
 /* -------- token_processor.c ----------------------------------------------- */
 int				process_token(t_ctx *c, t_token *token);
 void			exec_stack(t_ctx *c, t_parser_state *parse);
 
-/* -------- env.c ---------------------------------------------------- */
+/* -------- env.c ----------------------------------------------------------- */
 int				env(t_ctx *c);
 
-/* -------- pwd.c ---------------------------------------------------- */
+/* -------- pwd.c ----------------------------------------------------------- */
 int				pwd(t_ctx *c);
 char			*get_cwd_safely();
 
-/* -------- builtin_exit.c ---------------------------------------------------- */
+/* -------- builtin_exit.c -------------------------------------------------- */
 int				builtin_exit(t_ctx *c);
 
 /* -------- parse_input.c --------------------------------------------------- */
