@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/24 17:58:08 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/27 16:52:10 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,6 @@ void	*search_in_path(char *cmd_ctx)
 	return (NULL);
 }
 
-int	execute_non_builtin(t_ctx *c, char *cmd_ctx)
-{
-	// TODO see 2.9.1.6 Non-built-in Utility Execution https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_09_01_06
-	(void)c;
-	(void)cmd_ctx;
-	return (0);
-}
-
 /*
 	Directly follows 2.9.1.4 Command Search and Execution
 	TODO nik: maybe remember its location and need not search for the utility again unless the PATH variable has been the subject of an assignment. If the remembered location fails for a subsequent invocation,
@@ -70,7 +62,7 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 		{
 			command = search_in_path(cmd_ctx->name);
 			if (command != NULL)
-				return (execute_non_builtin(c, cmd_ctx->name));
+				return (execute_non_builtin(c, cmd_ctx));
 			else
 			{
 				return (127);
@@ -78,7 +70,7 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 		}
 	}
 	else
-		return (execute_non_builtin(c, cmd_ctx->name));
+		return (execute_non_builtin(c, cmd_ctx));
 }
 
 /*

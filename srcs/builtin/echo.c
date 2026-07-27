@@ -14,6 +14,7 @@ static void	print_val(char *str)
 		printf("%s\n", str);
 }
 
+//TODO add proper arg processing with white space and -n flag
 int	echo(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char *str;
