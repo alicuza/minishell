@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-
 static bool	is_empty(char *str)
 {
 	return (str == NULL || str[0] == '\0');

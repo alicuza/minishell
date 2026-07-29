@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/07/24 14:53:53 by nribakov         ###   ########.fr        #
+#    Updated: 2026/07/27 16:52:43 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ SRCS        = \
 			prompt.c \
 			input.c \
 			token_processor/token_processor.c \
+			token_processor/execute_non_builtin.c \
 			parser/parse_input.c \
 			parser/parser_utils.c \
 			lexer/lookahead.c \
@@ -51,6 +52,7 @@ SRCS        = \
 			environment/env_delete.c \
 			environment/free_env.c \
 			environment/init_env.c \
+			environment/env_to_envp.c \
 			builtin/env.c \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \
