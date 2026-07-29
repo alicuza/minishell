@@ -6,11 +6,12 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/27 16:52:10 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/29 21:08:15 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
+#include "env.h"
 #include "minishell.h"
 
 #define EQUAL 0
@@ -35,13 +36,6 @@ t_command_function	match_builtin(char *cmd_ctx)
 		return (NULL);
 }
 
-void	*search_in_path(char *cmd_ctx)
-// should be actually a custom type with name params ev
-{
-	(void)cmd_ctx;
-	return (NULL);
-}
-
 /*
 	Directly follows 2.9.1.4 Command Search and Execution
 	TODO nik: maybe remember its location and need not search for the utility again unless the PATH variable has been the subject of an assignment. If the remembered location fails for a subsequent invocation,
@@ -51,27 +45,29 @@ void	*search_in_path(char *cmd_ctx)
 int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 {
 	t_command_function	command;
+	int status;
 
 	command = NULL;
-	if (ft_strchr(cmd_ctx->name, '/') == NULL)
+	if (ft_strchr(cmd_ctx->pathname, '/') == NULL)
 	{
-		command = match_builtin(cmd_ctx->name);
+		command = match_builtin(cmd_ctx->pathname);
 		if (command != NULL)
 			return (command(c, cmd_ctx));
 		else
 		{
-			command = search_in_path(cmd_ctx->name);
-			if (command != NULL)
+			status = search_in_path(c, cmd_ctx);
+			if (status == EXIT_SUCCESS)
 				return (execute_non_builtin(c, cmd_ctx));
 			else
-			{
 				return (127);
-			}
 		}
 	}
 	else
 		return (execute_non_builtin(c, cmd_ctx));
 }
+
+execve(path, array of args)
+
 
 /*
 The shell parses the input into simple commands (see 2.9.1 Simple Commands) and compound commands (see 2.9.4 Compound Commands).
@@ -82,7 +78,7 @@ TODO: When Bash invokes an external command,
 
 int	init_command(t_command_ctx *command, uint64_t argc)
 {
-	command->name = NULL;
+	command->pathname = NULL;
 	command->argc = argc;
 	command->argv = malloc(sizeof(char *) * (argc + 1));
 	if (command->argv == NULL)
@@ -91,19 +87,22 @@ int	init_command(t_command_ctx *command, uint64_t argc)
 	return (EXIT_SUCCESS);
 }
 
-int	build_command(t_ctx *c, t_parser_state *parse) //TODO "export " will create env with empty key
+int	build_command(t_ctx *c, t_parser_state *parse)
+		// TODO "export " will create env with empty key
 {
-	t_symbol	*sym;
-	uint64_t	stack_idx;
-	t_arena		*stack;
-	t_command_ctx	command;
+	t_symbol *sym;
+	uint64_t stack_idx;
+	t_arena *stack;
+	t_command_ctx command;
 
 	stack = &c->arena[AT_STACK];
-	if (init_command(&command, parse->stack_idx - 1)) //TODO we have SYM_NEWLINE as last one, -1 to not cout it into argc
+	if (init_command(&command, parse->stack_idx - 1))
+		// TODO we have SYM_NEWLINE as last one, -1 to not cout it into argc
 		return (EXIT_FAILURE);
 	stack_idx = 1;
 	sym = get_ptr_from_idx(stack, stack_idx);
-	while (sym && sym->type == SYM_WORD) // && c->arena[AT_STRING].buf + token->offset != NULL 
+	while (sym && sym->type == SYM_WORD) // && c->arena[AT_STRING].buf
+		+ token->offset != NULL
 	{
 		t_token *token = get_ptr_from_idx(&c->arena[AT_TOKENS], sym->token_idx);
 		if (command.name == NULL)

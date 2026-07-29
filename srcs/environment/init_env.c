@@ -2,7 +2,7 @@
 #include "minishell.h"
 
 
-static int	add_default(t_env *env)
+static int	add_default(t_env *env) // TODO use when PATH null or unset"/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
 {
 	char *pwd;
 	char *key;

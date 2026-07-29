@@ -5,7 +5,11 @@
 test_basename=$(basename "$0")
 test_basename="${test_basename%.sh}"
 
-compare_bash_shni $test_basename  "cd \n pwd"
+compare_bash_shni $test_basename  "$(cat <<- \eof
+		cd
+		pwd
+		eof
+	)"
 compare_bash_shni $test_basename  "cd ."
 compare_bash_shni $test_basename  "cd .."
 compare_bash_shni $test_basename  "cd /"

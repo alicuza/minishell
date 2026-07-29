@@ -10,9 +10,9 @@ static int exit_on_issue(char *error_prefix)
 static int execute_in_child(t_command_ctx *cmd_ctx, char **envp)
 {
 #ifdef DEBUG
-	fprintf(stderr, "\nexecuting in child: %s\n", cmd_ctx->name);
+	fprintf(stderr, "\nexecuting in child: %s\n", cmd_ctx->pathname);
 #endif
-		execve(cmd_ctx->name, cmd_ctx->argv, envp);
+		execve(cmd_ctx->pathname, cmd_ctx->argv, envp);
 		return(exit_on_issue("execve"));
 }
 
@@ -50,7 +50,7 @@ int	execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx)
 	if(envp == NULL)
 		return (exit_mem_issue());
 #ifdef DEBUG
-	fprintf(stderr, "\nexecute_non_builtin: %s\n", cmd_ctx->name);
+	fprintf(stderr, "\nexecute_non_builtin: %s\n", cmd_ctx->pathname);
 #endif
 	pid = fork();
 	if(pid == -1)

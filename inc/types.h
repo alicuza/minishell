@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/24 14:59:23 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/29 21:08:29 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ typedef struct s_cmd	// stub
 
 typedef struct s_command_ctx
 {
-	char *name;
+	char *pathname;
 	uint64_t argc;
 	char	**argv;
 }	t_command_ctx;
