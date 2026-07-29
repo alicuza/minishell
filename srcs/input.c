@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:45:50 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/24 11:38:52 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/07/24 17:57:34 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ char	*get_user_input(t_ctx *c, bool is_continuation)
 		prompt = get_prompt(c, true);
 	read_line = readline(prompt);
 	if (read_line && *read_line && c->is_interactive)
-		add_history(c->read_line);
+		add_history(read_line);
 	if (!read_line)
 		c->read_line = "";
 	c->read_line = ft_strjoin(read_line, "\n");	// TODO: put into an arena?
