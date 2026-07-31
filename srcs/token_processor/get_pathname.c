@@ -19,6 +19,22 @@ static bool	is_empty(char *str)
 	return (str == NULL || str[0] == '\0');
 }
 
+char	*add_prefix(char *path, const char *pathname) //TODO add only if missing
+{
+	char	*tmp;
+	char	*tmp1;
+
+	tmp = NULL;
+	tmp1 = NULL;
+	tmp = ft_strjoin(path, "/");
+	if(tmp != NULL)
+	{
+		tmp1 = ft_strjoin(tmp, pathname);
+		free(tmp);
+	}
+	return (tmp1);
+}
+
 static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 {
 	char	*tmp;
@@ -32,7 +48,7 @@ static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 		if (paths[i][0] == '\0')
 			tmp = ft_strjoin("./", cmd_ctx->pathname);
 		else
-			tmp = ft_strjoin(paths[i], cmd_ctx->pathname);
+			tmp = add_prefix(paths[i], cmd_ctx->pathname);
 		if (!tmp)
 			return (EXIT_FAILURE);
 		if (access(tmp, X_OK) == 0)

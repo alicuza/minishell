@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/31 14:40:13 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/31 17:30:33 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ t_command_function	match_builtin(char *name)
 int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 {
 	t_command_function	command;
-	int status;
+	int					status;
 
 	command = NULL;
 	if (ft_strchr(cmd_ctx->pathname, '/') == NULL)
@@ -55,7 +55,7 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 		else
 		{
 			status = get_pathname(c, cmd_ctx);
-			if(status == EXIT_FAILURE)
+			if (status == EXIT_FAILURE)
 				return (exit_mem_issue());
 			else if (status == EXIT_SUCCESS && cmd_ctx->pathname != NULL)
 				return (execute_non_builtin(c, cmd_ctx));
@@ -82,10 +82,11 @@ int	init_command(t_command_ctx *command, uint64_t argc)
 // TODO we have SYM_NEWLINE as last one, -1 to not cout it into argc
 int	build_command(t_ctx *c, t_parser_state *parse)
 {
-	t_symbol *sym;
-	uint64_t stack_idx;
-	t_arena *stack;
-	t_command_ctx command;
+	t_symbol		*sym;
+	uint64_t		stack_idx;
+	t_arena			*stack;
+	t_command_ctx	command;
+	t_token			*token;
 
 	stack = &c->arena[AT_STACK];
 	if (init_command(&command, parse->stack_idx - 1))
@@ -94,14 +95,20 @@ int	build_command(t_ctx *c, t_parser_state *parse)
 	sym = get_ptr_from_idx(stack, stack_idx);
 	while (sym && sym->type == SYM_WORD)
 	{
-		t_token *token = get_ptr_from_idx(&c->arena[AT_TOKENS], sym->token_idx);
+		token = get_ptr_from_idx(&c->arena[AT_TOKENS], sym->token_idx);
 		if (command.pathname == NULL)
-			command.pathname = c->arena[AT_STRING].buf + token->offset;
+		{
+			command.pathname = ft_strdup(c->arena[AT_STRING].buf
+					+ token->offset);
+			if (command.pathname == NULL)
+				return (EXIT_FAILURE);
+		}
 		command.argv[stack_idx - 1] = c->arena[AT_STRING].buf + token->offset;
 		stack_idx++;
 		sym = get_ptr_from_idx(stack, stack_idx);
 	}
 	c->return_status = command_search_and_execution(c, &command);
+	free(command.pathname);
 	free(command.argv);
 	return (EXIT_SUCCESS);
 }
