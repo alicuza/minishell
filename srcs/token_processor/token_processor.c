@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/29 21:08:15 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/31 12:20:48 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,21 @@
 
 #define EQUAL 0
 
-t_command_function	match_builtin(char *cmd_ctx)
+t_command_function	match_builtin(char *name)
 {
-	if (ft_strncmp(cmd_ctx, ENV, 4) == EQUAL)
+	if (ft_strncmp(name, ENV, 4) == EQUAL)
 		return (&env);
-	else if (ft_strncmp(cmd_ctx, PWD, 4) == EQUAL)
+	else if (ft_strncmp(name, PWD, 4) == EQUAL)
 		return (&pwd);
-	else if (ft_strncmp(cmd_ctx, EXIT, 5) == EQUAL)
+	else if (ft_strncmp(name, EXIT, 5) == EQUAL)
 		return (&builtin_exit);
-	else if (ft_strncmp(cmd_ctx, CD, 3) == EQUAL)
+	else if (ft_strncmp(name, CD, 3) == EQUAL)
 		return (&cd);
-	else if (ft_strncmp(cmd_ctx, EXPORT, 7) == EQUAL)
+	else if (ft_strncmp(name, EXPORT, 7) == EQUAL)
 		return (&builtin_export);
-	else if (ft_strncmp(cmd_ctx, UNSET, 6) == EQUAL)
+	else if (ft_strncmp(name, UNSET, 6) == EQUAL)
 		return (&unset);
-	else if (ft_strncmp(cmd_ctx, B_ECHO, 7) == EQUAL)
+	else if (ft_strncmp(name, B_ECHO, 7) == EQUAL)
 		return (&echo);
 	else
 		return (NULL);
