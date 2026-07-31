@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/31 12:20:48 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/31 12:22:03 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,9 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 		else
 		{
 			status = search_in_path(c, cmd_ctx);
-			if (status == EXIT_SUCCESS)
+			if(status == EXIT_FAILURE)
+				return (exit_mem_issue());
+			else if (status == EXIT_SUCCESS && cmd_ctx->pathname != NULL)
 				return (execute_non_builtin(c, cmd_ctx));
 			else
 				return (127);

@@ -41,18 +41,19 @@ int get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 	char	*path;
 	char	**paths;
 	char	*tmp;
+	int status;
 
 	path = env_get(&c->env, PATH);
 	if(is_empty(path))
 	{
 		tmp = ft_strjoin("./", cmd_ctx->pathname);
 		if(!tmp)
-			return (free(path), EXIT_FAILURE); //TODO cleanup and exit
+			return (free(path), EXIT_FAILURE);
 		if(access(tmp, X_OK) == 0)
 		{
 			free(cmd_ctx->pathname);
 			cmd_ctx->pathname = tmp;
-			return (free(path), EXIT_SUCCESS);
+			return (free(path), EXIT_SUCCESS); //TODO do we need to return somthing else if access is not allowed?
 		}
 	}
 	else
@@ -60,8 +61,8 @@ int get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 		paths = ft_split_with_empty(path, ':');
 		if(!paths)
 			return (free(path), EXIT_FAILURE);
-		search_in_paths(paths, cmd_ctx); //todo save and return after cleanup the status 
-		//TODO clean path 
+		status = search_in_paths(paths, cmd_ctx); //todo save and return after cleanup the status 
+		//TODO clean paths
+		return (free(path), EXIT_SUCCESS);
 	}
-	return (NULL);
 }
