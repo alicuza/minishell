@@ -1,31 +1,47 @@
+#include "env.h"
+#include "minishell.h"
+
+static void	ft_free_str_arr(char **arr)
+{
+	int	i;
+
+	i = 0;
+	while (arr[i] != NULL)
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
+}
+
 static bool	is_empty(char *str)
 {
 	return (str == NULL || str[0] == '\0');
 }
 
-static int search_in_paths(char **paths, t_command_ctx *cmd_ctx)
+static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 {
-	char *tmp;
-	char *first_found;
-	int i;
+	char	*tmp;
+	char	*first_found;
+	int		i;
 
 	first_found = NULL;
 	i = 0;
 	while (paths[i] != NULL)
 	{
-		if(paths[i][0] == '\0')
-			tmp = ft_strjoin("./", name);
+		if (paths[i][0] == '\0')
+			tmp = ft_strjoin("./", cmd_ctx->pathname);
 		else
-			tmp = ft_strjoin(paths[i], name);
-		if(!tmp)
+			tmp = ft_strjoin(paths[i], cmd_ctx->pathname);
+		if (!tmp)
 			return (EXIT_FAILURE);
-		if(access(tmp, X_OK) == 0)
+		if (access(tmp, X_OK) == 0)
 		{
 			free(cmd_ctx->pathname);
 			cmd_ctx->pathname = tmp;
 			return (EXIT_SUCCESS);
 		}
-		else if(first_found == NULL && access(tmp, F_OK) == 0)
+		else if (first_found == NULL && access(tmp, F_OK) == 0)
 		{
 			first_found = tmp;
 		}
@@ -36,33 +52,34 @@ static int search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 	return (EXIT_SUCCESS);
 }
 
-int get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
+int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 {
 	char	*path;
 	char	**paths;
 	char	*tmp;
-	int status;
+	int		status;
 
 	path = env_get(&c->env, PATH);
-	if(is_empty(path))
+	if (is_empty(path))
 	{
 		tmp = ft_strjoin("./", cmd_ctx->pathname);
-		if(!tmp)
+		if (!tmp)
 			return (free(path), EXIT_FAILURE);
-		if(access(tmp, X_OK) == 0)
+		if (access(tmp, X_OK) == 0)
 		{
 			free(cmd_ctx->pathname);
 			cmd_ctx->pathname = tmp;
-			return (free(path), EXIT_SUCCESS); //TODO do we need to return somthing else if access is not allowed?
+			return (free(path), EXIT_SUCCESS);
 		}
+		return (free(path), EXIT_SUCCESS); // TODO do we need to return somthing else if access is not allowed?
 	}
 	else
 	{
 		paths = ft_split_with_empty(path, ':');
-		if(!paths)
+		if (!paths)
 			return (free(path), EXIT_FAILURE);
-		status = search_in_paths(paths, cmd_ctx); //todo save and return after cleanup the status 
-		//TODO clean paths
-		return (free(path), EXIT_SUCCESS);
+		status = search_in_paths(paths, cmd_ctx);
+		ft_free_str_arr(paths);
+		return (free(path), status);
 	}
 }

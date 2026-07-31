@@ -1,29 +1,6 @@
 #include "env.h"
 #include "minishell.h"
 
-
-static int	add_default(t_env *env) // TODO use when PATH null or unset"/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
-{
-	char *pwd;
-	char *key;
-	char *value;
-	pwd = env_get(env, PWD);
-	if (pwd == NULL)
-	{
-		key = ft_strdup(PWD);
-		value = getcwd(NULL, 0);
-		if (key == NULL || value == NULL)
-		{
-			free(key);
-			free(value);
-			return (exit_mem_issue());
-		}
-		return (env_add(env, key, value));
-	}
-	free(pwd);
-	return (EXIT_SUCCESS);
-}
-
 static void	free_2d_arr(char **val)
 {
 	int i;
@@ -90,6 +67,6 @@ int	init_env(t_env *env, char **envp)
 			free(tmp);
 			i++;
 		}
-	add_default(env);
+	add_env_defaults(env);
 	return (EXIT_SUCCESS);
 }

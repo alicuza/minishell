@@ -23,7 +23,6 @@ char *join_key_value(t_env_content *content)
   return join;
 }
 
-//TODO are enviroments with only key passed to executed process
 char **env_to_envp(t_env *env)
 {
   char **envp;
@@ -47,6 +46,7 @@ char **env_to_envp(t_env *env)
         i--;
         return NULL;
       }
+	env_vals = env_vals->next;
     i++;
   }
   return envp;

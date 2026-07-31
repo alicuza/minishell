@@ -1,4 +1,7 @@
+#include "env.h"
 #include "minishell.h"
+
+#define EQUAL 0
 
 static void	print_val(void *content_void_p)
 {
@@ -56,7 +59,8 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 		tmp = ft_split_key_value(command_ctx->argv[i], '=');
 		if (tmp == NULL)
 			return (exit_mem_issue());
-		if (is_valid_name(tmp[0]) == false)
+		if (is_valid_name(tmp[0]) == false || ft_strncmp(tmp[0], SHLVL,
+				6) == EQUAL)
 		{
 			free_2d_arr(tmp);
 			i++;

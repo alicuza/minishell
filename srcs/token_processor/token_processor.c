@@ -6,12 +6,11 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/31 12:22:03 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/31 14:40:13 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
-#include "env.h"
 #include "minishell.h"
 
 #define EQUAL 0
@@ -55,7 +54,7 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 			return (command(c, cmd_ctx));
 		else
 		{
-			status = search_in_path(c, cmd_ctx);
+			status = get_pathname(c, cmd_ctx);
 			if(status == EXIT_FAILURE)
 				return (exit_mem_issue());
 			else if (status == EXIT_SUCCESS && cmd_ctx->pathname != NULL)
@@ -68,16 +67,6 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 		return (execute_non_builtin(c, cmd_ctx));
 }
 
-execve(path, array of args)
-
-
-/*
-The shell parses the input into simple commands (see 2.9.1 Simple Commands) and compound commands (see 2.9.4 Compound Commands).
-
-TODO: When Bash invokes an external command,
-	the variable ‘$_’ is set to the full pathname of the command and passed to that command in its environment.
-*/
-
 int	init_command(t_command_ctx *command, uint64_t argc)
 {
 	command->pathname = NULL;
@@ -89,8 +78,9 @@ int	init_command(t_command_ctx *command, uint64_t argc)
 	return (EXIT_SUCCESS);
 }
 
+// TODO "export " will create env with empty key
+// TODO we have SYM_NEWLINE as last one, -1 to not cout it into argc
 int	build_command(t_ctx *c, t_parser_state *parse)
-		// TODO "export " will create env with empty key
 {
 	t_symbol *sym;
 	uint64_t stack_idx;
@@ -99,16 +89,14 @@ int	build_command(t_ctx *c, t_parser_state *parse)
 
 	stack = &c->arena[AT_STACK];
 	if (init_command(&command, parse->stack_idx - 1))
-		// TODO we have SYM_NEWLINE as last one, -1 to not cout it into argc
 		return (EXIT_FAILURE);
 	stack_idx = 1;
 	sym = get_ptr_from_idx(stack, stack_idx);
-	while (sym && sym->type == SYM_WORD) // && c->arena[AT_STRING].buf
-		+ token->offset != NULL
+	while (sym && sym->type == SYM_WORD)
 	{
 		t_token *token = get_ptr_from_idx(&c->arena[AT_TOKENS], sym->token_idx);
-		if (command.name == NULL)
-			command.name = c->arena[AT_STRING].buf + token->offset;
+		if (command.pathname == NULL)
+			command.pathname = c->arena[AT_STRING].buf + token->offset;
 		command.argv[stack_idx - 1] = c->arena[AT_STRING].buf + token->offset;
 		stack_idx++;
 		sym = get_ptr_from_idx(stack, stack_idx);

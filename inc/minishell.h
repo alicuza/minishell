@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/29 21:12:54 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/07/31 16:41:42 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,8 +169,11 @@ void			free_env(t_env *env);
 /* -------- init_env.c ---------------------------------------------------- */
 int				init_env(t_env *env, char **envp);
 
+/* -------- add_env_defaults.c ---------------------------------------------------- */
+int				add_env_defaults(t_env *env);
+
 /* -------- env_to_envp.c ---------------------------------------------------- */
-char **env_to_envp(t_env *env);
+char			**env_to_envp(t_env *env);
 
 /* -------- ft_split_key_value.c ---------------------------------------------------- */
 char			**ft_split_key_value(const char *s, char c);
@@ -180,13 +183,13 @@ int				process_token(t_ctx *c, t_token *token);
 void			exec_stack(t_ctx *c, t_parser_state *parse);
 
 /* -------- execute_non_builtin.c ----------------------------------------------- */
-int	execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
+int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
 
 /* -------- get_pathname.c ----------------------------------------------- */
-int get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
+int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
 
 /* -------- ft_split_with_empty.c ----------------------------------------------- */
-char	**ft_split_with_empty(char const *s, char c)
+char			**ft_split_with_empty(char const *s, char c);
 
 /* -------- env.c ---------------------------------------------------- */
 int				env(t_ctx *c, t_command_ctx *command_ctx);
