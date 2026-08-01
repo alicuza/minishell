@@ -1,8 +1,9 @@
 #include "minishell.h"
 
+
 size_t	word_len(const char *s, char del)
 {
-	size_t	i;
+	size_t i;
 
 	i = 0;
 	while (s[i] && s[i] != del)
@@ -20,22 +21,27 @@ static char	**on_alloc_fail_free_str_arr(char **arr, size_t ind)
 
 char	**ft_split_key_value(const char *s, char c)
 {
-	char	**res;
-	size_t	len;
+	char **res;
+	size_t len;
 
 	if (!s)
 		return (NULL);
-	res = malloc((3) * sizeof (char *));
+	res = malloc((3) * sizeof(char *));
 	if (!res)
 		return (NULL);
-  len = word_len(s, c);
-  res[0] = ft_substr(s, 0, len);
-  if (!res[0])
-    return (on_alloc_fail_free_str_arr(res, 0));
-  s+= len + 1;
-  res[1] = ft_substr(s, 0, ft_strlen(s));
-  if (!res[1])
-    return (on_alloc_fail_free_str_arr(res, 1));
+	len = word_len(s, c);
+	res[0] = ft_substr(s, 0, len);
+	if (!res[0])
+		return (on_alloc_fail_free_str_arr(res, 0));
+	if (s[len] == '=')
+	{
+		s += len + 1;
+		res[1] = ft_substr(s, 0, ft_strlen(s));
+		if (!res[1])
+			return (on_alloc_fail_free_str_arr(res, 1));
+	}
+	else
+		res[1] = NULL;
 	res[2] = NULL;
 	return (res);
 }

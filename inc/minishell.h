@@ -6,37 +6,36 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/26 19:35:57 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/01 16:10:11 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include <stdio.h>				// printf, perror
-# include <string.h>			// strerror
-# include <readline/readline.h>	// readline, rl_clear_history, rl_on_new_line,
+# include <readline/readline.h> // readline, rl_clear_history, rl_on_new_line,
+# include <stdio.h>             // printf, perror
+# include <string.h>            // strerror
 								// rl_replace_line, rl_redisplay
-# include <readline/history.h>	// add_history
-# include <stdlib.h>			// malloc, free, exit, getenv
-# include <unistd.h>			// access, write, read, fork, dup, dup2, pipe,
+# include <readline/history.h>  // add_history
+# include <stdlib.h>            // malloc, free, exit, getenv
+# include <unistd.h>            // access, write, read, fork, dup, dup2, pipe,
 								// getcwd, chdir, unlink, execve,
 								// isatty, ttyname, ttyslot
-# include <fcntl.h>				// open, close
-# include <signal.h>			// signal, sigaction, sigemptyset, sigaddset,
+# include <fcntl.h>             // open, close
+# include <signal.h>            // signal, sigaction, sigemptyset, sigaddset,
 								// kill
-# include <dirent.h>			// opendir, readdir, closedir
-# include <sys/wait.h>			// wait, waitpid, wait3, wait4
-# include <sys/stat.h>			// stat, lstat, fstat
-# include <sys/ioctl.h>			// ioctl
-# include <termios.h>			// tcgetattr, tcsetattr
-# include <termcap.h>			// tgetent, tgetflag, tgetnum, tgetstr, tgoto,
+# include <dirent.h>            // opendir, readdir, closedir
+# include <sys/ioctl.h>         // ioctl
+# include <sys/stat.h>          // stat, lstat, fstat
+# include <sys/wait.h>          // wait, waitpid, wait3, wait4
+# include <termcap.h>           // tgetent, tgetflag, tgetnum, tgetstr, tgoto,
+# include <termios.h>           // tcgetattr, tcsetattr
 								// tputs
-# include <errno.h>				// errno
-
-# include "libft.h"
 # include "arena.h"
+# include "libft.h"
 # include "types.h"
+# include <errno.h> // errno
 
 # ifdef DEBUG
 #  include "debug.h"
@@ -57,16 +56,16 @@
 # define INPUT_CONTINUATION 1
 
 /* -------- operators ------------------------------------------------------- */
-# define NL			"\n"
-# define PIPE		"|"
-# define LESS		"<"
-# define GREAT		">"
-# define DLESS		"<<"
-# define DGREAT		">>"
-# define AND_IF		"&&"
-# define OR_IF		"||"
-# define OPAR		"("
-# define CPAR		")"
+# define NL "\n"
+# define PIPE "|"
+# define LESS "<"
+# define GREAT ">"
+# define DLESS "<<"
+# define DGREAT ">>"
+# define AND_IF "&&"
+# define OR_IF "||"
+# define OPAR "("
+# define CPAR ")"
 
 /* -------- sets ------------------------------------------------------------ */
 # define OPERATOR_SET "<>&|()\n"
@@ -89,20 +88,20 @@
 # define PARSE_HERE_BODY		0x10
 
 /* -------- node flags ------------------------------------------------------ */
-# define FLAG_AND_IF			0x01
-# define FLAG_OR_IF				0x02
-# define FLAG_SUBSHELL			0x04
-# define REDIR_IN				0x08
-# define REDIR_OUT				0x10
-# define REDIR_HERE				0x20
-# define REDIR_APPEND			0x40
+# define FLAG_AND_IF 0x01
+# define FLAG_OR_IF 0x02
+# define FLAG_SUBSHELL 0x04
+# define REDIR_IN 0x08
+# define REDIR_OUT 0x10
+# define REDIR_HERE 0x20
+# define REDIR_APPEND 0x40
 
 # ifdef DEBUG
 /* -------- test scope flags ------------------------------------------------ */
-#  define SCOPE_TOKENS			0x01
-#  define SCOPE_SYMBOLS			0x02
-#  define SCOPE_STACK			0x04
-#  define SCOPE_COMMAND			0x08
+#  define SCOPE_TOKENS 0x01
+#  define SCOPE_SYMBOLS 0x02
+#  define SCOPE_STACK 0x04
+#  define SCOPE_COMMAND 0x08
 # endif
 
 /* -------- grammar constants ----------------------------------------------- */
@@ -159,10 +158,31 @@ bool			is_name_body(char c);
 bool			is_expansion_start(char *buffer, uint64_t idx);
 uint64_t		get_expansion_len(char *expansion);
 
-/* -------- env_utils.c ----------------------------------------------------- */
+/* -------- env_add.c ---------------------------------------------------- */
+int				env_add(t_env *env, char *key, char *value);
+
+/* -------- env_update.c ---------------------------------------------------- */
+int				env_update(t_env *env, char *key, char *value);
+int				env_update_with_copy(t_env *env, char *key, char *value);
+
+/* -------- env_get.c ------------------------------------------------------- */
+char			*env_get(t_env *env, char *key);
+
+/* -------- env_delete.c ------------------------------------------------------- */
+void			env_delete(t_env *env, char *key);
+
+/* -------- free_env.c ------------------------------------------------------- */
+void			free_env_content(void *content_void_p);
+void			free_env(t_env *env);
+
+/* -------- init_env.c ---------------------------------------------------- */
 int				init_env(t_env *env, char **envp);
-int				free_env(t_env *env);
-char			*search(t_env *env, char *key);
+
+/* -------- add_env_defaults.c ---------------------------------------------------- */
+int				add_env_defaults(t_env *env);
+
+/* -------- env_to_envp.c ---------------------------------------------------- */
+char			**env_to_envp(t_env *env);
 
 /* -------- ft_split_key_value.c -------------------------------------------- */
 char			**ft_split_key_value(const char *s, char c);
@@ -171,15 +191,21 @@ char			**ft_split_key_value(const char *s, char c);
 int				process_token(t_ctx *c, t_token *token);
 void			exec_stack(t_ctx *c, t_parser_state *parse);
 
-/* -------- env.c ----------------------------------------------------------- */
-int				env(t_ctx *c);
+/* -------- execute_non_builtin.c ----------------------------------------------- */
+int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
 
-/* -------- pwd.c ----------------------------------------------------------- */
-int				pwd(t_ctx *c);
-char			*get_cwd_safely();
+/* -------- get_pathname.c ----------------------------------------------- */
+int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
 
-/* -------- builtin_exit.c -------------------------------------------------- */
-int				builtin_exit(t_ctx *c);
+/* -------- ft_split_with_empty.c ----------------------------------------------- */
+char			**ft_split_with_empty(char const *s, char c);
+
+/* -------- env.c ---------------------------------------------------- */
+int				env(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- pwd.c ---------------------------------------------------- */
+int				pwd(t_ctx *c, t_command_ctx *command_ctx);
+char			*get_pwd(t_ctx *c);
 
 /* -------- parse_input.c --------------------------------------------------- */
 t_parser_state	parse_input(t_ctx *c);
@@ -187,5 +213,24 @@ t_parser_state	parse_input(t_ctx *c);
 /* -------- parser_utils.c -------------------------------------------------- */
 void			shift_symbol(t_ctx *c, t_parser_state *parse);
 
-#endif
+/* -------- builtin_exit.c ------------------------------ */
+int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
+int				exit_mem_issue(void);
+
+/* -------- cd.c ------------------------------ */
+int				cd(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- get_path_canonical_form.c ------------------------------ */
+char			*get_path_canonical_form(char *curpath, size_t len);
+
+/* -------- builtin_export.c ------------------------------ */
+int				builtin_export(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- unset.c ------------------------------ */
+int				unset(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- echi.c ------------------------------ */
+int				echo(t_ctx *c, t_command_ctx *command_ctx);
+
+#endif

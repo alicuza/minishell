@@ -6,9 +6,11 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 10:15:13 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/26 20:28:42 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/01 16:14:34 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+// TODO stefan: update naming, depending on what flags we keep
 
 #include "minishell.h"
 
