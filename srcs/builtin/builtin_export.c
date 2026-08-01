@@ -14,15 +14,8 @@ static void	print_val(void *content_void_p)
 		printf("declare -x %s=\"%s\"\n", (char *)content->key, content->val);
 }
 
-static bool	is_empty(char *str)
-{
-	return (str == NULL || str[0] == '\0');
-}
-
 static bool	is_valid_name(char *name)
 {
-	if (is_empty(name))
-		return (true);
 	if (!ft_isalpha(*name) && *name != '_')
 		return (false);
 	name++;

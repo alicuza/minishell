@@ -14,15 +14,8 @@ static void	free_2d_arr(char **val)
 	free(val);
 }
 
-static bool	is_empty(char *str)
-{
-	return (str == NULL || str[0] == '\0');
-}
-
 static bool	is_valid_name(char *name)
 {
-	if (is_empty(name))
-		return (true);
 	if (!ft_isalpha(*name) && *name != '_')
 		return (false);
 	name++;
@@ -35,12 +28,6 @@ static bool	is_valid_name(char *name)
 	return (true);
 }
 
-/*
-//TODO nik: set mininal required enviroment var
-default ones
-PWD=/home/nikit/42/minishell
-PATH=/home/nikit/.local/funcheck/host:/home/nikit/.local/funcheck/host:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-_=/usr/bin/env*/
 int	init_env(t_env *env, char **envp)
 {
 	char **tmp;
