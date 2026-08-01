@@ -23,7 +23,7 @@ void	print_symbol(t_ctx *c, t_symbol *symbol, uint64_t idx)
 	token = get_ptr_from_idx(tokens, symbol->token_idx);
 	fprintf(stderr, "\n--- symbol ---\n");
 	fprintf(stderr, "  [%lu]  %s(", idx, get_symbol_type_name(symbol->type));
-	print_escaped_str(stderr, input->buf + token->offset);
+	print_escaped_str(stderr, input->buf + token->body.pos);
 	fprintf(stderr, ")  {  token_idx = %lu state = %u  node_idx = %lu  flags = ",
 		symbol->token_idx, symbol->entry_state, symbol->node_idx);
 	print_flags(stderr, token->flags);

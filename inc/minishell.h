@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/01 16:10:11 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/01 17:48:39 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,19 +73,22 @@
 # define QUOTE_SET "\"'"
 # define SPECIAL_PARAM_SET "?"
 
-/* -------- lexer flags ----------------------------------------------------- */
+/* -------- token flags ----------------------------------------------------- */
 # define TKN_HAS_QUOTES			0x01
 # define TKN_HAS_EXPANSION		0x02
 # define TKN_IS_HERE_BODY		0x04
-# define LEX_IS_BUILDING		0x08
+
+/* -------- lexer flags ----------------------------------------------------- */
+# define LEX_IS_BUILDING		0x01
+# define LEX_SAVE_TOKENS		0x02 // change references
+# define LEX_HAS_SAVED_TOKENS	0x04 // change references
+# define LEX_HERE_BODY			0x08
 # define LEX_AT_EOI				0x10
 
 /* -------- parser flags ---------------------------------------------------- */
 # define PARSE_DONE				0x01
-# define PARSE_SAVE_TOKENS		0x02
-# define PARSE_HAS_SAVED_TOKENS	0x04
-# define PARSE_HERE_PENDING		0x08
-# define PARSE_HERE_BODY		0x10
+# define PARSE_HAS_COMMAND		0x02
+//# define PARSE_HERE_PENDING		0x04 // TODO stefan: delete if not used
 
 /* -------- node flags ------------------------------------------------------ */
 # define FLAG_AND_IF 0x01
@@ -116,7 +119,6 @@ char			*get_prompt(t_ctx *c, bool with_cwd);
 char			*get_user_input(t_ctx *c, bool is_continuation);
 
 /* -------- lookahead.c ----------------------------------------------------- */
-bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l, t_here_state *h);
 bool			lex_token(t_ctx *c, t_lexer_state *lex);
 
 /* -------- pair_utils.c ---------------------------------------------------- */
@@ -137,10 +139,10 @@ uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
 
 /* -------- lex_heredoc.c --------------------------------------------------- */
 bool			get_here_doc(t_ctx *c, t_lexer_state *l, t_here_state *h);
-bool			is_delim_line(t_ctx *c, t_lexer_state *l, t_here_state *);
+bool			is_delim_line(t_ctx *c, t_lexer_state *l, t_here_state *h);
 void			delimit_lex_here(t_ctx *c, t_here_state *h);
 bool			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l, t_here_state *h);
-bool			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
+bool			handle_saved_tokens(t_ctx *c, t_parser_state *parse, t_lexer_state *l);
 
 /* -------- lex_utils.c ----------------------------------------------------- */
 uint64_t		consume_char(t_lexer_state *lex, uint64_t len);
@@ -208,6 +210,7 @@ int				pwd(t_ctx *c, t_command_ctx *command_ctx);
 char			*get_pwd(t_ctx *c);
 
 /* -------- parse_input.c --------------------------------------------------- */
+bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l, t_here_state *h);
 t_parser_state	parse_input(t_ctx *c);
 
 /* -------- parser_utils.c -------------------------------------------------- */

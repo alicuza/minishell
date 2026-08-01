@@ -21,7 +21,7 @@ void	delimit_lex_here(t_ctx *c, t_here_state *here)
 	token = get_ptr_from_offset(tokens,
 		arena_alloc(tokens, sizeof(t_token), _Alignof(t_token)));
 	token->type = TKN_WORD;
-	token->offset = here->body.pos;
+	token->body.pos = here->body.pos;
 	token->flags = TKN_IS_HERE_BODY;
 }
 
@@ -87,29 +87,31 @@ bool	handle_here_body(t_ctx *c, t_parser_state *parse, t_lexer_state *lex, t_her
 	stack = &c->arena[AT_STACK];
 	if (!get_here_doc(c, lex, here))
 	{
-		parse->flags &= ~PARSE_HERE_BODY;
+		lex->flags &= ~LEX_HERE_BODY;
 		return (false);
 	}
-	parse->flags &= ~PARSE_HERE_BODY;
-	parse->flags |= PARSE_HAS_SAVED_TOKENS;
+	lex->flags &= ~LEX_HERE_BODY;
+	lex->flags |= LEX_HAS_SAVED_TOKENS;
 	symbol = get_ptr_from_idx(stack, parse->stack_idx);
-	parse->token_idx = symbol->token_idx;							// resetting parse.token_idx to the last shifted token after getting heredoc body
+	parse->lookahead.token_idx = symbol->token_idx;							// resetting parse.lookahead.token_idx to the last shifted token after getting heredoc body
 	return (true);
 }
 
-bool	handle_saved_tokens(t_ctx *c, t_parser_state *parse)
+bool	handle_saved_tokens(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
 {
 	t_arena	*tokens;
+	t_arena	*stack;
 	t_token	*next;
 
 	tokens = &c->arena[AT_TOKENS];
-	next = get_ptr_from_idx(tokens, parse->token_idx + 1);
+	stack = &c->arena[AT_STACK];
+	next = get_ptr_from_idx(tokens, parse->lookahead.token_idx + 1);
 	if (next->flags & TKN_IS_HERE_BODY) // TODO: figure out if this is the correct place to write the heredoc to a tmp file
 	{
-		parse->flags &= ~PARSE_HAS_SAVED_TOKENS;
-		++parse->token_idx;
+		lex->flags &= ~LEX_HAS_SAVED_TOKENS;
+		++parse->lookahead.token_idx;
 		return (false);
 	}
-	++parse->token_idx;
+	++parse->lookahead.token_idx;
 	return (true);
 }

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/01 16:10:59 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/01 17:49:40 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,25 +36,6 @@ typedef enum e_arena_type
 	AT_COUNT,
 }	t_arena_type;
 
-typedef struct s_ctx
-{
-	t_env	env;
-	t_arena	arena[AT_COUNT];
-	char	*read_line;
-	int		return_status;
-	bool	is_interactive;
-# ifdef DEBUG
-	uint8_t	scope;		/* SCOPE_TOKEN | SCOPE_SYMBOLS | SCOPE_STACK | SCOPE_COMMAND */
-	bool	no_exec;	/* TODO: do i actually need this? */
-# endif
-}	t_ctx;
-
-typedef struct s_slice
-{
-	uint64_t	pos;
-	uint64_t	len;
-}	t_slice;
-
 typedef struct s_cmd	// stub
 {
 	char *path;
@@ -68,8 +49,6 @@ typedef struct s_command_ctx
 	uint64_t argc;
 	char	**argv;
 }	t_command_ctx;
-
-typedef int	(*t_command_function)(t_ctx *c, t_command_ctx *command_ctx);
 
 typedef enum e_token_type
 {
@@ -134,9 +113,15 @@ typedef enum e_node_type
 	NODE_REDIR,
 }	t_node_type;
 
+typedef struct s_slice
+{
+	uint64_t	pos;
+	uint64_t	len;
+}	t_slice;
+
 typedef struct s_token
 {
-	uint64_t		offset;			/* into AT_STRING */
+	t_slice			body;			/* into AT_STRING */
 	t_token_type	type;
 	uint8_t			flags;			/* TKN_HAS_QUOTES | TKN_HAS_EXPANSION */
 }	t_token;
@@ -200,7 +185,7 @@ typedef struct s_parser_state
 {
 	uint32_t	cur_state;
 	uint64_t	stack_idx;			/* current top symbol on the stack */
-	uint64_t	token_idx;			/* current lookahead token in AT_TOKENS */
+	t_symbol	lookahead;
 	uint64_t	arg_head;			/* argument list head in AT_COMMAND */
 	uint64_t	redir_head;			/* redirection list head in AT_COMMAND */
 	uint8_t		flags;				/* PARSE_HERE_PENDING | PARSE_DONE | PARSE_ERROR */
@@ -216,11 +201,29 @@ typedef struct s_pair_state			// TODO: consider whether i want to reference or s
 typedef struct s_lexer_state
 {
 	t_pair_state	pair;			/* for use in find_matched_pair */
-	t_slice			token;			/* tracks the position and length of the current token being built */
+	t_token			token;			/* tracks the position and length of the current token being built */
 	uint64_t		char_idx;		/* offset into the input string */
 	t_token_type	type;
-	uint8_t			flags;			/* TKN_HAS_EXPANSION | TKN_HAS_QUOTES | LEX_IS_BUILDING | LEX_NEW_INPUT */
+	uint8_t			flags;			/* LEX_* */
 }	t_lexer_state;
+
+typedef struct s_ctx
+{
+	t_env			env;
+//	t_parser_state	parse;
+//	t_lexer_state	lex;
+//	t_here_state	here;
+	t_arena			arena[AT_COUNT];
+	char			*read_line;
+	int				return_status;
+	bool			is_interactive;
+# ifdef DEBUG
+	uint8_t			scope;		/* SCOPE_TOKEN | SCOPE_SYMBOLS | SCOPE_STACK | SCOPE_COMMAND */
+	bool			no_exec;	/* TODO: do i actually need this? */
+# endif
+}	t_ctx;
+
+typedef int	(*t_command_function)(t_ctx *c, t_command_ctx *command_ctx);
 
 typedef struct s_split_state
 {

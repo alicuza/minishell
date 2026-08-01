@@ -99,11 +99,11 @@ int	build_command(t_ctx *c, t_parser_state *parse)
 		if (command.pathname == NULL)
 		{
 			command.pathname = ft_strdup(c->arena[AT_STRING].buf
-					+ token->offset);
+					+ token->body.pos);
 			if (command.pathname == NULL)
 				return (EXIT_FAILURE);
 		}
-		command.argv[stack_idx - 1] = c->arena[AT_STRING].buf + token->offset;
+		command.argv[stack_idx - 1] = c->arena[AT_STRING].buf + token->body.pos;
 		stack_idx++;
 		sym = get_ptr_from_idx(stack, stack_idx);
 	}

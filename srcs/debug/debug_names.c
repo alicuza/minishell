@@ -70,14 +70,14 @@ const char	*get_flag_name(uint32_t bit)
 		return ("LEX_AT_EOI");
 	else if (bit == PARSE_DONE)
 		return ("PARSE_DONE");
-	else if (bit == PARSE_HAS_SAVED_TOKENS)
-		return ("PARSE_HAS_SAVED_TOKENS");
-	else if (bit == PARSE_SAVE_TOKENS)
-		return ("PARSE_SAVE_TOKENS");
-	else if (bit == PARSE_HERE_PENDING)
-		return ("PARSE_HERE_PENDING");
-	else if (bit == PARSE_HERE_BODY)
-		return ("PARSE_HERE_BODY");
+	else if (bit == LEX_HAS_SAVED_TOKENS)
+		return ("LEX_HAS_SAVED_TOKENS");
+	else if (bit == LEX_SAVE_TOKENS)
+		return ("LEX_SAVE_TOKENS");
+	else if (bit == PARSE_HAS_COMMAND)
+		return ("PARSE_HAS_COMMAND");
+	else if (bit == LEX_HERE_BODY)
+		return ("LEX_HERE_BODY");
 	else
 		return ("UNKNOWN");
 }

@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:37:40 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/26 17:38:04 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/01 18:33:34 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ bool	apply_rule_5(t_ctx *c, t_lexer_state *lex)
 	else
 		grow_lex_token(lex, len);
 	consume_char(lex, len);
-	lex->flags |= TKN_HAS_EXPANSION;
+	lex->token.flags |= TKN_HAS_EXPANSION;
 	return (false);
 }
 
@@ -155,7 +155,7 @@ bool	lex_token(t_ctx *c, t_lexer_state *lex)
 #endif
 	if (!c->read_line[lex->char_idx])										// rule 1
 		return (apply_rule_1(c, lex));
-	else if (lex->type == TKN_OPERATOR)										// rule 2 & 3
+	else if (lex->token.type == TKN_OPERATOR)										// rule 2 & 3
 	{
 		if (is_str_in_set(c->read_line + lex->char_idx - 1, get_operator_strs()))
 			return (apply_rule_2(c, lex));
@@ -172,7 +172,7 @@ bool	lex_token(t_ctx *c, t_lexer_state *lex)
 		return (apply_rule_6(c, lex));
 	else if (is_char_in_set(c->read_line[lex->char_idx], BLANK_SET))		// rule 7
 		return (apply_rule_7(c, lex));
-	else if (lex->type == TKN_WORD)											// rule 8
+	else if (lex->token.type == TKN_WORD)											// rule 8
 		return (apply_rule_8(lex));
 	else if (c->read_line[lex->char_idx] == '#')							// rule 9
 		return (apply_rule_9(c, lex));

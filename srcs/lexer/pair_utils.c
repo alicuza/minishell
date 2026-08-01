@@ -32,7 +32,7 @@ bool	find_matched_pair(t_ctx *c, t_lexer_state *lex)
 		&& c->read_line[lex->char_idx] != lex->pair.close)
     {
 		if (lex->pair.open == '"' && is_expansion_start(c->read_line, lex->char_idx))
-			lex->flags |= TKN_HAS_EXPANSION;
+			lex->token.flags |= TKN_HAS_EXPANSION;
         grow_lex_token(lex, 1);
         consume_char(lex, 1);
     }
@@ -43,6 +43,6 @@ bool	find_matched_pair(t_ctx *c, t_lexer_state *lex)
     }
     grow_lex_token(lex, 1);
 	consume_char(lex, 1);
-	lex->flags |= TKN_HAS_QUOTES;
+	lex->token.flags |= TKN_HAS_QUOTES;
     return (true);
 }

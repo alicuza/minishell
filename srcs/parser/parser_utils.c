@@ -16,7 +16,7 @@ t_symbol_type	classify_token(t_ctx *c, t_token *token)
 {
 	char	*token_body;
 
-	token_body = get_ptr_from_offset(&c->arena[AT_STRING], token->offset);
+	token_body = get_ptr_from_offset(&c->arena[AT_STRING], token->body.pos);
 	if (!ft_strncmp(token_body, NL, ft_strlen(NL)))
 		return (SYM_NEWLINE);
 	else if (!ft_strncmp(token_body, DLESS, ft_strlen(DLESS) + 1))
@@ -52,8 +52,8 @@ void	shift_symbol(t_ctx *c, t_parser_state *parse)
 	parse->stack_idx = get_idx_from_offset(stack,
 			arena_alloc(stack, sizeof(t_symbol), _Alignof(t_symbol)));
 	symbol = get_ptr_from_idx(stack, parse->stack_idx);
-	token = get_ptr_from_idx(tokens, parse->token_idx);
-	symbol->token_idx = parse->token_idx;
+	token = get_ptr_from_idx(tokens, parse->lookahead.token_idx);
+	symbol->token_idx = parse->lookahead.token_idx;
 	symbol->type = classify_token(c, token);
 	symbol->entry_state = parse->cur_state;
 	symbol->node_idx = 0;		// TODO: for now

@@ -48,10 +48,10 @@ void	print_lex_state(t_ctx *c, t_lexer_state *l)
 	print_char_info(ch);
 	fprintf(stderr, "  %s", get_token_type_name(l->type));
 	if (l->flags & LEX_IS_BUILDING)
-		fprintf(stderr, "(%.*s)", (int)l->token.len,
-			c->read_line + l->token.pos);
-	fprintf(stderr, "  {  token.pos = %lu  token.len = %lu  flags = ",
-		l->token.pos, l->token.len);
+		fprintf(stderr, "(%.*s)", (int)l->token.body.len,
+			c->read_line + l->token.body.pos);
+	fprintf(stderr, "  {  token.body.pos = %lu  token.body.len = %lu  flags = ",
+		l->token.body.pos, l->token.body.len);
 	print_flags(stderr, l->flags);
 	fprintf(stderr, "  }");
 	fprintf(stderr, "\n");
@@ -64,9 +64,9 @@ void	print_token(FILE *out, t_ctx *c, t_token *token)
 	input = &(c->arena[AT_STRING]);
 	fprintf(stderr, "\n--- token ---\n");
 	fprintf(out, "  %s(", get_token_type_name(token->type));
-	print_escaped_str(out, input->buf + token->offset);
+	print_escaped_str(out, input->buf + token->body.pos);
 	fprintf(out, ")");
-	fprintf(stderr, "  {  offset = %lu  flags =", token->offset);
+	fprintf(stderr, "  {  offset = %lu  flags =", token->body.pos);
 	fprintf(out, " ");
 	print_flags(out, token->flags);
 	fprintf(stderr, "  }");

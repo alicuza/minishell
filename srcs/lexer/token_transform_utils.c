@@ -34,5 +34,5 @@ void	*get_ptr_from_idx(t_arena *arena, uint64_t idx)
 
 char	*get_token_content(t_ctx *c, t_token *token)
 {
-	return (ft_strdup(c->arena[AT_STRING].buf + token->offset));
+	return (ft_strdup(c->arena[AT_STRING].buf + token->body.pos));
 }

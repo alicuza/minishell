@@ -23,12 +23,12 @@ t_slice	save_lex_token_slice(t_lexer_state *lex)
 	t_slice	save;
 
 	save.pos = lex->char_idx;
-	save.len = lex->token.len;
+	save.len = lex->token.body.len;
 	return (save);
 }
 
 void	restore_lex_token_slice(t_lexer_state *lex, t_slice saved)
 {
 	lex->char_idx = saved.pos;
-	lex->token.len = saved.len;
+	lex->token.body.len = saved.len;
 }
