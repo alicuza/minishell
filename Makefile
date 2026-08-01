@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/07/22 09:41:40 by sancuta          ###   ########.fr        #
+#    Updated: 2026/07/31 14:51:56 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,9 @@ SRCS        = \
 			prompt.c \
 			input.c \
 			token_processor/token_processor.c \
+			token_processor/execute_non_builtin.c \
+			token_processor/get_pathname.c \
+			token_processor/ft_split_with_empty.c \
 			parser/parse_input.c \
 			parser/parser_utils.c \
 			lexer/lookahead.c \
@@ -45,11 +48,23 @@ SRCS        = \
 			lexer/token_transform_utils.c \
 			lexer/string_utils.c \
 			lexer/expand_utils.c \
+			environment/env_add.c \
+			environment/env_update.c \
+			environment/env_get.c \
+			environment/env_delete.c \
+			environment/free_env.c \
+			environment/init_env.c \
+			environment/add_env_defaults.c \
+			environment/env_to_envp.c \
 			builtin/env.c \
-			builtin/env_utils.c \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \
-			builtin/builtin_exit.c
+			builtin/builtin_exit.c \
+			builtin/cd.c \
+			builtin/get_path_canonical_form.c \
+			builtin/builtin_export.c \
+			builtin/unset.c \
+			builtin/echo.c
 
 DEBUG_SRCS  = \
 			debug/debug_utils.c \
