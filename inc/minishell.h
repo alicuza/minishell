@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/31 16:41:42 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/01 16:10:11 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,16 +74,18 @@
 # define SPECIAL_PARAM_SET "?"
 
 /* -------- lexer flags ----------------------------------------------------- */
-# define TKN_HAS_QUOTES 0x01
-# define TKN_HAS_EXPANSION 0x02
-# define LEX_IS_BUILDING 0x04
-# define LEX_AT_EOI 0x08
+# define TKN_HAS_QUOTES			0x01
+# define TKN_HAS_EXPANSION		0x02
+# define TKN_IS_HERE_BODY		0x04
+# define LEX_IS_BUILDING		0x08
+# define LEX_AT_EOI				0x10
 
 /* -------- parser flags ---------------------------------------------------- */
-# define PARSE_DONE 0x01
-# define PARSE_SAVE_TOKENS 0x02
-# define PARSE_HERE_PENDING 0x04
-# define PARSE_HERE_BODY 0x08
+# define PARSE_DONE				0x01
+# define PARSE_SAVE_TOKENS		0x02
+# define PARSE_HAS_SAVED_TOKENS	0x04
+# define PARSE_HERE_PENDING		0x08
+# define PARSE_HERE_BODY		0x10
 
 /* -------- node flags ------------------------------------------------------ */
 # define FLAG_AND_IF 0x01
@@ -107,17 +109,17 @@
 # define MAX_RHS_LEN 4
 # define RULE_COUNT 48
 
-/* -------- prompt.c --------------------------------------------------------- */
+/* -------- prompt.c -------------------------------------------------------- */
 char			*get_prompt(t_ctx *c, bool with_cwd);
 
 /* -------- input.c --------------------------------------------------------- */
 char			*get_user_input(t_ctx *c, bool is_continuation);
 
 /* -------- lookahead.c ----------------------------------------------------- */
-bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l);
-bool			line_is_delim(t_ctx *c, t_here_state *h);
+bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l, t_here_state *h);
+bool			lex_token(t_ctx *c, t_lexer_state *lex);
 
-/* -------- pair_utils.c --------------------------------------------------- */
+/* -------- pair_utils.c ---------------------------------------------------- */
 char			matching_close(char open);
 bool			find_matched_pair(t_ctx *c, t_lexer_state *lex);
 
@@ -132,6 +134,13 @@ char			*get_token_content(t_ctx *c, t_token *token);
 void			start_lex_token(t_lexer_state *lex, t_token_type type);
 void			delimit_lex_token(t_ctx *c, t_lexer_state *lex);
 uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
+
+/* -------- lex_heredoc.c --------------------------------------------------- */
+bool			get_here_doc(t_ctx *c, t_lexer_state *l, t_here_state *h);
+bool			is_delim_line(t_ctx *c, t_lexer_state *l, t_here_state *);
+void			delimit_lex_here(t_ctx *c, t_here_state *h);
+bool			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l, t_here_state *h);
+bool			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
 
 /* -------- lex_utils.c ----------------------------------------------------- */
 uint64_t		consume_char(t_lexer_state *lex, uint64_t len);
@@ -175,7 +184,7 @@ int				add_env_defaults(t_env *env);
 /* -------- env_to_envp.c ---------------------------------------------------- */
 char			**env_to_envp(t_env *env);
 
-/* -------- ft_split_key_value.c ---------------------------------------------------- */
+/* -------- ft_split_key_value.c -------------------------------------------- */
 char			**ft_split_key_value(const char *s, char c);
 
 /* -------- token_processor.c ----------------------------------------------- */

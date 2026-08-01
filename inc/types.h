@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/29 21:08:29 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/01 16:10:59 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,12 +190,17 @@ typedef struct s_node				/* tagged union */
 	uint8_t	flags;					/* FLAG_AND_IF | FLAG_OR_IF | FLAG_SUBSHELL | REDIR_IN | REDIR_OUT | REDIR_HERE | REDIR_APPEND */
 }	t_node;
 
+typedef struct s_here_state
+{
+	t_slice	delim;					/* delimiter slice in AT_STRING */
+	t_slice	body;					/* accumulated body slice in AT_STRING */
+}	t_here_state;
+
 typedef struct s_parser_state
 {
 	uint32_t	cur_state;
 	uint64_t	stack_idx;			/* current top symbol on the stack */
 	uint64_t	token_idx;			/* current lookahead token in AT_TOKENS */
-	uint64_t	parsed_cnt;			/* incremented by shift_symbol, cursor of what was parsed */ //TODO: 
 	uint64_t	arg_head;			/* argument list head in AT_COMMAND */
 	uint64_t	redir_head;			/* redirection list head in AT_COMMAND */
 	uint8_t		flags;				/* PARSE_HERE_PENDING | PARSE_DONE | PARSE_ERROR */
@@ -207,14 +212,6 @@ typedef struct s_pair_state			// TODO: consider whether i want to reference or s
 	char	close;					/* SQUOTE, DQUOTE, CPAR */
 	uint8_t	flags;					/* TKN_HAS_EXPANSION | TKN_HAS_QUOTES */
 }	t_pair_state;
-
-typedef struct s_here_state			// TODO: consider whether i want to reference or save the char
-{
-	uint64_t	delim_idx;			/* heredoc delimiter WORD in AT_TOKENS */
-	uint64_t	body_idx;			/* heredoc body WORD in AT_TOKENS */
-	uint64_t	cur_line;			/* offset of the current heredoc body line in AT_STRING */
-	uint8_t		flags;				/* DELIM_QUOTED */
-}	t_here_state;
 
 typedef struct s_lexer_state
 {

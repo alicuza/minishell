@@ -6,9 +6,11 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 10:15:13 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/24 11:07:44 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/01 16:14:34 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+// TODO stefan: update naming, depending on what flags we keep
 
 #include "minishell.h"
 
@@ -60,12 +62,16 @@ const char	*get_flag_name(uint32_t bit)
 		return ("TKN_HAS_QUOTES");
 	else if (bit == TKN_HAS_EXPANSION)
 		return ("TKN_HAS_EXPANSION");
+	else if (bit == TKN_IS_HERE_BODY)
+		return ("TKN_IS_HERE_BODY");
 	else if (bit == LEX_IS_BUILDING)
 		return ("LEX_IS_BUILDING");
 	else if (bit == LEX_AT_EOI)
 		return ("LEX_AT_EOI");
 	else if (bit == PARSE_DONE)
 		return ("PARSE_DONE");
+	else if (bit == PARSE_HAS_SAVED_TOKENS)
+		return ("PARSE_HAS_SAVED_TOKENS");
 	else if (bit == PARSE_SAVE_TOKENS)
 		return ("PARSE_SAVE_TOKENS");
 	else if (bit == PARSE_HERE_PENDING)
