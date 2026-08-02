@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/31 17:30:33 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/02 16:42:37 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,18 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 		else
 		{
 			status = get_pathname(c, cmd_ctx);
-			if (status == EXIT_FAILURE)
-				return (exit_mem_issue());
-			else if (status == EXIT_SUCCESS && cmd_ctx->pathname != NULL)
+			if (status == EXIT_SUCCESS && cmd_ctx->pathname != NULL)
 				return (execute_non_builtin(c, cmd_ctx));
-			else
-				return (127);
+			else if(status == PERMISSION_DENIED_EXIT_CODE)
+			{
+				
+			}
+			else if(status == NO_SUCH_FILE_OR_DIR_EXIT_CODE)
+			{
+				
+			}
+			//else if (status == EXIT_FAILURE)
+			return (exit_mem_issue());
 		}
 	}
 	else

@@ -87,6 +87,10 @@ int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 			cmd_ctx->pathname = tmp;
 			return (free(path), EXIT_SUCCESS);
 		}
+		// else (first_found == NULL && access(tmp, F_OK) == 0)
+		// {
+		// 	first_found = tmp;
+		// }
 		return (free(path), EXIT_SUCCESS); // TODO do we need to return somthing else if access is not allowed?
 	}
 	else

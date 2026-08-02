@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/01 16:10:11 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/02 16:41:44 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,11 @@
 # define NO_TOKEN 0
 # define MAX_RHS_LEN 4
 # define RULE_COUNT 48
+
+//# define PERMISSION_DENIED_MSG "Permission denied"
+# define PERMISSION_DENIED_EXIT_CODE 126
+# define NO_SUCH_FILE_OR_DIR_EXIT_CODE 127
+
 
 /* -------- prompt.c -------------------------------------------------------- */
 char			*get_prompt(t_ctx *c, bool with_cwd);
