@@ -40,7 +40,8 @@ SRCS        = \
 			token_processor/get_pathname.c \
 			token_processor/ft_split_with_empty.c \
 			parser/parse_input.c \
-			parser/parser_utils.c \
+			parser/classify_token.c \
+			parser/shift_reduce.c \
 			lexer/lookahead.c \
 			lexer/lex_tokens.c \
 			lexer/lex_heredoc.c \

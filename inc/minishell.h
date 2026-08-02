@@ -147,6 +147,9 @@ uint64_t		consume_char(t_lexer_state *lex, uint64_t len);
 t_slice			save_lex_token_slice(t_lexer_state *lex);
 void			restore_lex_token_slice(t_lexer_state *lex, t_slice len);
 
+/* -------- shift_reduce.c ----------------------------------------------------- */
+void	shift_reduce(t_ctx *c, t_parser_state *parse, t_lexer_state *lex, t_here_state *here);
+
 /* -------- string_utils.c -------------------------------------------------- */
 const char		**get_operator_strs(void);
 bool			is_char_in_set(char c, const char *set);
@@ -210,8 +213,8 @@ char			*get_pwd(t_ctx *c);
 /* -------- parse_input.c --------------------------------------------------- */
 t_parser_state	parse_input(t_ctx *c);
 
-/* -------- parser_utils.c -------------------------------------------------- */
-void			shift_symbol(t_ctx *c, t_parser_state *parse);
+/* -------- classify_token.c -------------------------------------------------- */
+t_symbol_type	classify_token(t_ctx *c, t_token *token);
 
 /* -------- builtin_exit.c ------------------------------ */
 int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);

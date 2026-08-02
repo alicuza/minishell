@@ -25,7 +25,7 @@ static t_ctx	init_ctx(char **envp)
 	c.arena[AT_STRING] = arena_init(ARENA_SIZE, sizeof(char));
 	c.arena[AT_TOKENS] = arena_init(ARENA_SIZE, sizeof(t_token));
 	c.arena[AT_STACK] = arena_init(ARENA_SIZE, sizeof(t_symbol));
-	c.arena[AT_COMMAND] = arena_init(ARENA_SIZE, sizeof(t_cmd));
+	c.arena[AT_COMMAND] = arena_init(ARENA_SIZE, sizeof(t_node));
 	if (init_env(&c.env, envp))
 		printf("Error init_env");
 	if (isatty(STDIN_FILENO))

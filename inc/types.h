@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/01 16:10:59 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/02 18:52:28 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,18 +55,18 @@ typedef struct s_slice
 	uint64_t	len;
 }	t_slice;
 
-typedef struct s_cmd	// stub
+/*typedef struct s_cmd	// stub
 {
-	char *path;
+	char	*path;
 	char	**argv;
 	char	**envp;
-}	t_cmd;
+}	t_cmd;*/
 
 typedef struct s_command_ctx
 {
-	char *pathname;
-	uint64_t argc;
-	char	**argv;
+	char		*pathname;
+	uint64_t	argc;
+	char		**argv;
 }	t_command_ctx;
 
 typedef int	(*t_command_function)(t_ctx *c, t_command_ctx *command_ctx);
@@ -164,13 +164,13 @@ typedef struct s_node_command
 
 typedef struct s_node_arg
 {
-	uint64_t	arena_idx;
+	uint64_t	arena_offset;
 	uint64_t	next;
 }	t_node_arg;
 
 typedef struct s_node_redir
 {
-	uint64_t	arena_idx;
+	uint64_t	arena_offset;
 	uint64_t	next;
 	int32_t		fd;					// NOTE: only for heredocs?
 }	t_node_redir;
@@ -198,7 +198,7 @@ typedef struct s_here_state
 
 typedef struct s_parser_state
 {
-	uint32_t	cur_state;
+	int32_t	state;
 	uint64_t	stack_idx;			/* current top symbol on the stack */
 	uint64_t	token_idx;			/* current lookahead token in AT_TOKENS */
 	uint64_t	arg_head;			/* argument list head in AT_COMMAND */
@@ -229,11 +229,11 @@ typedef struct s_split_state
 	bool		active;
 }	t_split_state;
 
-typedef void	(*t_reduce)(t_ctx *, t_parser_state *, uint64_t);
+typedef void	(*t_reduce)(t_ctx *, t_parser_state *);
 
 typedef struct s_rule
 {
-	t_reduce		reduce;			/* pointer to handler function */
+	t_reduce		handler;		/* pointer to handler function */
 	uint32_t		rhs_len;		/* number of rhs symbols in rule */
 	t_symbol_type	lhs_type;		/* type of lhs in rule */
 }	t_rule;

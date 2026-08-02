@@ -998,67 +998,67 @@ yysetstate:
   YY_STACK_PRINT (yyss, yyssp);
 
   if (yyss + yystacksize - 1 <= yyssp)
-#if !defined yyoverflow && !defined YYSTACK_RELOCATE
-    YYNOMEM;
-#else
-    {
-      /* Get the current used size of the three stacks, in elements.  */
-      YYPTRDIFF_T yysize = yyssp - yyss + 1;
-
-# if defined yyoverflow
-      {
-        /* Give user a chance to reallocate the stack.  Use copies of
-           these so that the &'s don't force the real ones into
-           memory.  */
-        yy_state_t *yyss1 = yyss;
-        YYSTYPE *yyvs1 = yyvs;
-
-        /* Each stack pointer address is followed by the size of the
-           data in use in that stack, in bytes.  This used to be a
-           conditional around just the two extra args, but that might
-           be undefined if yyoverflow is a macro.  */
-        yyoverflow (YY_("memory exhausted"),
-                    &yyss1, yysize * YYSIZEOF (*yyssp),
-                    &yyvs1, yysize * YYSIZEOF (*yyvsp),
-                    &yystacksize);
-        yyss = yyss1;
-        yyvs = yyvs1;
-      }
-# else /* defined YYSTACK_RELOCATE */
-      /* Extend the stack our own way.  */
-      if (YYMAXDEPTH <= yystacksize)
-        YYNOMEM;
-      yystacksize *= 2;
-      if (YYMAXDEPTH < yystacksize)
-        yystacksize = YYMAXDEPTH;
-
-      {
-        yy_state_t *yyss1 = yyss;
-        union yyalloc *yyptr =
-          YY_CAST (union yyalloc *,
-                   YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
-        if (! yyptr)
-          YYNOMEM;
-        YYSTACK_RELOCATE (yyss_alloc, yyss);
-        YYSTACK_RELOCATE (yyvs_alloc, yyvs);
-#  undef YYSTACK_RELOCATE
-        if (yyss1 != yyssa)
-          YYSTACK_FREE (yyss1);
-      }
-# endif
-
-      yyssp = yyss + yysize - 1;
-      yyvsp = yyvs + yysize - 1;
-
-      YY_IGNORE_USELESS_CAST_BEGIN
-      YYDPRINTF ((stderr, "Stack size increased to %ld\n",
-                  YY_CAST (long, yystacksize)));
-      YY_IGNORE_USELESS_CAST_END
-
-      if (yyss + yystacksize - 1 <= yyssp)
-        YYABORT;
-    }
-#endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
+// #if !defined yyoverflow && !defined YYSTACK_RELOCATE
+//     YYNOMEM;
+// #else
+//     {
+//       /* Get the current used size of the three stacks, in elements.  */
+//       YYPTRDIFF_T yysize = yyssp - yyss + 1;
+// 
+// # if defined yyoverflow
+//       {
+//         /* Give user a chance to reallocate the stack.  Use copies of
+//            these so that the &'s don't force the real ones into
+//            memory.  */
+//         yy_state_t *yyss1 = yyss;
+//         YYSTYPE *yyvs1 = yyvs;
+// 
+//         /* Each stack pointer address is followed by the size of the
+//            data in use in that stack, in bytes.  This used to be a
+//            conditional around just the two extra args, but that might
+//            be undefined if yyoverflow is a macro.  */
+//         yyoverflow (YY_("memory exhausted"),
+//                     &yyss1, yysize * YYSIZEOF (*yyssp),
+//                     &yyvs1, yysize * YYSIZEOF (*yyvsp),
+//                     &yystacksize);
+//         yyss = yyss1;
+//         yyvs = yyvs1;
+//       }
+// # else /* defined YYSTACK_RELOCATE */
+//       /* Extend the stack our own way.  */
+//       if (YYMAXDEPTH <= yystacksize)
+//         YYNOMEM;
+//       yystacksize *= 2;
+//       if (YYMAXDEPTH < yystacksize)
+//         yystacksize = YYMAXDEPTH;
+// 
+//       {
+//         yy_state_t *yyss1 = yyss;
+//         union yyalloc *yyptr =
+//           YY_CAST (union yyalloc *,
+//                    YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
+//         if (! yyptr)
+//           YYNOMEM;
+//         YYSTACK_RELOCATE (yyss_alloc, yyss);
+//         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
+// #  undef YYSTACK_RELOCATE
+//         if (yyss1 != yyssa)
+//           YYSTACK_FREE (yyss1);
+//       }
+// # endif
+// 
+//       yyssp = yyss + yysize - 1;
+//       yyvsp = yyvs + yysize - 1;
+// 
+//       YY_IGNORE_USELESS_CAST_BEGIN
+//       YYDPRINTF ((stderr, "Stack size increased to %ld\n",
+//                   YY_CAST (long, yystacksize)));
+//       YY_IGNORE_USELESS_CAST_END
+// 
+//       if (yyss + yystacksize - 1 <= yyssp)
+//         YYABORT;
+//     }
+// #endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
 
 
   if (yystate == YYFINAL)
@@ -1082,33 +1082,33 @@ yybackup:
   /* Not known => get a lookahead token if don't already have one.  */
 
   /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
-  if (yychar == YYEMPTY)
-    {
-      YYDPRINTF ((stderr, "Reading a token\n"));
-      yychar = yylex ();
-    }
-
-  if (yychar <= YYEOF)
-    {
-      yychar = YYEOF;
-      yytoken = YYSYMBOL_YYEOF;
-      YYDPRINTF ((stderr, "Now at end of input.\n"));
-    }
-  else if (yychar == YYerror)
-    {
-      /* The scanner already issued an error message, process directly
-         to error recovery.  But do not keep the error token as
-         lookahead, it is too special and may lead us to an endless
-         loop in error recovery. */
-      yychar = YYUNDEF;
-      yytoken = YYSYMBOL_YYerror;
-      goto yyerrlab1;
-    }
-  else
-    {
-      yytoken = YYTRANSLATE (yychar);
-      YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
-    }
+//  if (yychar == YYEMPTY)
+//    {
+//      YYDPRINTF ((stderr, "Reading a token\n"));
+//      yychar = yylex ();
+//    }
+//
+//  if (yychar <= YYEOF)
+//    {
+//      yychar = YYEOF;
+//      yytoken = YYSYMBOL_YYEOF;
+//      YYDPRINTF ((stderr, "Now at end of input.\n"));
+//    }
+//  else if (yychar == YYerror)
+//    {
+//      /* The scanner already issued an error message, process directly
+//         to error recovery.  But do not keep the error token as
+//         lookahead, it is too special and may lead us to an endless
+//         loop in error recovery. */
+//      yychar = YYUNDEF;
+//      yytoken = YYSYMBOL_YYerror;
+//      goto yyerrlab1;
+//    }
+//  else
+//    {
+//      yytoken = YYTRANSLATE (yychar);
+//      YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
+//    }
 
   /* If the proper action on seeing token YYTOKEN is to reduce or to
      detect an error, take that action.  */
@@ -1126,8 +1126,8 @@ yybackup:
 
   /* Count tokens shifted since error; after three, turn off error
      status.  */
-  if (yyerrstatus)
-    yyerrstatus--;
+//  if (yyerrstatus)
+//    yyerrstatus--;
 
   /* Shift the lookahead token.  */
   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#define YYFINAL  28
 
 void	try_reduce_symbol(t_ctx *c, t_parser_state *parse, t_here_state *here)
 {
@@ -108,8 +109,8 @@ t_parser_state	parse_input(t_ctx *c)
 		}
 		else
 		{
-			if parse->state == YYFINAL;
-				return accept(lalr_state);
+			// if(parse.state == YYFINAL)
+			// 	return accept(lalr_state); // TODO implement accept
 			shift_reduce(c, &parse, &lex, &here);
 //			shift_symbol(c, &parse);
 //			try_reduce_symbol(c, &parse, &here);
