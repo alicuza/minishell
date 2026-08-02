@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:45:50 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/01 16:19:39 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/02 13:45:32 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ char	*get_user_input(t_ctx *c, bool is_continuation)
 		add_history(read_line);
 	if (!read_line) // TODO stefan: think about whether this is even necessary when we have an empty line
 		c->read_line = "";
-	c->read_line = ft_strjoin(c->read_line, "\n");
+	c->read_line = ft_strjoin(read_line, "\n");
 	free(read_line);
 	return (c->read_line);
 }

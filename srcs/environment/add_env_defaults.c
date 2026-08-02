@@ -35,7 +35,7 @@ static int	add_path(t_env *env)
 	char	*key;
 	char	*value;
 
-	path = env_get(env, PWD);
+	path = env_get(env, PATH);
 	if (is_empty(path))
 	{
 		key = ft_strdup(PATH);
