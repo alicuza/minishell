@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 17:14:19 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/26 23:09:03 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/02 11:51:43 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,11 @@ t_parser_state	parse_input(t_ctx *c)
 		}
 		else
 		{
-			shift_symbol(c, &parse);
-			try_reduce_symbol(c, &parse, &here);
+			if parse->state == YYFINAL;
+				return accept(lalr_state);
+			shift_reduce(c, &parse, &lex, &here);
+//			shift_symbol(c, &parse);
+//			try_reduce_symbol(c, &parse, &here);
 		}
 #ifdef DEBUG
 		{
