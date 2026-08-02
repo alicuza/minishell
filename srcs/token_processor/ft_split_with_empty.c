@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 14:43:42 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/29 20:51:39 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/02 16:07:17 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ static char	*get_substring(char const *s, char c, int n)
 {
 	size_t	i;
 	size_t	start;
-	size_t	len;
 	int		substr_index;
 
 	i = 0;
@@ -50,9 +49,8 @@ static char	*get_substring(char const *s, char c, int n)
 	{
 		if (s[i] == c)
 		{
-			len = i - start;
 			if (substr_index == n)
-				return (ft_substr(s, start, len));
+				return (ft_substr(s, start, i - start));
 			else
 			{
 				start = i + 1;
@@ -61,6 +59,8 @@ static char	*get_substring(char const *s, char c, int n)
 		}
 		i++;
 	}
+	if (substr_index == n)
+		return (ft_substr(s, start, i - start));
 	return (ft_strdup(""));
 }
 
