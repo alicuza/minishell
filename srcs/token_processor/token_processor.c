@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/08/04 00:23:35 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/04 01:37:37 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,17 @@ int	build_command(t_ctx *c, t_parser_state *parse)
 	free(command.argv);
 	return (EXIT_SUCCESS);
 }
+/*
+TODO nik: Maybe part of reduction:
+  - read 2.6.6 Pathname Expansion
+	In the case of a simple command, the results usually include a list of pathnames and fields to be treated as a command name and arguments; see 2.9 Shell Commands.
 
+The shell performs redirection (see 2.7 Redirection) and removes redirection operators and their operands from the parameter list.
+
+The shell executes a function (see 2.9.5 Function Definition Command), built-in (see 2.15 Special Built-In Utilities), executable file, or script, giving the names of the arguments as positional parameters numbered 1 to n, and the name of the command (or in the case of a function within a script, the name of the script) as special parameter 0 (see 2.9.1.4 Command Search and Execution).
+
+The shell optionally waits for the command to complete and collects the exit status (see 2.8.2 Exit Status for Commands).
+*/
 void	execute(t_ctx *c, t_parser_state *parse)
 {
 	t_arena		*stack;

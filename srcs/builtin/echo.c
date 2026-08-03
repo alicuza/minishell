@@ -13,7 +13,7 @@ static void	print_val(char *str)
 		printf("%s\n", str);
 }
 
-//TODO add proper arg processing with white space and -n flag
+//TODO add proper arg processing with white space and -n flag see 2.6.5 Field Splitting
 int	echo(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char *str;
