@@ -6,15 +6,15 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/01 16:10:11 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/03 12:38:02 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include <readline/readline.h> // readline, rl_clear_history, rl_on_new_line,
 # include <stdio.h>             // printf, perror
+# include <readline/readline.h> // readline, rl_clear_history, rl_on_new_line,
 # include <string.h>            // strerror
 								// rl_replace_line, rl_redisplay
 # include <readline/history.h>  // add_history

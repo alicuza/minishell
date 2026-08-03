@@ -82,11 +82,14 @@ typedef enum e_lalr_action
 
 static void pop(t_ctx *c, t_parser_state *parse, uint32_t len)
 {
-	t_arena    *stack;
+	t_arena		*stack;
+	t_symbol	*symbol;
 
 	stack = &(c->arena[AT_STACK]);
 	parse->stack_idx -= len;
 	stack->offset -= len * stack->stride;
+	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
+	parse->state = symbol->entry_state;
 }
 
 void	push_term(t_ctx *c, t_parser_state *parse)
@@ -123,21 +126,34 @@ void	push_nonterm(t_ctx *c, t_parser_state *parse, t_symbol_type type)
 	symbol->node_idx = 0;		// TODO: for now
 }
 
-static t_rule	*get_rule(uint32_t action)
+//typedef struct s_rule		// TODO stefan: delete this when done with rules
+//{
+//	t_reduce		handler;		/* pointer to handler function */
+//	uint32_t		rhs_len;		/* number of rhs symbols in rule */
+//	t_symbol_type	lhs_type;		/* type of lhs in rule */
+//}	t_rule;
+
+static t_rule	*rule_dispatch_first(int32_t action);
 {
-	(void) action;
-	return ((t_rule*) NULL);
+	t_rule	rule[22];
+	rule[0] = memset(rule, 0, sizeof(t_rule));
+	rule[1] = {NULL, }
 }
 
+static t_rule	*get_rule(uint32_t action)
+{
+	if (0 < action && action < 23)
+		return rule_dispatch_first(action);
+	else
+		return rule_dispatch_second(action - 21); // TODO stefan: macros for the magic numbers
+}
 
-void	reduce(t_ctx *c, t_parser_state *parse, uint32_t action)// TODO stefan: what does this need to return?
+void	reduce(t_ctx *c, t_parser_state *parse, int32_t action)// TODO stefan: what does this need to return?
 {
 	t_rule	*rule;
 	int32_t	lhs;
 	int32_t	index;
-	t_arena	*tokens;
 
-	tokens = &c->arena[AT_TOKENS];
 	rule = get_rule(action);
 	lhs = rule->lhs_type - NTERM_OFFSET;
 	rule->handler(c, parse); //TODO stefan: figure out how to wire the reduction structs;
@@ -150,7 +166,7 @@ void	reduce(t_ctx *c, t_parser_state *parse, uint32_t action)// TODO stefan: wha
 	push_nonterm(c, parse, rule->lhs_type);
 }
 
-void	shift(t_ctx *c, t_parser_state *parse, uint32_t action)
+void	shift(t_ctx *c, t_parser_state *parse, int32_t action)
 {
 	parse->state = action;
 	push_term(c, parse);
@@ -158,9 +174,9 @@ void	shift(t_ctx *c, t_parser_state *parse, uint32_t action)
 
 void	shift_reduce(t_ctx *c, t_parser_state *parse, t_lexer_state *lex, t_here_state *here)
 {
-	int action;
-	int index;
-	t_arena		*tokens;
+	t_arena	*tokens;
+	int32_t	action;
+	int32_t	index;
 	int32_t	lookahead_type;
 
 	(void) lex; //TODO stefan: check if nessesary
@@ -212,7 +228,126 @@ void	reduce_cmd_name(t_ctx *c, t_parser_state *parse)
 	node->type = NODE_ARG;
 	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
 	symbol->node_idx = get_idx_from_offset(commands, cmd_offset);
-//	symbol = (t_symbol *)get_ptr_from_offset(stack, stack->offset) - 1;
 	token = get_ptr_from_idx(tokens, symbol->token_idx);
 	node->data.arg.arena_offset = token->offset;
+}
+
+void	reduce_cmd_word(t_ctx *c, t_parser_state *parse)
+{
+	uint64_t	cmd_offset;
+	t_arena		*tokens;
+	t_arena		*stack;
+	t_arena		*commands;
+	t_token		*token;
+	t_symbol	*symbol;
+	t_node		*node;
+
+	(void) parse; //TODO stefan: check if nessesary
+	tokens = &c->arena[AT_TOKENS];
+	commands = &c->arena[AT_COMMAND];
+	stack = &c->arena[AT_STACK];
+	cmd_offset = arena_alloc(commands, sizeof(t_node), _Alignof(t_node));
+	node = get_ptr_from_offset(commands, cmd_offset);
+	node->type = NODE_ARG;
+	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
+	symbol->node_idx = get_idx_from_offset(commands, cmd_offset);
+	token = get_ptr_from_idx(tokens, symbol->token_idx);
+	node->data.arg.arena_offset = token->offset;
+}
+
+void	reduce_here_end(t_ctx *c, t_parser_state *parse)
+{
+	uint64_t	cmd_offset;
+	t_arena		*tokens;
+	t_arena		*stack;
+	t_arena		*commands;
+	t_token		*token;
+	t_symbol	*symbol;
+	t_node		*node;
+
+	(void) parse; //TODO stefan: check if nessesary
+	tokens = &c->arena[AT_TOKENS];
+	commands = &c->arena[AT_COMMAND];
+	stack = &c->arena[AT_STACK];
+	cmd_offset = arena_alloc(commands, sizeof(t_node), _Alignof(t_node));
+	node = get_ptr_from_offset(commands, cmd_offset);
+	node->type = NODE_REDIR;
+	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
+	symbol->node_idx = get_idx_from_offset(commands, cmd_offset);
+	token = get_ptr_from_idx(tokens, symbol->token_idx);
+	node->data.arg.arena_offset = token->offset;
+}
+
+void	reduce_filename(t_ctx *c, t_parser_state *parse)
+{
+	uint64_t	cmd_offset;
+	t_arena		*tokens;
+	t_arena		*stack;
+	t_arena		*commands;
+	t_token		*token;
+	t_symbol	*symbol;
+	t_node		*node;
+
+	(void) parse; //TODO stefan: check if nessesary
+	tokens = &c->arena[AT_TOKENS];
+	commands = &c->arena[AT_COMMAND];
+	stack = &c->arena[AT_STACK];
+	cmd_offset = arena_alloc(commands, sizeof(t_node), _Alignof(t_node));
+	node = get_ptr_from_offset(commands, cmd_offset);
+	node->type = NODE_REDIR;
+	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
+	symbol->node_idx = get_idx_from_offset(commands, cmd_offset);
+	token = get_ptr_from_idx(tokens, symbol->token_idx);
+	node->data.arg.arena_offset = token->offset;
+}
+
+void	reduce_io_here(t_ctx *c, t_parser_state *parse) // TODO stefan: should this be the function that triggers the here_body reading?
+{
+	(void) c; //TODO stefan: check if nessesary
+	(void) parse; //TODO stefan: check if nessesary
+}
+
+void	reduce_io_file_LESS(t_ctx *c, t_parser_state *parse)
+{
+	t_arena		*stack;
+	t_arena		*commands;
+	t_symbol	*symbol;
+	t_node		*node;
+
+	(void) parse; //TODO stefan: check if nessesary
+	commands = &c->arena[AT_COMMAND];
+	stack = &c->arena[AT_STACK];
+	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
+	node = get_ptr_from_idx(commands, symbol->node_idx);
+	node->flags |= REDIR_LESS;
+}
+
+void	reduce_io_file_DLESS(t_ctx *c, t_parser_state *parse)
+{
+	t_arena		*stack;
+	t_arena		*commands;
+	t_symbol	*symbol;
+	t_node		*node;
+
+	(void) parse; //TODO stefan: check if nessesary
+	commands = &c->arena[AT_COMMAND];
+	stack = &c->arena[AT_STACK];
+	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
+	node = get_ptr_from_idx(commands, symbol->node_idx);
+	node->flags |= REDIR_DLESS;
+}
+
+void	reduce_io_file_DGREAT(t_ctx *c, t_parser_state *parse)
+{
+	t_arena		*stack;
+	t_arena		*commands;
+	t_symbol	*symbol;
+	t_node		*node;
+
+	(void) parse; //TODO stefan: check if nessesary
+	commands = &c->arena[AT_COMMAND];
+	stack = &c->arena[AT_STACK];
+	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
+	node = get_ptr_from_idx(commands, symbol->node_idx);
+	node->flags |= REDIR_DGREAT;
 }
