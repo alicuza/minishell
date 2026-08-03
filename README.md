@@ -76,25 +76,14 @@ scaffold, and arena-based memory management.
 
 ---
 
-## Known Limitations
+## TODO OR current Known Limitations
 
-- **Shift-only parser:** the parser stacks tokens (`t_symbol`) but does not
-  perform grammar reductions. No non-terminal nodes are created. `t_rule` table
-  and `t_reduce` function pointers are defined but never populated.
-- **No external commands:** there is no `fork()`/`execve()` loop. Only the
-  builtins `env`, `pwd`, and `exit` are wired; `exit` does not terminate
-  the shell.
 - **No pipelines, redirections, subshells, or chaining:** `|`, `<`, `>`, `<<`,
   `>>`, `&&`, `||`, `(`, `)` are lexed but never acted upon.
-- **No expansion:** `$NAME`, `$?`, and quoted strings are flagged but never
-  expanded or quote-removed. No field splitting.
 - **No heredoc:** `<<` is tokenized but the heredoc body reader is not
   implemented.
 - **No signal handling:** `<signal.h>` is included but no handlers are
   registered. `SIGINT` and `SIGQUIT` are ignored by default.
-- **Incomplete builtins:** only 3 of the 7 required builtins are stubbed.
-  `echo`, `cd`, `export`, `unset` are declared in `builtin.h` but not wired
-  in `map_to_command()`.
 
 ---
 

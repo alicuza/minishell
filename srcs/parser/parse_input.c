@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 17:14:19 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/02 11:51:43 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/04 00:04:10 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,8 @@ t_parser_state	parse_input(t_ctx *c)
 		}
 		else
 		{
-			// if(parse.state == YYFINAL)
-			// 	return accept(lalr_state); // TODO implement accept
+			if(parse.state == YYFINAL)
+				return (parse);
 			shift_reduce(c, &parse, &lex, &here);
 //			shift_symbol(c, &parse);
 //			try_reduce_symbol(c, &parse, &here);

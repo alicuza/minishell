@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/02 18:52:28 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/04 00:22:15 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,14 +151,14 @@ typedef struct s_symbol
 
 typedef struct s_node_pipeline
 {
-	uint64_t	command_head;
-	uint64_t	next;
+	uint64_t	command_head_idx;
+	uint64_t	next_idx;
 }	t_node_pipeline;
 
 typedef struct s_node_command
 {
-	uint64_t	arg_head;
-	uint64_t	redir_head;
+	uint64_t	arg_head_idx;
+	uint64_t	redir_head_idx;
 	uint64_t	next;
 }	t_node_command;
 

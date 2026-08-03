@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/07/31 17:30:33 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/04 00:23:35 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,25 +113,30 @@ int	build_command(t_ctx *c, t_parser_state *parse)
 	return (EXIT_SUCCESS);
 }
 
+void	execute(t_ctx *c, t_parser_state *parse)
+{
+	t_arena		*stack;
+	t_symbol	*symbol;
+	t_node		*pipeline_node;
+	t_node		*command_node;
+	t_node		*arg_node;
+
+	stack = &(c->arena[AT_STACK]);
+	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
+	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND], symbol->node_idx);
+	while (*pipeline_node != '\0') // TODO stefan: check if condition is correct
+	{
+		command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
+				pipeline_node->data.command_head_idx);
+		arg_node = command_node->data.command.arg_head;
+		// build_command(c, arg_node);
+		pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
+				pipeline_node->data.next_idx);
+	}
+}
+
 void	exec_stack(t_ctx *c, t_parser_state *parse)
 {
-	build_command(c, parse);
-	// t_symbol	*sym;
-	// t_token		t;
-	// t_arena		*stack;
-	// stack = &c->arena[AT_STACK];
-	// sym = get_ptr_from_idx(stack, parse->stack_idx);
-	// while (1)
-	// {
-	// 	if (sym->type == SYM_TOKEN)
-	// 	{
-	// 		t.offset = sym->offset;
-	// 		t.type = sym->type;
-	// 		t.flags = sym->flags;
-	// 		process_token(c, &t);
-	// 	}
-	// 	if (!sym->prev_symbol)
-	// 		break ;
-	// 	sym = get_ptr_from_idx(stack, sym->prev_symbol);
-	// }
+	// build_command(c, parse);
+	execute(c); // Execute stuff after parser is done
 }
