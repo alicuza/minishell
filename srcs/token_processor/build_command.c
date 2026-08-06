@@ -1,5 +1,10 @@
+#include "minishell.h"
+
 static int	init_command(t_command_ctx *command, uint64_t argc)
 {
+	command = malloc(sizeof(t_command_ctx));
+	if(command == NULL)
+		return (EXIT_FAILURE);
 	command->pathname = NULL;
 	command->argc = argc;
 	command->argv = malloc(sizeof(char *) * (argc + 1));
@@ -49,7 +54,7 @@ static int	get_argc(t_ctx *c, t_node *arg_node)
 	i = 0;
 	while (arg_node != NULL)
 	{
-		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->next);
+		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->data.arg.next);
 		i++;
 	}
 	return (i);
@@ -57,24 +62,25 @@ static int	get_argc(t_ctx *c, t_node *arg_node)
 
 t_command_ctx	*build_command(t_ctx *c, t_node *arg_node)
 {
-	t_command_ctx	command;
+	t_command_ctx	*command;
 	int				i;
 
 	i = 0;
-	if (init_command(&command, get_argc(c, arg_node)))
+	command = NULL;
+	if (init_command(command, get_argc(c, arg_node)))
 		return (NULL);
 	while (arg_node != NULL)
 	{
-		if (command.pathname == NULL)
+		if (command->pathname == NULL)
 		{
-			command.pathname = ft_strdup(c->arena[AT_STRING].buf
-					+ arg_node->arena_offset);
-			if (command.pathname == NULL)
+			command->pathname = ft_strdup(c->arena[AT_STRING].buf
+					+ arg_node->data.arg.arena_offset);
+			if (command->pathname == NULL)
 				return (NULL);
 		}
-		command.argv[i] = c->arena[AT_STRING].buf + arg_node->arena_offset;
+		command->argv[i] = c->arena[AT_STRING].buf + arg_node->data.arg.arena_offset;
 		i++;
-		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->next);
+		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->data.arg.next);
 	}
-	return (&command);
+	return (command);
 }

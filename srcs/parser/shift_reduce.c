@@ -136,7 +136,7 @@ void	push_nonterm(t_ctx *c, t_parser_state *parse, t_symbol_type type)
 
 # define OFFSET 21
 
-static t_rule	*rule_dispatch_first(int32_t action); //TODO stefan: is index same as bison or it is -1
+static t_rule	*rule_dispatch_first(int32_t action) //TODO stefan: is index same as bison or it is -1
 {
 	t_rule	rule[20];
 	rule[23 - OFFSET] = {NULL, 1, SYM_CMD_PREFIX};

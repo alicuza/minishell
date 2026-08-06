@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/08/01 16:10:39 by sancuta          ###   ########.fr        #
+#    Updated: 2026/08/07 00:10:02 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,8 @@ SRCS        = \
 			token_processor/execute_non_builtin.c \
 			token_processor/get_pathname.c \
 			token_processor/ft_split_with_empty.c \
+			token_processor/command_search_and_execution.c \
+			token_processor/build_command.c \
 			parser/parse_input.c \
 			parser/classify_token.c \
 			parser/shift_reduce.c \

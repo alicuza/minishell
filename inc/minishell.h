@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/03 12:38:02 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/07 00:13:35 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,12 @@ char			**ft_split_key_value(const char *s, char c);
 int				process_token(t_ctx *c, t_token *token);
 void			exec_stack(t_ctx *c, t_parser_state *parse);
 
+/* -------- build_command.c ----------------------------------------------- */
+t_command_ctx	*build_command(t_ctx *c, t_node *arg_node);
+
+/* -------- command_search_and_execution.c ----------------------------------------------- */
+int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx);
+
 /* -------- execute_non_builtin.c ----------------------------------------------- */
 int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
 
@@ -233,7 +239,7 @@ int				builtin_export(t_ctx *c, t_command_ctx *command_ctx);
 /* -------- unset.c ------------------------------ */
 int				unset(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- echi.c ------------------------------ */
+/* -------- echo.c ------------------------------ */
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
 
 #endif
