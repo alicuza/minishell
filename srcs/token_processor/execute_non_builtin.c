@@ -77,7 +77,7 @@ int	execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx)
 	if (pid == -1)
 	{
 		close_io(c);
-		return (exit_on_issue("fork"));
+		return (exit_on_issue("fork")); //TODO not exit minishell
 	}
 	else if (pid == 0)
 		return (execute_in_child(c, cmd_ctx, envp));
