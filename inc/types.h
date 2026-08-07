@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/04 00:22:15 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/07 16:56:43 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ typedef enum e_arena_type
 typedef struct s_ctx
 {
 	t_env	env;
+	int		pipe_fd[2];
+	int		io_fd[2];
 	t_arena	arena[AT_COUNT];
 	char	*read_line;
 	int		return_status;

@@ -6,21 +6,47 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/08/07 00:19:54 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/07 19:31:14 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtin.h"
 #include "minishell.h"
+
+void process_redirection(t_ctx *c, t_node *redir_node)
+{
+	char * filename;
+	
+	while(redir_node != NULL)
+	{
+		if(redir_node.flags & REDIR_IN)
+		{
+			errno = 0;
+			filename = c->arena[AT_STRING].buf
+					+ redir_node->data.redir.arena_offset;
+			c->io_fd[0] = open(filename , O_RDONLY);
+			if (c->io_fd[0] == -1)
+			handle_error(filename, strerror(errno), 1);
+		}
+		else if(redir_node.flags & REDIR_OUT)
+		{
+			
+		}
+		if(redir_node.flags & REDIR_HERE)
+		if(redir_node.flags & REDIR_APPEND)
+
+		redir_node = get_ptr_from_idx(&c->arena[AT_COMMAND], redir_node->data.redir.next);
+	}
+}
 
 void process_command(t_ctx *c, t_node			*command_node)
 {
 	t_node			*arg_node;
 	t_command_ctx	*command;
 
+	process_redirection(c, get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.redir_head_idx));
 	arg_node =  get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.arg_head_idx);
 	command = build_command(c, arg_node);
-	c->return_status = command_search_and_execution(c, command);
+	c->return_status = command_search_and_execution(c, command); //TODO nik: make sure it folows the  Exit Status and Errors section
 	free(command->pathname);
 	free(command->argv);
 }
