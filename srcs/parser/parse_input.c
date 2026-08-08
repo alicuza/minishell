@@ -2,68 +2,102 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   parse_input.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                    ft_t         :+:   :+:   */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  :+:       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 17:14:19 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/04 00:04:10 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/08 14:37:26 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#define YYFINAL  28
+#include "parser.h"
 
-void	try_reduce_symbol(t_ctx *c, t_parser_state *parse, t_here_state *here)
+static void	parse_exec(t_ctx *c, t_parser_state *parse)
 {
-	t_arena			*strings;
-	t_arena			*symbols;
-	t_arena			*tokens;
-	t_symbol		*symbol;
-	t_token			*token;
+	t_symbol	*symbol;
 
-	strings = &c->arena[AT_STRING];
-	tokens = &c->arena[AT_TOKENS];
-	symbols = &c->arena[AT_STACK];
-	symbol =
-		get_ptr_from_offset(symbols, symbols->offset - symbols->stride);
-	token = get_ptr_from_idx(tokens, symbol->token_idx);
-	if ((symbol - 1)->type == SYM_DLESS && symbol->type == SYM_WORD)
-	{
-		parse->flags |= PARSE_SAVE_TOKENS;
-	    here->body.pos = 0;
-    	here->body.len = 0;
-		here->delim.pos = token->offset;
-		here->delim.len = ft_strlen(get_ptr_from_offset(strings, here->delim.pos));
-		if (token->flags & TKN_HAS_QUOTES)	// TODO: needs more roburs handling for quuotes in any position
-		{
-			here->delim.pos += 1;
-			here->delim.len -= 2;
-		}
-	}
+	if (!parse->exec_idx)
+		return ;
+#ifndef DEBUG
+	exec_list(c, parse->exec_idx);
+#else
+	if (!c->dbg.no_exec)
+		exec_list(c, parse->exec_idx);
+#endif
+	parse->exec_idx = 0;
+#ifdef DEBUG
+	if (c->dbg.no_exec)
+		return ;
+#endif
+	arena_clear(&c->arena[AT_COMMAND]);
+	symbol = get_ptr_from_idx(&c->arena[AT_STACK], parse->stack_idx);
+	symbol->node_idx = 0;
 }
 
-bool	get_next_token(t_ctx *c, t_parser_state *parse, t_lexer_state *lex, t_here_state *here)
+static bool	parse_advance(t_ctx *c, t_parser_state *parse,
+		t_lalr_action action)
 {
+	if (action == LALR_REDUCE)
+		return (true);
+	parse->flags &= ~PARSE_HAS_LOOKAHEAD;
+	if (action == LALR_SHIFT)
+		return (true);
+	if (action == LALR_ACCEPT)
+	{
+		parse->flags |= PARSE_DONE;
+		return (false);
+	}
+	report_parse_error(c, parse);
+	return (false);
+}
+
+static bool	run_parse_iteration(t_ctx *c, t_parser_state *parse,
+		t_lexer_state *lex)
+{
+	t_lalr_action	action;
+
+#ifdef DEBUG
+	if (c->dbg.states & DBG_PARSER)
+		debug_parse_header(parse);
+	debug_parse_arenas(c);
+#endif
+	if (!(parse->flags & PARSE_HAS_LOOKAHEAD))
+	{
+		if (!get_lookahead(c, parse, lex))
+			return (false);
+	}
+	if (parse->flags & PARSE_SAVE_TOKENS)
+	{
+		parse->flags &= ~PARSE_HAS_LOOKAHEAD;
+		return (handle_here_doc(c, parse));
+	}
+	action = shift_reduce(c, parse);
+	parse_exec(c, parse);
+#ifdef DEBUG
+	debug_parse_action(c, parse, action);
+#endif
+	return (parse_advance(c, parse, action));
+}
+
+static void	final_pass(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
+{
+	t_lalr_action	action;
+
+	(void)lex;
 	while (true)
 	{
-		if ((parse->flags & PARSE_HERE_BODY)
-			&& !handle_here_body(c, parse, lex, here))
-			return (false);
-		if (lex->flags & LEX_AT_EOI)
+		action = shift_reduce(c, parse);
+		parse_exec(c, parse);
+		if (action == LALR_ACCEPT)
 		{
-			ft_memset(lex, 0, sizeof(t_lexer_state));
-			return (false);													// eof reached
+			parse->flags |= PARSE_DONE;
+			return ;
 		}
-		if (parse->flags & PARSE_HAS_SAVED_TOKENS)
+		if (action == LALR_ERROR)
 		{
-			if (handle_saved_tokens(c, parse))
-				return (true);
-//			return (false);
-		}
-		if (lex_token(c, lex))
-		{
-			++parse->token_idx;
-			return (true);
+			report_parse_error(c, parse);
+			return ;
 		}
 	}
 }
@@ -72,57 +106,21 @@ t_parser_state	parse_input(t_ctx *c)
 {
 	t_parser_state	parse;
 	t_lexer_state	lex;
-	t_here_state	here; // TODO: think about adding t_here_state to t_parser_state
-	t_arena			*strings;
-	t_arena			*tokens;
-	t_token			*cur_token;
 
-	ft_memset(&lex, 0, sizeof(t_lexer_state));
 	ft_memset(&parse, 0, sizeof(t_parser_state));
-	ft_memset(&here, 0, sizeof(t_here_state));
-	strings = &c->arena[AT_STRING];
-	tokens = &c->arena[AT_TOKENS];
-	arena_clear(strings);
-	arena_clear(tokens);
-	while (true)
+	ft_memset(&lex, 0, sizeof(t_lexer_state));
+	arena_clear(&c->arena[AT_STRING]);
+	arena_clear(&c->arena[AT_TOKENS]);
+	arena_clear(&c->arena[AT_STACK]);
+	arena_clear(&c->arena[AT_COMMAND]);
+	while (run_parse_iteration(c, &parse, &lex))
+		;
+	if (!(parse.flags & PARSE_ERROR) && !(parse.flags & PARSE_DONE))
 	{
-		if(!get_next_token(c, &parse, &lex, &here))
-			break ;
-		cur_token = get_ptr_from_idx(tokens, parse.token_idx);
-#ifdef DEBUG
-		FILE *out = stderr;
-		if (c->scope & SCOPE_TOKENS)
-			out = stdout;
-		fprintf(stderr, "\n--- lookahead ---\n");
-		print_token(out, c, cur_token);
-		print_arena(&c->arena[AT_STRING]);
-		print_arena(&c->arena[AT_TOKENS]);
-#endif
-		if (parse.flags & PARSE_SAVE_TOKENS)
-		{
-			if (cur_token->type == TKN_OPERATOR
-				&& strings->buf[cur_token->offset] == '\n')
-			{
-				parse.flags &= ~PARSE_SAVE_TOKENS;
-				parse.flags |= PARSE_HERE_BODY;
-			}
-		}
-		else
-		{
-			if(parse.state == YYFINAL)
-				return (parse);
-			shift_reduce(c, &parse, &lex, &here);
-//			shift_symbol(c, &parse);
-//			try_reduce_symbol(c, &parse, &here);
-		}
-#ifdef DEBUG
-		{
-			t_symbol *symbol;
-			symbol = get_ptr_from_idx(&c->arena[AT_STACK], parse.stack_idx);
-			print_symbol(c, symbol, parse.stack_idx);
-			print_arena(&c->arena[AT_STACK]);
-		}
-#endif
+		parse.flags |= PARSE_LOOKAHEAD_IS_EOF;
+		final_pass(c, &parse, &lex);
 	}
+	if (!(parse.flags & PARSE_ERROR) && (parse.flags & PARSE_SAVE_TOKENS))
+		get_here_doc(c, &lex, &parse.here);
 	return (parse);
 }
