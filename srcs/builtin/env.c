@@ -24,5 +24,8 @@ int	env(t_ctx *c, t_command_ctx *command_ctx)
 		return (EXIT_SUCCESS);
 	}
 	else
-		return (EXIT_FAILURE);
+	{
+		errno = 0
+		return (handle_builtin_error(c, "env: enviroment is empty", EXIT_FAILURE));
+	}
 }

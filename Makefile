@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/08/07 00:10:02 by nribakov         ###   ########.fr        #
+#    Updated: 2026/08/08 12:56:16 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,6 +60,7 @@ SRCS        = \
 			environment/init_env.c \
 			environment/add_env_defaults.c \
 			environment/env_to_envp.c \
+			error_handling/error_handling.c
 			builtin/env.c \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \
@@ -68,7 +69,7 @@ SRCS        = \
 			builtin/get_path_canonical_form.c \
 			builtin/builtin_export.c \
 			builtin/unset.c \
-			builtin/echo.c
+			builtin/echo.c \
 
 DEBUG_SRCS  = \
 			debug/debug_utils.c \

@@ -6,38 +6,14 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/08/07 19:31:14 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/08 20:41:11 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void process_redirection(t_ctx *c, t_node *redir_node)
-{
-	char * filename;
-	
-	while(redir_node != NULL)
-	{
-		if(redir_node.flags & REDIR_IN)
-		{
-			errno = 0;
-			filename = c->arena[AT_STRING].buf
-					+ redir_node->data.redir.arena_offset;
-			c->io_fd[0] = open(filename , O_RDONLY);
-			if (c->io_fd[0] == -1)
-			handle_error(filename, strerror(errno), 1);
-		}
-		else if(redir_node.flags & REDIR_OUT)
-		{
-			
-		}
-		if(redir_node.flags & REDIR_HERE)
-		if(redir_node.flags & REDIR_APPEND)
-
-		redir_node = get_ptr_from_idx(&c->arena[AT_COMMAND], redir_node->data.redir.next);
-	}
-}
-
+// TODO nik : ha? In all of the cases shown in the table where an interactive shell is required not to exit and a non-interactive shell is required to exit, an interactive shell shall not perform any further processing of the command in which the error occurred.
+// TOD nik :maybe here indicate if contunue or not
 void process_command(t_ctx *c, t_node			*command_node)
 {
 	t_node			*arg_node;
@@ -46,23 +22,52 @@ void process_command(t_ctx *c, t_node			*command_node)
 	process_redirection(c, get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.redir_head_idx));
 	arg_node =  get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.arg_head_idx);
 	command = build_command(c, arg_node);
-	c->return_status = command_search_and_execution(c, command); //TODO nik: make sure it folows the  Exit Status and Errors section
+	command_search_and_execution(c, command); //TODO nik: make sure it folows the  Exit Status and Errors section and alos see https://www.gnu.org/software/bash/manual/bash.html#Exit-Status-1
 	free(command->pathname);
 	free(command->argv);
 }
+//TODO nik indicate if it is part of pipe or we get status right away.
+void wait_return_status(t_ctx *c)
+{
+	// TODO nik: the exit status of a command shall be that of the last simple command executed by the command.
+	- I guess trach the pid and wait for last one; and also mark shell state that it is waiting so signal hendler wkons what to do
+	
+	If the command is not found, the exit status shall be 127.
+Otherwise, if the command name is found, but it is not an executable utility, the exit status shall be 126.
+Otherwise, if the command terminated due to the receipt of a signal, the shell shall assign it an exit status greater than 128. The exit status shall identify, in an implementation-defined manner, which signal terminated the command. Note that shell implementations are permitted to assign an exit status greater than 255 if a command terminates due to a signal.
+Otherwise, the exit status shall be the value obtained by the equivalent of the WEXITSTATUS macro applied to the status obtained by the wait() function (as defined in the System Interfaces volume of POSIX.1-2024). Note that for C programs, this value is equal to the result of performing a modulo 256 operation on the value passed to _Exit(), _exit(), or exit() or returned from main().
 
+	c->return_status = 
+}
+
+// TODO nik: if it is not the only comand then it is part of pipeline and all builtins should be executed it fork. Maybe new flag is nessesary or when fork set noninteractice context: Builtin commands that are invoked as part of a pipeline, except possibly in the last element depending on the value of the lastpipe shell option (see The Shopt Builtin), are also executed in a subshell environment. Changes made to the subshell environment cannot affect the shell’s execution environment.
 void process_pipeline(t_ctx *c, t_node			*pipeline_node)
 {
 	t_node			*command_node;
+	struct stat	buf;
 
 	command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				pipeline_node->data.pipeline.command_head_idx);
 	while(command_node != NULL)
 	{
-		process_command(c, command_node);
+		if (command_node->data.command.next != 0)
+		{
+			pipe(c->pipe_fd);
+			c->io_fd[1] = pipe_fd[1];
+			process_command(c, command_node);
+			if (fstat(STDIN_FILENO , &buf) == -1)
+				return ;
+			c->io_fd[0] = pipe_fd[0];
+		} else
+		{
+			process_command(c, command_node);
+			if (fstat(STDIN_FILENO , &buf) == -1)
+				return ;
+		}
 		command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				command_node->data.command.next);
 	}
+	wait_return_status(c);
 }
 
 /*
@@ -97,7 +102,7 @@ void	execute(t_ctx *c)
 				pipeline_node->data.pipeline.next_idx);
 	}
 }
-
+//TODO nik: set up https://www.gnu.org/software/bash/manual/bash.html#Signals-1
 void	exec_stack(t_ctx *c, t_parser_state *parse)
 {
 	(void) parse;

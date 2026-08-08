@@ -22,17 +22,24 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 #ifdef DEBUG
 	fprintf(stderr, "\nexecuting in child: %s\n", cmd_ctx->pathname);
 #endif
-	dup2(c->io_fd[0], 0); // TODO nik: what on error
-	dup2(c->io_fd[1], 1);
-	close(c->io_fd[0]);
-	close(c->io_fd[1]);
+	close(pipe_fd[0]);
+	if(c->io_fd[0] != -1)
+	{
+		dup2(c->io_fd[0], 0); // TODO nik: what on error
+		close(c->io_fd[0]);
+	}
+	if(c->io_fd[1] != -1)
+	{
+		dup2(c->io_fd[1], 1);
+		close(c->io_fd[1]);
+	}
 	execve(cmd_ctx->pathname, cmd_ctx->argv, envp);
 	error = ft_strjoin("execve: ", cmd_ctx->pathname);
 	if (error == NULL)
 		return (exit_mem_issue());
 	return (exit_on_issue(error));
 }
-
+//TODO nik: The return status (see Exit Status) of a simple command is its exit status as provided by the POSIX 1003.1 waitpid function, or 128+n if the command was terminated by signal n.
 static int	wait_return_status(t_ctx *c, pid_t pid)
 {
 	int wstatus;

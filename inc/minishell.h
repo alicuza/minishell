@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/07 00:13:35 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/08 16:23:09 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,6 +225,7 @@ t_symbol_type	classify_token(t_ctx *c, t_token *token);
 /* -------- builtin_exit.c ------------------------------ */
 int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
+/* -------- error_handling.c ------------------------------ */
 int				exit_mem_issue(void);
 
 /* -------- cd.c ------------------------------ */
@@ -241,5 +242,8 @@ int				unset(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- echo.c ------------------------------ */
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- signal_handling.c ------------------------------ */
+void	setup_signal_handler(t_ctx *c);
 
 #endif
