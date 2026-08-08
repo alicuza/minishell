@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 11:08:25 by sancuta           #+#    #+#             */
-/*   Updated: 2026/07/22 09:50:43 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/03 12:42:02 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ const char	*get_arena_name(t_arena *arena)
 		poison_stride(arena);
 		return ("stack arena");
 	}
-	else if (arena->stride == sizeof(t_cmd))
+	else if (arena->stride == sizeof(t_node))
 		return ("command arena");
 	else
 		return ("arena not initialized");

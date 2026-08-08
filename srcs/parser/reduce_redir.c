@@ -1,0 +1,78 @@
+#include "minishell.h"
+#include "parser.h"
+
+uint64_t	reduce_redir_append(t_ctx *c, t_parser_state *parse,
+		t_rule *rule)
+{
+	uint64_t	head;
+	uint64_t	new;
+
+	head = get_symbol_from_rhs(c, parse, rule, 0)->node_idx;
+	new = get_symbol_from_rhs(c, parse, rule, 1)->node_idx;
+	append_node_to_tail(c, head, new);
+	return (head);
+}
+
+uint64_t	reduce_io_file(t_ctx *c, t_parser_state *parse, t_rule *rule)
+{
+	t_symbol		*symbol;
+	t_symbol		*op;
+	t_node			*node;
+	uint64_t		node_idx;
+
+	symbol = get_symbol_from_rhs(c, parse, rule, 1);
+	node_idx = symbol->node_idx;
+	node = get_node_from_idx(c, node_idx);
+	op = get_symbol_from_rhs(c, parse, rule, 0);
+	if (op->type == SYM_LESS)
+		node->flags |= REDIR_IN;
+	else if (op->type == SYM_GREAT)
+		node->flags |= REDIR_OUT;
+	else
+		node->flags |= REDIR_APPEND;
+	return (node_idx);
+}
+
+static uint8_t	set_here_delim(t_ctx *c, t_parser_state *parse,
+		t_token *token)
+{
+	char	*delim_word;
+	uint8_t	flags;
+
+	delim_word = get_token_body(c, token);
+	parse->here.delim.pos = token->offset;
+	parse->here.delim.len = ft_strlen(delim_word);
+	flags = REDIR_HERE;
+	if (token->flags & TKN_HAS_QUOTES)
+	{	// TODO stefan: needs a better quote removal function
+		parse->here.delim.pos += 1;
+		parse->here.delim.len -= 2;
+		flags |= REDIR_HAS_QUOTES;
+	}
+	return (flags);
+}
+
+uint64_t	reduce_io_here(t_ctx *c, t_parser_state *parse, t_rule *rule)
+{
+	t_token		*token;
+	t_symbol	*symbol;
+	t_node		*node;
+	uint64_t	node_idx;
+	uint8_t		flags;
+
+	symbol = get_symbol_from_rhs(c, parse, rule, 1);
+	token = get_ptr_from_idx(&c->arena[AT_TOKENS], symbol->token_idx);
+	flags = set_here_delim(c, parse, token);
+	parse->here.body.pos = 0;
+	parse->here.body.len = 0;
+#ifdef DEBUG
+	if (c->dbg.states & DBG_PARSER)
+		fprintf(stderr, "--- parse ---\n\theredoc: entering SAVE_TOKENS mode\n");
+#endif
+	parse->flags |= PARSE_SAVE_TOKENS;
+	node_idx = alloc_node(c, NODE_REDIR);
+	node = get_node_from_idx(c, node_idx);
+	node->flags = flags;
+	node->data.redir.arena_offset = token->offset;
+	return (node_idx);
+}

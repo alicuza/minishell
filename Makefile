@@ -40,10 +40,27 @@ SRCS        = \
 			token_processor/get_pathname.c \
 			token_processor/ft_split_with_empty.c \
 			parser/parse_input.c \
-			parser/parser_utils.c \
+			parser/parse_token_flow.c \
+			parser/classify_token.c \
+			parser/yy_pact.c \
+			parser/yy_table.c \
+			parser/rule_dispatch.c \
+			parser/stack_ops.c \
+			parser/reduce_from_term.c \
+			parser/reduce_pipeline.c \
+			parser/reduce_command.c \
+			parser/reduce_redir.c \
+			parser/reduce_compound.c \
+			parser/reduce_helpers.c \
+			parser/reduce_driver.c \
+			parser/node_utils.c \
+			parser/node_getters.c \
 			lexer/lookahead.c \
+			lexer/lookahead_rules1.c \
+			lexer/lookahead_rules2.c \
 			lexer/lex_tokens.c \
 			lexer/lex_heredoc.c \
+			lexer/here_body_read.c \
 			lexer/lex_utils.c \
 			lexer/pair_utils.c \
 			lexer/token_transform_utils.c \
@@ -68,6 +85,7 @@ SRCS        = \
 			builtin/echo.c
 
 DEBUG_SRCS  = \
+			debug/debug_main.c \
 			debug/debug_utils.c \
 			debug/debug_names.c \
 			debug/debug_arena.c \
