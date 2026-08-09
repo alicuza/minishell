@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/08/09 22:17:03 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 22:43:36 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void process_command(t_ctx *c, t_node			*command_node)
 	return;
 	// expand_redirections(c, get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.redir_head_idx)); TODO nik
 	// TODO nik: check if somthing is left after filed expansion if no just do redirection in subshell
-	c->return_status = 0, 127, 126, 1 command_search_and_execution(c, &command); //TODO nik: make sure it folows the  Exit Status and Errors section and alos see https://www.gnu.org/software/bash/manual/bash.html#Exit-Status-1
+	c->return_status = command_search_and_execution(c, &command); //TODO nik: make sure it folows the  Exit Status and Errors section and alos see https://www.gnu.org/software/bash/manual/bash.html#Exit-Status-1
 	free(command.pathname);
 	free(command.argv);
 }
