@@ -54,7 +54,7 @@ static int	get_argc(t_ctx *c, t_node *arg_node)
 	i = 0;
 	while (arg_node != NULL)
 	{
-		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->data.arg.next);
+		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->next_idx);
 		i++;
 	}
 	return (i);
@@ -81,7 +81,7 @@ t_command_ctx	*build_command(t_ctx *c, t_node *arg_node)
 		}
 		command->argv[i] = c->arena[AT_STRING].buf + arg_node->data.arg.arena_offset;
 		i++;
-		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->data.arg.next);
+		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->next_idx);
 	}
 	return (command);
 }

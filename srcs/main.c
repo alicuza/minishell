@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 11:18:17 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 14:54:56 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,11 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	c = init_ctx(envp);
-	setup_signal_handler(&c);
+	if(setup_signal_handler(&c))
+	{
+		cleanup(&c);
+		return (EXIT_FAILURE);
+	}
 #ifdef DEBUG
 	parse_debug_args(argc, argv, &c);
 #endif

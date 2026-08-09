@@ -23,9 +23,10 @@ int	exit_mem_issue(void)
 //Not sure if we always need to exit or just skip 
 int handle_redirection_error(t_ctx *c, char *filename, int error_code)
 {
+	(void) c;
 	ft_putstr_fd("redirection: ", STDERR_FILENO);
 	ft_putstr_fd((char *) filename, STDERR_FILENO);
-	perror();
+	perror("");
 	//close(0);
 	return (error_code);
 }

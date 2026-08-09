@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 11:13:58 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 14:54:05 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,6 +281,6 @@ int				unset(t_ctx *c, t_command_ctx *command_ctx);
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- signal_handling.c ------------------------------ */
-void	setup_signal_handler(t_ctx *c);
+int	setup_signal_handler(t_ctx *c);
 
 #endif

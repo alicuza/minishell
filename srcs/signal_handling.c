@@ -1,23 +1,10 @@
+#include "minishell.h"
+
 static void	signal_handler(int signum, siginfo_t *info, void *ucontext)
 {
-	static volatile sig_atomic_t	client_pid = 0;
-
-	(void)ucontext;
-	if (getpid() == info->si_pid && client_pid != 0)
-	{
-		process_own_signal(&client_pid, signum);
-	}
-	else
-	{
-		if (client_pid == 0)
-			client_pid = info->si_pid;
-		else if (client_pid != info->si_pid)
-		{
-			kill(info->si_pid, SIGUSR1);
-			return (ft_putendl_fd(ERROR_SIG_IGNORE, STDERR_FILENO));
-		}
-		g_signal = signum;
-	}
+	(void) signum;
+	(void) info;
+	(void) ucontext;
 }
 
 /*
@@ -37,26 +24,26 @@ see wtf is job control
 todo handle the SIGPIPE to clear all
 */
 
-
-void	setup_signal_handler(t_ctx *c)
+int	setup_signal_handler(t_ctx *c)
 {
-	struct sigaction	sact;
+	struct sigaction	sact_to_ignore;
+	struct sigaction	sact_to_hanle;
 
-	In all cases, Bash ignores SIGQUIT
-	if(c->is_interactive)
+	(void) c; //Use to determine if it is interactive
+	sact_to_ignore.sa_handler = SIG_IGN;
+	sact_to_hanle.sa_flags = SA_SIGINFO | SA_RESTART;
+	sact_to_hanle.sa_sigaction = &signal_handler;
+	if ( sigemptyset(&sact_to_ignore.sa_mask) == -1
+		|| sigemptyset(&sact_to_hanle.sa_mask) == -1
+		|| sigaction(SIGQUIT, &sact_to_ignore, NULL) == -1 // In all cases, Bash ignores SIGQUIT
+		|| sigaction(SIGTERM, &sact_to_ignore, NULL) == -1 //	If Bash is interactive
+		|| sigaction(SIGINT, &sact_to_hanle, NULL) == -1 // If Bash is interactive
+		//  If job control is in effect (see Job Control), Bash ignores SIGTTIN, SIGTTOU, and SIGTSTP.
+		|| sigaction(SIGHUP, &sact_to_hanle, NULL) == -1) //TODO The shell exits by default upon receipt of a SIGHUP. Before exiting, an interactive shell resends the SIGHUP to all jobs, running or stopped. The shell sends SIGCONT to stopped jobs to ensure that they receive the SIGHUP (See Job Control, for more information about running and stopped jobs)
 	{
-		it ignores SIGTERM
-		catches and handles SIGINT
+		ft_putendl_fd("Error: failed to setup signal handdler", STDERR_FILENO);
+		close(0);
+		return (EXIT_FAILURE);
 	}
-	sact.sa_flags = 0;
-	sact.sa_sigaction = &signal_handler;
-	if (sigaddset(&sact.sa_mask, SIGTERM) == -1
-		|| sigaddset(&sact.sa_mask, SIGQUIT) == -1
-		|| sigaction(SIGINT, &sact, NULL) == -1 //TODO handle it 
-		|| sigaction(SIGHUP, &sact, NULL) == -1) //TODO The shell exits by default upon receipt of a SIGHUP. Before exiting, an interactive shell resends the SIGHUP to all jobs, running or stopped. The shell sends SIGCONT to stopped jobs to ensure that they receive the SIGHUP (See Job Control, for more information about running and stopped jobs)
-	{
-		ft_putendl_fd("Error: failed to setup server.", STDERR_FILENO);
-		exit(EXIT_FAILURE);
-	}
-	ft_bzero(server, sizeof(t_server));
+	return (EXIT_SUCCESS);
 }

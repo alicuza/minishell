@@ -68,6 +68,6 @@ void process_redirection(t_ctx *c, t_node *redir_node)
 		{
 			open_out_file(c, redir_node, O_CREAT | O_WRONLY | O_APPEND);
 		}
-		redir_node = get_ptr_from_idx(&c->arena[AT_COMMAND], redir_node->data.redir.next);
+		redir_node = get_ptr_from_idx(&c->arena[AT_COMMAND], redir_node->next_idx);
 	}
 }
