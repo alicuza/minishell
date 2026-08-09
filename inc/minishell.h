@@ -86,9 +86,8 @@
 # define PARSE_HERE_BODY		0x02
 # define PARSE_HAS_SAVED_TOKENS	0x04
 # define PARSE_HAS_LOOKAHEAD	0x08
-# define PARSE_LOOKAHEAD_IS_EOF	0x10
-# define PARSE_DONE				0x20
-# define PARSE_ERROR			0x40
+# define PARSE_DONE				0x10
+# define PARSE_ERROR			0x20
 
 /* -------- node flags ------------------------------------------------------ */
 # define FLAG_AND_IF			0x01
@@ -156,21 +155,18 @@ char			matching_close(char open);
 bool			find_matched_pair(t_ctx *c, t_lexer_state *lex);
 
 /* -------- token_transform_utils.c ----------------------------------------- */
-uint64_t		get_idx_from_offset(t_arena *arena, uint64_t offset);
-uint64_t		get_offset_from_idx(t_arena *arena, uint64_t idx);
-void			*get_ptr_from_offset(t_arena *arena, uint64_t offset);
-void			*get_ptr_from_idx(t_arena *arena, uint64_t idx);
 char			*get_token_content(t_ctx *c, t_token *token);
 
 /* -------- lex_tokens.c ---------------------------------------------------- */
 void			start_lex_token(t_lexer_state *lex, t_token_type type);
+uint64_t		alloc_token(t_ctx *c);
 void			delimit_lex_token(t_ctx *c, t_lexer_state *lex);
 uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
 
 /* -------- lex_heredoc.c --------------------------------------------------- */
 void			get_here_doc(t_ctx *c, t_lexer_state *l, t_here_state *h);
 void			delimit_lex_here(t_ctx *c, t_here_state *here);
-bool			is_delim_line(t_ctx *c, t_lexer_state *l, t_here_state *);
+bool			is_delim_line(t_ctx *c, t_lexer_state *l, t_here_state *h);
 bool			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l);
 bool			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
 

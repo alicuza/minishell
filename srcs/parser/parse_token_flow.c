@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "parser.h"
 
 bool	get_next_token(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
 {
@@ -34,10 +33,10 @@ void	report_parse_error(t_ctx *c, t_parser_state *parse)
 	parse->flags |= PARSE_ERROR;
 	token = get_token_from_idx(c, parse->token_idx);
 	body = get_ptr_from_offset(&c->arena[AT_STRING], token->offset);
-	if (parse->flags & PARSE_LOOKAHEAD_IS_EOF)
+	if (parse->lookahead_type == SYM_EOF)
 		ft_putendl_fd("minishell: syntax error near unexpected token"
 			" 'end of file'", STDERR_FILENO);
-	else if (body[0] == '\n')
+	else if (parse->lookahead_type == SYM_NEWLINE)
 		ft_putendl_fd("minishell: syntax error near unexpected token"
 			" 'newline'", STDERR_FILENO);
 	else
@@ -55,6 +54,8 @@ bool	get_lookahead(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
 	{
 		if (get_next_token(c, parse, lex))
 		{
+			parse->lookahead_type = classify_token(c,
+					get_token_from_idx(c, parse->token_idx));
 			parse->flags |= PARSE_HAS_LOOKAHEAD;
 			return (true);
 		}
@@ -69,7 +70,7 @@ bool	handle_here_doc(t_ctx *c, t_parser_state *parse)
 {
 	t_token	*cur;
 
-	cur = get_ptr_from_idx(&c->arena[AT_TOKENS], parse->token_idx);
+	cur = get_token_from_idx(c, parse->token_idx);
 	if (c->arena[AT_STRING].buf[cur->offset] == '\n')
 	{
 		parse->flags &= ~PARSE_SAVE_TOKENS;

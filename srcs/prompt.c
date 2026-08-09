@@ -115,7 +115,7 @@ char	*get_prompt(t_ctx *c, bool with_cwd)
 	if (with_cwd && !add_cwd_to_prompt(c))
 		return (get_prompt(c, NO_CWD));
 	end_prompt(prompt, c->return_status);
-	return ((char *)get_arena_ptr(prompt, prompt->stride));
+	return ((char *)get_ptr_from_offset(prompt, prompt->stride));
 }
 
 /* backup in case of other prompt related problems.
