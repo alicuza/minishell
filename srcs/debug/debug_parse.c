@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 11:08:25 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/04 17:49:49 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/09 11:26:48 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	print_stack(FILE *out, t_ctx *c, t_parser_state *parse)
 	fprintf(out, "--- bottom ----\n");
 	if (c->dbg.awaiting)
 		fprintf(out, "lookahead: " DBG_LOOKAHEAD_PENDING "\n");
-	else if (parse->flags & PARSE_LOOKAHEAD_IS_EOF)
+	else if (parse->lookahead_type == SYM_EOF)
 		fprintf(out, "lookahead: " DBG_LOOKAHEAD_EOF "\n");
 	else
 	{
@@ -125,7 +125,7 @@ static void	build_lookahead_desc(t_ctx *c, t_parser_state *parse, char *buf,
 	char	*body;
 	size_t	pos;
 
-	if (parse->flags & PARSE_LOOKAHEAD_IS_EOF)
+	if (parse->lookahead_type == SYM_EOF)
 	{
 		ft_strlcpy(buf, DBG_LOOKAHEAD_EOF, size);
 		return ;

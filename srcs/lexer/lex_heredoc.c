@@ -6,13 +6,11 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/26 13:03:24 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/08 14:23:13 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/09 14:16:43 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "minishell.h"
-#include "parser.h"
 
 static bool	here_body_has_expansion(t_ctx *c, t_here_state *here)
 {
@@ -32,12 +30,11 @@ static bool	here_body_has_expansion(t_ctx *c, t_here_state *here)
 
 void	delimit_lex_here(t_ctx *c, t_here_state *here)
 {
-	t_arena		*tokens;
 	t_token		*token;
+	uint64_t	token_idx;
 
-	tokens = &c->arena[AT_TOKENS];
-	token = get_ptr_from_offset(tokens,
-			arena_alloc(tokens, sizeof(t_token), _Alignof(t_token)));
+	token_idx = alloc_token(c);
+	token = get_token_from_idx(c, token_idx);
 	token->type = TKN_WORD;
 	token->offset = here->body.pos;
 	token->flags = TKN_IS_HERE_BODY;

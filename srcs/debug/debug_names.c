@@ -146,8 +146,6 @@ const char	*get_parse_flag_name(uint32_t bit)
 		return ("PARSE_HERE_BODY");
 	else if (bit == PARSE_ERROR)
 		return ("PARSE_ERROR");
-	else if (bit == PARSE_LOOKAHEAD_IS_EOF)
-		return ("PARSE_LOOKAHEAD_IS_EOF");
 	return ("UNKNOWN");
 }
 
