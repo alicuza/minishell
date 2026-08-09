@@ -1,13 +1,5 @@
 #include "minishell.h"
 
-static t_lalr_action	reduce_or_error(t_ctx *c, t_parser_state *parse,
-		int32_t action)
-{
-	if (!action)
-		return (LALR_ERROR);
-	return (reduce(c, parse, action));
-}
-
 t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
 {
 	t_rule		rule;

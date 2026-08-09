@@ -179,7 +179,9 @@ fclean: clean
 	rm -f compile_flags
 	rm -rf log
 
-re: fclean all
+re: 
+	$(MAKE) fclean
+	$(MAKE) all
 
 # ---- phony targets ------------------------------------------------------- #
 .PHONY: all debug run run-debug doc test clean fclean re FORCE
