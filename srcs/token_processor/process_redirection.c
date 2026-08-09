@@ -16,7 +16,7 @@ void open_in_file(t_ctx *c, t_node *redir_node)
 			+ redir_node->data.redir.arena_offset; //TODO nik:The word following the redirection operator in the following descriptions, unless otherwise noted, is subjected to brace expansion, tilde expansion, parameter and variable expansion, command substitution, arithmetic expansion, quote removal, filename expansion, and word splitting.
 	c->io_fd[0] = open(filename , O_RDONLY);// TODO process failure 
 	if (c->io_fd[0] == -1)
-	handle_error(filename, strerror(errno), 1);
+		handle_redirection_error(c, filename, EXIT_FAILURE);
 }
 
 void open_here_file(t_ctx *c, t_node *redir_node)
@@ -32,7 +32,8 @@ void open_here_file(t_ctx *c, t_node *redir_node)
 			+ redir_node->data.redir.arena_offset;
 	c->io_fd[0] = open(filename , O_RDONLY);// TODO process failure 
 	if (c->io_fd[0] == -1)
-	handle_error(filename, strerror(errno), 1); */
+	handle_redirection_error(c, filename, EXIT_FAILURE);
+ */
 }
 
 void open_out_file(t_ctx *c, t_node *redir_node, int oflag)
@@ -46,26 +47,26 @@ void open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 			+ redir_node->data.redir.arena_offset;
 	c->io_fd[1] = open(filename, oflag, 0644);// TODO process failure 
 	if (c->io_fd[1] == -1)
-		handle_error(filename, strerror(errno), 1);
+		handle_redirection_error(c, filename, EXIT_FAILURE);
 }
 
 void process_redirection(t_ctx *c, t_node *redir_node)
 {	
 	while(redir_node != NULL)
 	{
-		if(redir_node.flags & REDIR_IN)
+		if(redir_node->flags & REDIR_IN)
 		{
-			open_in_file(c, redir_node)
+			open_in_file(c, redir_node);
 		}
-		else if(redir_node.flags & REDIR_OUT)
+		else if(redir_node->flags & REDIR_OUT)
 		{
-			open_out_file(c, redir_node, O_CREAT | O_WRONLY | O_TRUNC)
+			open_out_file(c, redir_node, O_CREAT | O_WRONLY | O_TRUNC);
 		}
-		else if(redir_node.flags & REDIR_HERE)
+		else if(redir_node->flags & REDIR_HERE)
 			open_here_file(c, redir_node);
-		else if(redir_node.flags & REDIR_APPEND)
+		else if(redir_node->flags & REDIR_APPEND)
 		{
-			open_out_file(c, redir_node, O_CREAT | O_WRONLY | O_APPEND)
+			open_out_file(c, redir_node, O_CREAT | O_WRONLY | O_APPEND);
 		}
 		redir_node = get_ptr_from_idx(&c->arena[AT_COMMAND], redir_node->data.redir.next);
 	}

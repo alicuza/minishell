@@ -59,7 +59,8 @@ static int	get_argc(t_ctx *c, t_node *arg_node)
 	}
 	return (i);
 }
-
+//TODO nik: do all expansions
+//  - read 2.6.6 Pathname Expansion
 t_command_ctx	*build_command(t_ctx *c, t_node *arg_node)
 {
 	t_command_ctx	*command;

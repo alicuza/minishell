@@ -22,7 +22,7 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 #ifdef DEBUG
 	fprintf(stderr, "\nexecuting in child: %s\n", cmd_ctx->pathname);
 #endif
-	close(pipe_fd[0]);
+	close(c->pipe_fd[0]);
 	if(c->io_fd[0] != -1)
 	{
 		dup2(c->io_fd[0], 0); // TODO nik: what on error

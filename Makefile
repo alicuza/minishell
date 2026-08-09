@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/08/08 12:56:16 by nribakov         ###   ########.fr        #
+#    Updated: 2026/08/09 10:39:24 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,7 @@ SRCS        = \
 			token_processor/token_processor.c \
 			token_processor/execute_non_builtin.c \
 			token_processor/get_pathname.c \
+			token_processor/process_redirection.c \
 			token_processor/ft_split_with_empty.c \
 			token_processor/command_search_and_execution.c \
 			token_processor/build_command.c \
@@ -60,7 +61,7 @@ SRCS        = \
 			environment/init_env.c \
 			environment/add_env_defaults.c \
 			environment/env_to_envp.c \
-			error_handling/error_handling.c
+			error_handling/error_handling.c \
 			builtin/env.c \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \
@@ -69,7 +70,7 @@ SRCS        = \
 			builtin/get_path_canonical_form.c \
 			builtin/builtin_export.c \
 			builtin/unset.c \
-			builtin/echo.c \
+			builtin/echo.c
 
 DEBUG_SRCS  = \
 			debug/debug_utils.c \

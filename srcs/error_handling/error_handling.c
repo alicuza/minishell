@@ -20,6 +20,16 @@ int	exit_mem_issue(void)
 	return (EXIT_FAILURE);
 }
 
+//Not sure if we always need to exit or just skip 
+int handle_redirection_error(t_ctx *c, char *filename, int error_code)
+{
+	ft_putstr_fd("redirection: ", STDERR_FILENO);
+	ft_putstr_fd((char *) filename, STDERR_FILENO);
+	perror();
+	//close(0);
+	return (error_code);
+}
+
 int handle_builtin_error(t_ctx *c, char *error_prefix, int error_code)
 {
 	perror(error_prefix);

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/08 16:23:09 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 11:07:51 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,6 +206,9 @@ int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
 /* -------- get_pathname.c ----------------------------------------------- */
 int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
 
+/* -------- process_redirection.c ----------------------------------------------- */
+void process_redirection(t_ctx *c, t_node *redir_node);
+
 /* -------- ft_split_with_empty.c ----------------------------------------------- */
 char			**ft_split_with_empty(char const *s, char c);
 
@@ -227,6 +230,8 @@ int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- error_handling.c ------------------------------ */
 int				exit_mem_issue(void);
+int handle_redirection_error(t_ctx *c, char *filename, int error_code);
+int handle_builtin_error(t_ctx *c, char *error_prefix, int error_code);
 
 /* -------- cd.c ------------------------------ */
 int				cd(t_ctx *c, t_command_ctx *command_ctx);
