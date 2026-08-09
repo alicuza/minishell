@@ -318,9 +318,12 @@ void	log_rhs_symbols(t_ctx *c, t_parser_state *parse, t_rule *rule)
 	{
 		symbol = get_symbol_from_rhs(c, parse, rule, rhs);
 		if (symbol->node_idx)
+		{
+			fprintf(stderr, "[rhs] ");
 			print_node_line(stderr, c,
 				get_node_from_idx(c, symbol->node_idx),
 				symbol->node_idx);
+		}
 		++rhs;
 	}
 }
@@ -340,7 +343,10 @@ void	debug_parse_header(t_parser_state *parse)
 	uint32_t	bit;
 	uint8_t		flags;
 
-	fprintf(stderr, "\n--- parse ---\ntoken_idx = %lu  flags =", parse->token_idx);
+	fprintf(stderr, "\n--- parse ---\n");
+	if (parse->flags & PARSE_HAS_LOOKAHEAD)
+		fprintf(stderr, "[lookahead] ");
+	fprintf(stderr, "token_idx = %lu  flags =", parse->token_idx);
 	flags = parse->flags;
 	bit = 1;
 	while (bit && !(flags & bit))

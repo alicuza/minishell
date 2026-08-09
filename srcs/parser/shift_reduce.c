@@ -1,6 +1,14 @@
 #include "minishell.h"
 
-static t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
+static t_lalr_action	reduce_or_error(t_ctx *c, t_parser_state *parse,
+		int32_t action)
+{
+	if (!action)
+		return (LALR_ERROR);
+	return (reduce(c, parse, action));
+}
+
+t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
 {
 	t_rule		rule;
 	t_symbol	sym;
@@ -21,8 +29,11 @@ static t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
 	if (c->dbg.states & DBG_PARSER)
 	{
 		if (sym.node_idx)
+		{
+			fprintf(stderr, "[lhs] ");
 			print_node_line(stderr, c, get_node_from_idx(c, sym.node_idx),
 				sym.node_idx);
+		}
 	}
 #endif
 	push_symbol(c, parse, &sym);
