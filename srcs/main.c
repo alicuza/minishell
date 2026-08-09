@@ -6,21 +6,12 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/08 13:26:04 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/09 20:02:49 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-/*
-PWD from env if the value is an absolute pathname of the current working
-directory that is no longer than {PATH_MAX} bytes including the terminating
-null byte, and the value does not contain dot or dot-dot components
-otherwice  pwd -P
-if the cwd or any parent directory have insufficient permission, to determine
-what that pathname would be, the value of PWD is unspecified. Assignments to
-this variable may be ignored. If an application sets or unsets PWD, the
-behaviors of the cd and pwd utilities are unspecified.
-*/
+
 static t_ctx	init_ctx(char **envp)
 {
 	t_ctx	c;
@@ -35,18 +26,11 @@ static t_ctx	init_ctx(char **envp)
 		printf("Error init_env");
 	if (isatty(STDIN_FILENO))
 		c.is_interactive = true;
+	c.io_fd[0] = -1;
+	c.io_fd[1] = -1;
+	c.pipe_fd[0] = -1;
+	c.pipe_fd[1] = -1;
 	return (c);
-}
-
-int	cleanup(t_ctx *c)
-{
-	arena_free(&c->arena[AT_STRING]);
-	arena_free(&c->arena[AT_TOKENS]);
-	arena_free(&c->arena[AT_STACK]);
-	arena_free(&c->arena[AT_PROMPT]);
-	arena_free(&c->arena[AT_COMMAND]);
-	free_env(&c->env);
-	return (0);
 }
 
 static void	shell_loop(t_ctx *c)
@@ -82,6 +66,11 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	c = init_ctx(envp);
+	if (setup_signal_handler(&c))
+	{
+		cleanup(&c);
+		return (EXIT_FAILURE);
+	}
 #ifdef DEBUG
 	parse_debug_args(argc, argv, &c);
 #endif

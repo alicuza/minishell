@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/08 11:20:42 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/09 20:23:21 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,10 @@
 # define MAX_RHS_LEN 4
 # define RULE_COUNT 46
 
+/* -------- cleanup.c ---------------------------------------------------------- */
+int	cleanup(t_ctx *c);
+void	free_str_arr(char **val);
+
 /* -------- prompt.c -------------------------------------------------------- */
 char			*get_prompt(t_ctx *c, bool with_cwd);
 
@@ -219,11 +223,20 @@ char			**ft_split_key_value(const char *s, char c);
 int				process_token(t_ctx *c, t_token *token);
 void			exec_list(t_ctx *c, uint64_t head_idx);
 
+/* -------- build_command.c ------------------------------------------------- */
+int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node);
+
+/* -------- command_search_and_execution.c ---------------------------------- */
+int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx);
+
 /* -------- execute_non_builtin.c ------------------------------------------- */
 int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
 
 /* -------- get_pathname.c -------------------------------------------------- */
 int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
+
+/* -------- process_redirection.c ------------------------------------------- */
+void process_redirection(t_ctx *c, t_node *redir_node);
 
 /* -------- ft_split_with_empty.c ------------------------------------------- */
 char			**ft_split_with_empty(char const *s, char c);
@@ -247,7 +260,11 @@ t_symbol_type	classify_token(t_ctx *c, t_token *token);
 /* -------- builtin_exit.c -------------------------------------------------- */
 int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
+/* -------- error_handling.c ------------------------------ */
 int				exit_mem_issue(void);
+int handle_redirection_error(t_ctx *c, char *filename, int error_code);
+int handle_builtin_error(t_ctx *c, char *error_prefix, int error_code);
+int exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
 
 /* -------- cd.c ------------------------------------------------------------ */
 int				cd(t_ctx *c, t_command_ctx *command_ctx);
@@ -263,5 +280,11 @@ int				unset(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- echo.c ---------------------------------------------------------- */
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- signal_handling.c ----------------------------------------------- */
+int	setup_signal_handler(t_ctx *c);
+
+/* -------- ft_close_fd.c ----------------------------------------------- */
+void ft_close_fd(int *fd);
 
 #endif

@@ -6,135 +6,104 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/08/04 01:37:37 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 22:43:36 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtin.h"
 #include "minishell.h"
 
-#define EQUAL 0
-
-t_command_function	match_builtin(char *name)
-{
-	if (ft_strncmp(name, ENV, 4) == EQUAL)
-		return (&env);
-	else if (ft_strncmp(name, PWD, 4) == EQUAL)
-		return (&pwd);
-	else if (ft_strncmp(name, EXIT, 5) == EQUAL)
-		return (&builtin_exit);
-	else if (ft_strncmp(name, CD, 3) == EQUAL)
-		return (&cd);
-	else if (ft_strncmp(name, EXPORT, 7) == EQUAL)
-		return (&builtin_export);
-	else if (ft_strncmp(name, UNSET, 6) == EQUAL)
-		return (&unset);
-	else if (ft_strncmp(name, B_ECHO, 7) == EQUAL)
-		return (&echo);
-	else
-		return (NULL);
-}
-
+// TOD nik :maybe here indicate if contunue or not
 /*
-	Directly follows 2.9.1.4 Command Search and Execution
-	TODO nik: maybe remember its location and need not search for the utility again unless the PATH variable has been the subject of an assignment. If the remembered location fails for a subsequent invocation,
-		the shell shall repeat the search to find the new location for the utility,
-		if any.
+new is pseoudo code:
+	- expand args
+	- expend redirects
+	- if it is a pipeline then fork
+	- else if builtin return
+
 */
-int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
+void process_command(t_ctx *c, t_node			*command_node)
 {
-	t_command_function	command;
-	int					status;
-
-	command = NULL;
-	if (ft_strchr(cmd_ctx->pathname, '/') == NULL)
-	{
-		command = match_builtin(cmd_ctx->pathname);
-		if (command != NULL)
-			return (command(c, cmd_ctx));
-		else
-		{
-			status = get_pathname(c, cmd_ctx);
-			if (status == EXIT_FAILURE)
-				return (exit_mem_issue());
-			else if (status == EXIT_SUCCESS && cmd_ctx->pathname != NULL)
-				return (execute_non_builtin(c, cmd_ctx));
-			else
-				return (127);
-		}
-	}
-	else
-		return (execute_non_builtin(c, cmd_ctx));
-}
-
-int	init_command(t_command_ctx *command, uint64_t argc)
-{
-	command->pathname = NULL;
-	command->argc = argc;
-	command->argv = malloc(sizeof(char *) * (argc + 1));
-	if (command->argv == NULL)
-		return (exit_mem_issue());
-	command->argv[argc] = NULL;
-	return (EXIT_SUCCESS);
-}
-
-// TODO "export " will create env with empty key
-// TODO we have SYM_NEWLINE as last one, -1 to not cout it into argc
-int	build_command(t_ctx *c, t_parser_state *parse)
-{
-	t_symbol		*sym;
-	uint64_t		stack_idx;
-	t_arena			*stack;
+	t_node			*arg_node;
 	t_command_ctx	command;
-	t_token			*token;
 
-	stack = &c->arena[AT_STACK];
-	if (init_command(&command, parse->stack_idx - 1))
-		return (EXIT_FAILURE);
-	stack_idx = 1;
-	sym = get_ptr_from_idx(stack, stack_idx);
-	while (sym && sym->type == SYM_WORD)
-	{
-		token = get_ptr_from_idx(&c->arena[AT_TOKENS], sym->token_idx);
-		if (command.pathname == NULL)
-		{
-			command.pathname = ft_strdup(c->arena[AT_STRING].buf
-					+ token->offset);
-			if (command.pathname == NULL)
-				return (EXIT_FAILURE);
-		}
-		command.argv[stack_idx - 1] = c->arena[AT_STRING].buf + token->offset;
-		stack_idx++;
-		sym = get_ptr_from_idx(stack, stack_idx);
-	}
-	c->return_status = command_search_and_execution(c, &command);
+	arg_node =  get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.arg_head_idx);
+	if(build_command(c, &command, arg_node) == EXIT_FAILURE)
+	return;
+	// expand_redirections(c, get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.redir_head_idx)); TODO nik
+	// TODO nik: check if somthing is left after filed expansion if no just do redirection in subshell
+	c->return_status = command_search_and_execution(c, &command); //TODO nik: make sure it folows the  Exit Status and Errors section and alos see https://www.gnu.org/software/bash/manual/bash.html#Exit-Status-1
 	free(command.pathname);
 	free(command.argv);
-	return (EXIT_SUCCESS);
 }
 /*
-TODO nik: Maybe part of reduction:
-  - read 2.6.6 Pathname Expansion
-	In the case of a simple command, the results usually include a list of pathnames and fields to be treated as a command name and arguments; see 2.9 Shell Commands.
+TODO nik:  the exit status of a command shall be that of the last simple command executed by the command.
+	- Maybe indicate if it is part of pipe or we get status right away.
+		+ store list of child processes, and if is not empaty wait here
+	- I guess trach the pid and wait for last one; and also mark shell state that it is waiting so signal hendler wkons what to do
 
-The shell performs redirection (see 2.7 Redirection) and removes redirection operators and their operands from the parameter list.
-
-The shell executes a function (see 2.9.5 Function Definition Command), built-in (see 2.15 Special Built-In Utilities), executable file, or script, giving the names of the arguments as positional parameters numbered 1 to n, and the name of the command (or in the case of a function within a script, the name of the script) as special parameter 0 (see 2.9.1.4 Command Search and Execution).
-
-The shell optionally waits for the command to complete and collects the exit status (see 2.8.2 Exit Status for Commands).
 */
+void wait_return_status(t_ctx *c)
+{
+	(void) c;
+
+// 	If the command is not found, the exit status shall be 127.
+// Otherwise, if the command name is found, but it is not an executable utility, the exit status shall be 126.
+// Otherwise, if the command terminated due to the receipt of a signal, the shell shall assign it an exit status greater than 128. The exit status shall identify, in an implementation-defined manner, which signal terminated the command. Note that shell implementations are permitted to assign an exit status greater than 255 if a command terminates due to a signal.
+// Otherwise, the exit status shall be the value obtained by the equivalent of the WEXITSTATUS macro applied to the status obtained by the wait() function (as defined in the System Interfaces volume of POSIX.1-2024). Note that for C programs, this value is equal to the result of performing a modulo 256 operation on the value passed to _Exit(), _exit(), or exit() or returned from main().
+// c->return_status = 
+}
+
+// TODO nik: if it is not the only comand then it is part of pipeline and all builtins should be executed it fork. Maybe new flag is nessesary or when fork set noninteractice context: Builtin commands that are invoked as part of a pipeline, except possibly in the last element depending on the value of the lastpipe shell option (see The Shopt Builtin), are also executed in a subshell environment. Changes made to the subshell environment cannot affect the shell’s execution environment.
+
+/*
+new pseupocode
+ if is not a pipeline then one coman and we just wait 
+ if pipeline always wait at the end including the builtin
+*/
+void process_pipeline(t_ctx *c, t_node			*pipeline_node)
+{
+	t_node			*command_node;
+	int status;
+	struct stat	buf;
+
+
+	command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
+				pipeline_node->data.pipeline.command_head_idx);
+	while(command_node->type == NODE_COMMAND)
+	{
+		if (command_node->next_idx != 0)
+		{
+			status = pipe(c->pipe_fd);
+			if(status == -1)
+				return ; // TODO:nik make proper error handling
+			c->io_fd[1] = c->pipe_fd[1];
+			process_command(c, command_node);
+			if (fstat(STDIN_FILENO , &buf) == -1)
+				return ; //TODO nik: currently will miss exit status, we might need to wait for started chiled
+			c->io_fd[0] = c->pipe_fd[0];
+		} else
+		{
+			process_command(c, command_node);
+			if (fstat(STDIN_FILENO , &buf) == -1)
+				return ;
+		}  
+		command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
+				command_node->next_idx);
+	}
+	wait_return_status(c);
+}
+
+//TODO nik: set up https://www.gnu.org/software/bash/manual/bash.html#Signals-1
 void	exec_list(t_ctx *c, uint64_t head_idx)
 {
 	t_node		*pipeline_node;
 
 	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND], head_idx);
-	while (pipeline_node)
+	while (pipeline_node->type == NODE_PIPELINE)
 	{
-		// TODO nik: walk the arg chain and redirection chain of
-		// pipeline_node->data.pipeline.command_head_idx and execute
-		pipeline_node = pipeline_node->next_idx
-			? get_ptr_from_idx(&c->arena[AT_COMMAND],
-				pipeline_node->next_idx)
-			: NULL;
+		process_pipeline(c, pipeline_node);
+		pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
+			pipeline_node->next_idx);
 	}
 }
+
