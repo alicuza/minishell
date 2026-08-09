@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 18:12:00 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 20:02:49 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,21 +31,6 @@ static t_ctx	init_ctx(char **envp)
 	c.pipe_fd[0] = -1;
 	c.pipe_fd[1] = -1;
 	return (c);
-}
-
-int	cleanup(t_ctx *c)
-{
-	arena_free(&c->arena[AT_STRING]);
-	arena_free(&c->arena[AT_TOKENS]);
-	arena_free(&c->arena[AT_STACK]);
-	arena_free(&c->arena[AT_PROMPT]);
-	arena_free(&c->arena[AT_COMMAND]);
-	free_env(&c->env);
-	ft_close_fd(&c->io_fd[0]);
-	ft_close_fd(&c->io_fd[1]);
-	ft_close_fd(&c->pipe_fd[0]);
-	ft_close_fd(&c->pipe_fd[1]);
-	return (0);
 }
 
 static void	shell_loop(t_ctx *c)

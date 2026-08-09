@@ -67,11 +67,8 @@ int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
 		return (EXIT_FAILURE);
 	while (arg_node->type == NODE_ARG)
 	{
+		// see 3.5 Shell Expansions in bash man
 		if (command->pathname == NULL)
-			// TODO nik: also meanse that it is first arg The first word (if any) that is not a variable assignment or redirection shall be expanded. If any fields remain following its expansion,
-			// the first field shall be considered the command name.  If no fields remain,
-			// the next word (if any) shall be expanded, and so on,
-			// until a command name is found or no words remain. see 3.5 Shell Expansions in bash man
 		{
 			command->pathname = ft_strdup(c->arena[AT_STRING].buf
 					+ arg_node->data.arg.arena_offset);

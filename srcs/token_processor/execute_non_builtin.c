@@ -16,7 +16,6 @@ static int	exit_on_issue(char *error_prefix)
 
 static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 {
-	char *error;
 #ifdef DEBUG
 	fprintf(stderr, "\nexecuting in child: %s\n", cmd_ctx->pathname);
 #endif
@@ -32,10 +31,7 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 		ft_close_fd(&c->io_fd[1]);
 	}
 	execve(cmd_ctx->pathname, cmd_ctx->argv, envp);
-	error = ft_strjoin("execve: ", cmd_ctx->pathname);
-	if (error == NULL)
-		return (exit_mem_issue());
-	return (exit_on_issue(error));
+	return(exit_child(c, cmd_ctx, envp));
 }
 //TODO nik: The return status (see Exit Status) of a simple command is its exit status as provided by the POSIX 1003.1 waitpid function, or 128+n if the command was terminated by signal n.
 static int	wait_return_status(t_ctx *c, pid_t pid)
@@ -76,19 +72,17 @@ int	execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx)
 #ifdef DEBUG
 	fprintf(stderr, "\nexecute_non_builtin: %s\n", cmd_ctx->pathname);
 #endif
-
-
-	pid = fork();
+	pid = fork(); // TODO nik: exit / or ignore if ERESTARTNOINTR + add to context the pids
 	if (pid == -1)
 	{
-		close_io(c);
-		return (exit_on_issue("fork")); //TODO not exit minishell
+		perror("fork");
+		close(0);
+		free_str_arr(envp);
+		return (EXIT_FAILURE); 
 	}
-	else if (pid == 0)
+	if (pid == 0)
 		return (execute_in_child(c, cmd_ctx, envp));
-	else
-	{
-		close_io(c);
-		return (wait_return_status(c, pid));
-	}
+	close_io(c);
+	free_str_arr(envp);
+	return (wait_return_status(c, pid));
 }

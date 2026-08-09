@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 18:04:22 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 20:23:21 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,10 @@
 # define NO_TOKEN 0
 # define MAX_RHS_LEN 4
 # define RULE_COUNT 46
+
+/* -------- cleanup.c ---------------------------------------------------------- */
+int	cleanup(t_ctx *c);
+void	free_str_arr(char **val);
 
 /* -------- prompt.c -------------------------------------------------------- */
 char			*get_prompt(t_ctx *c, bool with_cwd);
@@ -260,6 +264,7 @@ int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 int				exit_mem_issue(void);
 int handle_redirection_error(t_ctx *c, char *filename, int error_code);
 int handle_builtin_error(t_ctx *c, char *error_prefix, int error_code);
+int exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
 
 /* -------- cd.c ------------------------------------------------------------ */
 int				cd(t_ctx *c, t_command_ctx *command_ctx);

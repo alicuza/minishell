@@ -28,19 +28,6 @@ static bool	is_valid_name(char *name)
 	return (true);
 }
 
-static void	free_2d_arr(char **val)
-{
-	int	i;
-
-	i = 0;
-	while (val[i] != NULL)
-	{
-		free(val[i]);
-		i++;
-	}
-	free(val);
-}
-
 int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char		**tmp;
@@ -55,7 +42,7 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 		if (is_valid_name(tmp[0]) == false || ft_strncmp(tmp[0], SHLVL,
 				6) == EQUAL)
 		{
-			free_2d_arr(tmp);
+			free_str_arr(tmp);
 			i++;
 			continue ;
 		}
