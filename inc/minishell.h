@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 14:54:05 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 18:04:22 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,7 +220,7 @@ int				process_token(t_ctx *c, t_token *token);
 void			exec_list(t_ctx *c, uint64_t head_idx);
 
 /* -------- build_command.c ------------------------------------------------- */
-t_command_ctx	*build_command(t_ctx *c, t_node *arg_node);
+int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node);
 
 /* -------- command_search_and_execution.c ---------------------------------- */
 int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx);
@@ -276,7 +276,10 @@ int				unset(t_ctx *c, t_command_ctx *command_ctx);
 /* -------- echo.c ---------------------------------------------------------- */
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- signal_handling.c ------------------------------ */
+/* -------- signal_handling.c ----------------------------------------------- */
 int	setup_signal_handler(t_ctx *c);
+
+/* -------- ft_close_fd.c ----------------------------------------------- */
+void ft_close_fd(int *fd);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/08/09 14:57:13 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 17:40:11 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,15 @@
 void process_command(t_ctx *c, t_node			*command_node)
 {
 	t_node			*arg_node;
-	t_command_ctx	*command;
+	t_command_ctx	command;
 
 	process_redirection(c, get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.redir_head_idx));
 	arg_node =  get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.arg_head_idx);
-	command = build_command(c, arg_node);
-	c->return_status = command_search_and_execution(c, command); //TODO nik: make sure it folows the  Exit Status and Errors section and alos see https://www.gnu.org/software/bash/manual/bash.html#Exit-Status-1
-	free(command->pathname);
-	free(command->argv);
+	if(build_command(c, &command, arg_node) == EXIT_FAILURE)
+		return;
+	c->return_status = command_search_and_execution(c, &command); //TODO nik: make sure it folows the  Exit Status and Errors section and alos see https://www.gnu.org/software/bash/manual/bash.html#Exit-Status-1
+	free(command.pathname);
+	free(command.argv);
 }
 /*
 TODO nik:  the exit status of a command shall be that of the last simple command executed by the command.
@@ -54,7 +55,7 @@ void process_pipeline(t_ctx *c, t_node			*pipeline_node)
 
 	command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				pipeline_node->data.pipeline.command_head_idx);
-	while(command_node != NULL)
+	while(command_node->type == NODE_COMMAND)
 	{
 		if (command_node->next_idx != 0)
 		{
@@ -84,14 +85,11 @@ void	exec_list(t_ctx *c, uint64_t head_idx)
 	t_node		*pipeline_node;
 
 	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND], head_idx);
-	while (pipeline_node != NULL)
+	while (pipeline_node->type == NODE_PIPELINE)
 	{
 		process_pipeline(c, pipeline_node);
-		if(pipeline_node->next_idx) // TODO nik/stefan: is this patern nessesary everywhere?
-			pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
-				pipeline_node->next_idx);
-		else
-			return;
+		pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
+			pipeline_node->next_idx);
 	}
 }
 

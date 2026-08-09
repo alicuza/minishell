@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 14:54:56 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 18:12:00 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,10 @@ int	cleanup(t_ctx *c)
 	arena_free(&c->arena[AT_PROMPT]);
 	arena_free(&c->arena[AT_COMMAND]);
 	free_env(&c->env);
+	ft_close_fd(&c->io_fd[0]);
+	ft_close_fd(&c->io_fd[1]);
+	ft_close_fd(&c->pipe_fd[0]);
+	ft_close_fd(&c->pipe_fd[1]);
 	return (0);
 }
 
@@ -77,7 +81,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	c = init_ctx(envp);
-	if(setup_signal_handler(&c))
+	if (setup_signal_handler(&c))
 	{
 		cleanup(&c);
 		return (EXIT_FAILURE);

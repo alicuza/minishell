@@ -3,10 +3,8 @@
 
 void	close_io(t_ctx *c)
 {
-	if (c->io_fd[0] != -1)
-		close(c->io_fd[0]); // TODO nik: what on error
-	if (c->io_fd[1] != -1)
-		close(c->io_fd[1]);
+	ft_close_fd(&c->io_fd[0]);
+	ft_close_fd(&c->io_fd[1]);
 }
 
 static int	exit_on_issue(char *error_prefix)
@@ -22,16 +20,16 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 #ifdef DEBUG
 	fprintf(stderr, "\nexecuting in child: %s\n", cmd_ctx->pathname);
 #endif
-	close(c->pipe_fd[0]);
+	ft_close_fd(&c->pipe_fd[0]);
 	if(c->io_fd[0] != -1)
 	{
 		dup2(c->io_fd[0], 0); // TODO nik: what on error
-		close(c->io_fd[0]);
+		ft_close_fd(&c->io_fd[0]);
 	}
 	if(c->io_fd[1] != -1)
 	{
 		dup2(c->io_fd[1], 1);
-		close(c->io_fd[1]);
+		ft_close_fd(&c->io_fd[1]);
 	}
 	execve(cmd_ctx->pathname, cmd_ctx->argv, envp);
 	error = ft_strjoin("execve: ", cmd_ctx->pathname);

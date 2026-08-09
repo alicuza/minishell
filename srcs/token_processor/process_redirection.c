@@ -9,8 +9,7 @@ void open_in_file(t_ctx *c, t_node *redir_node)
 {
 	char * filename;
 
-	if(c->io_fd[0] != -1)
-		close(c->io_fd[0]); //TODO look if failse
+	ft_close_fd(&c->io_fd[0]);
 	errno = 0;
 	filename = c->arena[AT_STRING].buf
 			+ redir_node->data.redir.arena_offset; //TODO nik:The word following the redirection operator in the following descriptions, unless otherwise noted, is subjected to brace expansion, tilde expansion, parameter and variable expansion, command substitution, arithmetic expansion, quote removal, filename expansion, and word splitting.
@@ -25,8 +24,7 @@ void open_here_file(t_ctx *c, t_node *redir_node)
 	(void) redir_node;
 	/* char * filename;
 
-	if(c->io_fd[0] != -1)
-		close(c->io_fd[0]); //TODO look if failse
+	ft_close_fd(&c->io_fd[0]);
 	errno = 0;
 	filename = c->arena[AT_STRING].buf
 			+ redir_node->data.redir.arena_offset;
@@ -40,8 +38,7 @@ void open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 {
 	char * filename;
 
-	if(c->io_fd[1] != -1)
-		close(c->io_fd[1]); //TODO look if failse
+	ft_close_fd(&c->io_fd[1]);
 	errno = 0;
 	filename = c->arena[AT_STRING].buf
 			+ redir_node->data.redir.arena_offset;
@@ -52,7 +49,7 @@ void open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 
 void process_redirection(t_ctx *c, t_node *redir_node)
 {	
-	while(redir_node != NULL)
+	while(redir_node->type == NODE_REDIR)
 	{
 		if(redir_node->flags & REDIR_IN)
 		{

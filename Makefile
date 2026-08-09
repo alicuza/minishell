@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/08/09 13:44:01 by nribakov         ###   ########.fr        #
+#    Updated: 2026/08/09 18:03:41 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ SRCS        = \
 			prompt.c \
 			input.c \
 			signal_handling.c \
+			ft_close_fd.c \
 			token_processor/token_processor.c \
 			token_processor/execute_non_builtin.c \
 			token_processor/get_pathname.c \
