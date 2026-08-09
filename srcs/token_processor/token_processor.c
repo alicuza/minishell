@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/08/09 10:50:52 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 13:36:06 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,33 +71,27 @@ void process_pipeline(t_ctx *c, t_node			*pipeline_node)
 			process_command(c, command_node);
 			if (fstat(STDIN_FILENO , &buf) == -1)
 				return ;
-		}
+		}  
 		command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				command_node->data.command.next);
 	}
 	wait_return_status(c);
 }
 
-void	execute(t_ctx *c)
+//TODO nik: set up https://www.gnu.org/software/bash/manual/bash.html#Signals-1
+void	exec_list(t_ctx *c, uint64_t head_idx)
 {
-	t_arena			*stack;
-	t_symbol		*symbol;
-	t_node			*pipeline_node;
+	t_node		*pipeline_node;
 
-	stack = &(c->arena[AT_STACK]);
-	symbol = get_ptr_from_offset(stack, stack->offset - stack->stride);
-	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND], symbol->node_idx);
-	while (pipeline_node != NULL) // TODO stefan: check if condition is correct
+	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND], head_idx);
+	while (pipeline_node != NULL)
 	{
 		process_pipeline(c, pipeline_node);
-		pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
-				pipeline_node->data.pipeline.next_idx);
+		if(pipeline_node->next_idx)
+			pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
+				pipeline_node->next_idx);
+		else
+			return;
 	}
 }
-//TODO nik: set up https://www.gnu.org/software/bash/manual/bash.html#Signals-1
-void	exec_stack(t_ctx *c, t_parser_state *parse)
-{
-	(void) parse;
-	// build_command(c, parse);
-	execute(c); // Execute stuff after parser is done
-}
+

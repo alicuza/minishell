@@ -254,6 +254,17 @@ Applications may indicate that the prompt contains characters that take up no ph
   - NODE_PIPELINE: data.pipeline.command → first NODE_COMMAND
   - NODE_COMMAND: data.command.args → NODE_ARG chain, data.command.redirs → NODE_REDIR chain
 
+**2026.08.08.**
+- reviewed & cleaned up all 15 parser reduction handlers (naming convention `<role>_sym`/`_node`/`_idx`, removed dead/redundant guards, fixed a real bug in `suffix_attach_last` that dropped the first arg/redir of every suffix)
+- `append_node_to_tail` now self-guards on empty head and returns the head (was `new_idx`), so callers do `head = append_node_to_tail(...)`; `get_token_body` helper added
+- arena-clearing consolidation: `AT_STRING`/`AT_TOKENS`/`AT_STACK`/`AT_COMMAND` are now all reset at the start of `parse_input`; `AT_COMMAND` is still reclaimed incrementally in `parse_exec` after each top-level exec; `AT_PROMPT` self-clears in `init_prompt`. Dropped the redundant end-of-line `clear_arenas` from `shell_loop` (deleted the function).
+- FUTURE — preparing for command substitution `$(...)`: it requires **re-entrant execution** (an inner command runs mid-parse/expansion while the outer command's AST is still live in `AT_COMMAND`). Plan:
+  - replace the global `arena_clear(AT_COMMAND)` with **`arena_save`/`arena_restore` scoped per execution**: the executor captures the arena offset at scope start and restores it at scope end, reclaiming only the nested subtree while preserving the enclosing command's nodes.
+  - the reclaim must stay owned by the execution path (`parse_exec` today; a `$(...)` handler tomorrow) — never a global clear in `shell_loop`.
+  - `AT_STRING`/`AT_TOKENS`/`AT_STACK` have the same re-entrancy need — a nested parse needs its own tokens/strings/stack (save/restore, or a separate parse context).
+  - the `symbol->node_idx = 0` bookkeeping in `parse_exec` becomes per-scope.
+  - note: subshells `( )` do NOT need this — they execute inline as a single top-level unit, since only `complete_commands` triggers exec and a subshell's internals are `compound_list`/`term`, never `complete_commands`. Only command substitution executes mid-expansion.
+
 #### personal
 
 **2026.04.30**
@@ -329,6 +340,8 @@ export LESS_TERMCAP_ue=$'\e[0m'           # end underline
 - [ ] consider error handling according to posix
 - [ ] implement mutable env unsure if arenas are the right choice here. this seems like exactly the opposiite of what they are useful for.
 - [ ] implement parser reductions (grammar tables, reduce functions)
+  - [x] ~~write `get_token_body(c, token)` helper (token string body accessor)~~
+  - [ ] write a proper quote removal function (replace ad-hoc `pos += 1; len -= 2` in `set_here_delim`)
 - [ ] resolve `$VAR` expansion tokens
 - [ ] finish writing the readme file
 - [x] ~~remove the statics from token.c, maybe into the ctx var, so i can actually test this properly in isolation.~~

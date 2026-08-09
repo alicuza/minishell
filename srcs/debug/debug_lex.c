@@ -18,21 +18,20 @@ void	print_flags(FILE *out, uint32_t flags)
 
 	if (!flags)
 	{
-		fprintf(stderr, "(no flags set)");
+		fprintf(out, "(no flags set)");
 		return ;
 	}
 	bit = 1;
 	while (!(flags & bit))
 		bit <<= 1;
-	fprintf(out, "%s ", get_flag_name(bit));
+	fprintf(out, "%s", get_lex_flag_name(bit));
 	flags ^= bit;
 	while (flags)
 	{
 		bit <<= 1;
 		if (flags & bit)
 		{
-			fprintf(stderr, "|");
-			fprintf(out, "%s ", get_flag_name(bit));
+			fprintf(out, " | %s", get_lex_flag_name(bit));
 			flags ^= bit;
 		}
 	}
@@ -48,8 +47,11 @@ void	print_lex_state(t_ctx *c, t_lexer_state *l)
 	print_char_info(ch);
 	fprintf(stderr, "  %s", get_token_type_name(l->type));
 	if (l->flags & LEX_IS_BUILDING)
-		fprintf(stderr, "(%.*s)", (int)l->token.len,
-			c->read_line + l->token.pos);
+	{
+		fprintf(stderr, "(");
+		print_escaped_strn(stderr, c->read_line + l->token.pos, l->token.len);
+		fprintf(stderr, ")");
+	}
 	fprintf(stderr, "  {  token.pos = %lu  token.len = %lu  flags = ",
 		l->token.pos, l->token.len);
 	print_flags(stderr, l->flags);
@@ -70,5 +72,32 @@ void	print_token(FILE *out, t_ctx *c, t_token *token)
 	fprintf(out, " ");
 	print_flags(out, token->flags);
 	fprintf(stderr, "  }");
+	fprintf(out, "\n");
+}
+
+void	print_token_line(FILE *out, t_ctx *c, t_token *token)
+{
+	t_arena	*input;
+	uint32_t	bit;
+
+	input = &(c->arena[AT_STRING]);
+	fprintf(out, "%s(", get_token_type_name(token->type));
+	print_escaped_str(out, input->buf + token->offset);
+	fprintf(out, ")");
+	if (token->flags)
+	{
+		bit = 1;
+		while (bit && !(token->flags & bit))
+			bit <<= 1;
+		while (bit)
+		{
+			if (token->flags & bit)
+			{
+				fprintf(out, " %s", get_lex_flag_name(bit));
+				token->flags ^= bit;
+			}
+			bit <<= 1;
+		}
+	}
 	fprintf(out, "\n");
 }
