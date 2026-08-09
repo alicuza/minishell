@@ -37,8 +37,6 @@ const char	*get_parse_flag_name(uint32_t bit);
 
 /* -------- debug_parse.c -------------------------------------------------- */
 void		print_symbol(FILE *out, t_ctx *c, t_symbol *symbol, uint64_t idx);
-void		print_parse_table(FILE *out, t_ctx *c, t_parser_state *parse,
-				const char *action);
 void		print_trace_line(FILE *out, t_ctx *c, t_parser_state *parse,
 				const char *action);
 void		print_tokens(FILE *out, t_ctx *c);

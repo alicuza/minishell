@@ -142,6 +142,8 @@ const char	*get_parse_flag_name(uint32_t bit)
 		return ("PARSE_SAVE_TOKENS");
 	else if (bit == PARSE_HAS_SAVED_TOKENS)
 		return ("PARSE_HAS_SAVED_TOKENS");
+	else if (bit == PARSE_HAS_LOOKAHEAD)
+		return ("PARSE_HAS_LOOKAHEAD");
 	else if (bit == PARSE_HERE_BODY)
 		return ("PARSE_HERE_BODY");
 	else if (bit == PARSE_ERROR)
