@@ -1,16 +1,14 @@
 #include "minishell.h"
-#include "parser.h"
 
 uint64_t	reduce_redir_append(t_ctx *c, t_parser_state *parse,
 		t_rule *rule)
 {
-	uint64_t	head;
-	uint64_t	new;
+	t_symbol	*list_sym;
+	t_symbol	*redir_sym;
 
-	head = get_symbol_from_rhs(c, parse, rule, 0)->node_idx;
-	new = get_symbol_from_rhs(c, parse, rule, 1)->node_idx;
-	append_node_to_tail(c, head, new);
-	return (head);
+	list_sym = get_symbol_from_rhs(c, parse, rule, 0);
+	redir_sym = get_symbol_from_rhs(c, parse, rule, 1);
+	return (append_node_to_tail(c, list_sym->node_idx, redir_sym->node_idx));
 }
 
 uint64_t	reduce_io_file(t_ctx *c, t_parser_state *parse, t_rule *rule)
@@ -61,7 +59,7 @@ uint64_t	reduce_io_here(t_ctx *c, t_parser_state *parse, t_rule *rule)
 	uint8_t		flags;
 
 	symbol = get_symbol_from_rhs(c, parse, rule, 1);
-	token = get_ptr_from_idx(&c->arena[AT_TOKENS], symbol->token_idx);
+	token = get_token_from_idx(c, symbol->token_idx);
 	flags = set_here_delim(c, parse, token);
 	parse->here.body.pos = 0;
 	parse->here.body.len = 0;

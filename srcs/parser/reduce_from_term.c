@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "parser.h"
 
 uint64_t	reduce_from_term(t_ctx *c, t_parser_state *parse, t_rule *rule)
 {

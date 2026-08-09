@@ -50,13 +50,13 @@ SRCS        = \
 			parser/yy_table.c \
 			parser/rule_dispatch.c \
 			parser/stack_ops.c \
+			parser/shift_reduce.c \
+			parser/reduce_helpers.c \
 			parser/reduce_from_term.c \
 			parser/reduce_pipeline.c \
 			parser/reduce_command.c \
 			parser/reduce_redir.c \
 			parser/reduce_compound.c \
-			parser/reduce_helpers.c \
-			parser/reduce_driver.c \
 			parser/node_utils.c \
 			parser/node_getters.c \
 			lexer/lookahead.c \
@@ -64,8 +64,8 @@ SRCS        = \
 			lexer/lookahead_rules2.c \
 			lexer/lex_tokens.c \
 			lexer/lex_heredoc.c \
-			lexer/here_body_read.c \
 			lexer/lex_utils.c \
+			lexer/here_body_read.c \
 			lexer/pair_utils.c \
 			lexer/token_transform_utils.c \
 			lexer/string_utils.c \
