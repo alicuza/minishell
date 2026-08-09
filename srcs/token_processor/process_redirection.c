@@ -1,10 +1,6 @@
 #include "minishell.h"
 
-// TODO nik: is it significant? 2.9.1.3 Commands with no Command Name
-// If a simple command has no command name after word expansion (see 2.9.1.1 Order of Processing), any redirections shall be performed in a subshell environment; it is unspecified whether this subshell environment is the same one as that used for a command substitution within the command. (To affect the current execution environment, see the exec special built-in.) If any of the redirections performed in the current shell execution environment fail, the command shall immediately fail with an exit status greater than zero, and the shell shall write an error message indicating the failure. See 2.8.1 Consequences of Shell Errors for the consequences of these failures on interactive and non-interactive shells.
-
-//A failure to open or create a file shall cause a redirection to fail.
-/// . A redirection error causes the command to exit with a non-zero status.
+// A failure to open or create a file shall cause a redirection to fail.
 void open_in_file(t_ctx *c, t_node *redir_node)
 {
 	char * filename;

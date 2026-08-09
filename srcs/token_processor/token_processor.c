@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/08/09 17:40:11 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/08/09 21:18:34 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,11 @@ void process_command(t_ctx *c, t_node			*command_node)
 	t_node			*arg_node;
 	t_command_ctx	command;
 
-	process_redirection(c, get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.redir_head_idx));
 	arg_node =  get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.arg_head_idx);
 	if(build_command(c, &command, arg_node) == EXIT_FAILURE)
-		return;
+	return;
+	// expand_redirections(c, get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.redir_head_idx)); TODO nik
+	// TODO nik: check if somthing is left after filed expansion if no just do redirection in subshell
 	c->return_status = command_search_and_execution(c, &command); //TODO nik: make sure it folows the  Exit Status and Errors section and alos see https://www.gnu.org/software/bash/manual/bash.html#Exit-Status-1
 	free(command.pathname);
 	free(command.argv);

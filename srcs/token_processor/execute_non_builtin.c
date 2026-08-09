@@ -19,6 +19,7 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 #ifdef DEBUG
 	fprintf(stderr, "\nexecuting in child: %s\n", cmd_ctx->pathname);
 #endif
+	// TODO nik: process_redirection();
 	ft_close_fd(&c->pipe_fd[0]);
 	if(c->io_fd[0] != -1)
 	{

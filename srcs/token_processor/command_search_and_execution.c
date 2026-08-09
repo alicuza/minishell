@@ -24,10 +24,8 @@ static t_command_function	match_builtin(char *name)
 }
 
 /*
-	Directly follows 2.9.1.4 Command Search and Execution
-	TODO nik: maybe remember its location and need not search for the utility again unless the PATH variable has been the subject of an assignment. If the remembered location fails for a subsequent invocation,
-		the shell shall repeat the search to find the new location for the utility,
-		if any.
+	TODO nik: is it significant? 2.9.1.3 Commands with no Command Name
+	If a simple command has no command name after word expansion (see 2.9.1.1 Order of Processing), any redirections shall be performed in a subshell environment; If any of the redirections performed in the current shell execution environment fail, the command shall immediately fail with an exit status greater than zero, and the shell shall write an error message indicating the failure.
 */
 int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 {
@@ -38,7 +36,7 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 	if (ft_strchr(cmd_ctx->pathname, '/') == NULL)
 	{
 		command = match_builtin(cmd_ctx->pathname);
-		if (command != NULL)
+		if (command != NULL) //TODO nik: do rederactions and revert them when you done
 			return (command(c, cmd_ctx));
 		else
 		{
