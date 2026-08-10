@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/08/01 16:10:39 by sancuta          ###   ########.fr        #
+#    Updated: 2026/08/09 20:01:33 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,10 +35,16 @@ SRCS        = \
 			main.c \
 			prompt.c \
 			input.c \
+			signal_handling.c \
+			ft_close_fd.c \
+			cleanup.c \
 			token_processor/token_processor.c \
 			token_processor/execute_non_builtin.c \
 			token_processor/get_pathname.c \
+			token_processor/process_redirection.c \
 			token_processor/ft_split_with_empty.c \
+			token_processor/command_search_and_execution.c \
+			token_processor/build_command.c \
 			parser/parse_input.c \
 			parser/parse_token_flow.c \
 			parser/classify_token.c \
@@ -74,6 +80,7 @@ SRCS        = \
 			environment/init_env.c \
 			environment/add_env_defaults.c \
 			environment/env_to_envp.c \
+			error_handling/error_handling.c \
 			builtin/env.c \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \

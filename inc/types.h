@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 14:58:41 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/09 16:30:47 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ typedef struct s_debug
 typedef struct s_ctx
 {
 	t_env	env;
+	int		pipe_fd[2];
+	int		io_fd[2];
 	t_arena	arena[AT_COUNT];
 	char	*read_line;
 	int		return_status;
