@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/26 13:03:24 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 14:16:43 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/10 19:42:52 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ bool	handle_here_body(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
 
 #ifdef DEBUG
 	if (c->dbg.states & DBG_HEREDOC)
-		fprintf(stderr, "--- heredoc ---\n\treading body until delimiter\n");
+		print_here_reading(c, parse);
 #endif
 	get_here_doc(c, lex, &parse->here);
 	parse->flags &= ~PARSE_HERE_BODY;
@@ -58,6 +58,10 @@ bool	handle_here_body(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
 	node = get_node_from_idx(c, symbol->node_idx);
 	node->data.redir.arena_offset = parse->here.body.pos;
 	parse->token_idx = symbol->token_idx;
+#ifdef DEBUG
+	if (c->dbg.states & DBG_HEREDOC)
+		print_here_stored(parse, symbol->token_idx);
+#endif
 	return (true);
 }
 
@@ -70,8 +74,7 @@ bool	handle_saved_tokens(t_ctx *c, t_parser_state *parse)
 	next = get_ptr_from_idx(tokens, parse->token_idx + 1);
 #ifdef DEBUG
 	if (c->dbg.states & DBG_HEREDOC)
-		fprintf(stderr, "--- heredoc ---\n\treplaying saved token %lu\n",
-			parse->token_idx + 1);
+		print_here_replay(parse->token_idx + 1);
 #endif
 	if (next->flags & TKN_IS_HERE_BODY)
 	{

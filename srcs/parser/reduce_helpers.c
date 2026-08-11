@@ -14,7 +14,7 @@ uint64_t	reduce_compute_result(t_ctx *c, t_parser_state *parse,
 		*token_idx = get_symbol_from_rhs(c, parse, rule,
 			rule->rhs_len - 1)->token_idx;
 #ifdef DEBUG
-		if (c->dbg.states & DBG_PARSER)
+		if ((c->dbg.states & DBG_PARSER) && (c->dbg.parser & DBG_SHOW_LINKS))
 			log_rhs_symbols(c, parse, rule);
 #endif
 	}

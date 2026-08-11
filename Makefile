@@ -97,7 +97,8 @@ DEBUG_SRCS  = \
 			debug/debug_names.c \
 			debug/debug_arena.c \
 			debug/debug_lex.c \
-			debug/debug_parse.c
+			debug/debug_parse.c \
+			debug/debug_heredoc.c
 
 RELEASE_OBJS = $(addprefix $(RELEASE_DIR)/, $(SRCS:.c=.o))
 DEBUG_OBJS   = $(addprefix $(DEBUG_DIR)/, $(SRCS:.c=.o)) \

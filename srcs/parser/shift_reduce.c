@@ -5,20 +5,18 @@ t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
 	t_rule		rule;
 	t_symbol	sym;
 #ifdef DEBUG
-	char		rule_desc[256];
-#endif
+	int32_t		from;
 
-	rule = get_rule(action);
-#ifdef DEBUG
-	build_rule_desc(rule_desc, sizeof(rule_desc), action, c, &rule, parse);
+	from = parse->state;
 #endif
+	rule = get_rule(action);
 	sym.node_idx = reduce_compute_result(c, parse, &rule, &sym.token_idx);
 	sym.type = rule.lhs_type;
 	parse->exec_root_idx = get_exec_root(c, parse, &rule);
 	pop_symbols(c, parse, rule.rhs_len);
 	reduce_apply_goto(parse, &rule);
 #ifdef DEBUG
-	if (c->dbg.states & DBG_PARSER)
+	if ((c->dbg.states & DBG_PARSER) && (c->dbg.parser & DBG_SHOW_LINKS))
 	{
 		if (sym.node_idx)
 		{
@@ -30,12 +28,12 @@ t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
 #endif
 	push_symbol(c, parse, &sym);
 #ifdef DEBUG
-	print_trace_step(c, parse, rule_desc);
+	print_step(c, parse, (t_debug_step){LALR_REDUCE, action, from});
 #endif
 	if (parse->state == YYFINAL)
 	{
 #ifdef DEBUG
-		print_trace_step(c, parse, "accept");
+		print_step(c, parse, (t_debug_step){LALR_ACCEPT, 0, from});
 #endif
 		return (LALR_ACCEPT);
 	}
@@ -53,15 +51,19 @@ static t_lalr_action	reduce_or_error(t_ctx *c, t_parser_state *parse,
 static t_lalr_action	shift(t_ctx *c, t_parser_state *parse, int32_t action)
 {
 	t_symbol	sym;
+#ifdef DEBUG
+	int32_t		from;
 
+	from = parse->state;
+#endif
 	parse->state = action;
 #ifdef DEBUG
-	debug_trace_shift(c, parse);
+	print_step(c, parse, (t_debug_step){LALR_SHIFT, 0, from});
 #endif
 	if (parse->state == YYFINAL)
 	{
 #ifdef DEBUG
-		print_trace_step(c, parse, "accept");
+		print_step(c, parse, (t_debug_step){LALR_ACCEPT, 0, from});
 #endif
 		return (LALR_ACCEPT);
 	}

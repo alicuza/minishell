@@ -57,7 +57,7 @@ static bool	run_parse_iteration(t_ctx *c, t_parser_state *parse,
 	t_lalr_action	action;
 
 #ifdef DEBUG
-	if (c->dbg.states & DBG_PARSER)
+	if ((c->dbg.states & DBG_PARSER) && (c->dbg.parser & DBG_SHOW_FLAGS))
 		debug_parse_header(parse);
 	debug_parse_arenas(c);
 #endif
