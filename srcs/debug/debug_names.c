@@ -157,8 +157,6 @@ const char	*get_lex_flag_name(uint32_t bit)
 		return ("TKN_HAS_QUOTES");
 	else if (bit == TKN_HAS_EXPANSION)
 		return ("TKN_HAS_EXPANSION");
-	else if (bit == TKN_IS_HERE_BODY)
-		return ("TKN_IS_HERE_BODY");
 	else if (bit == LEX_IS_BUILDING)
 		return ("LEX_IS_BUILDING");
 	else if (bit == LEX_AT_EOI)

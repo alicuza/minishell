@@ -60,6 +60,7 @@ SRCS        = \
 			parser/reduce_redir.c \
 			parser/reduce_compound.c \
 			parser/node_utils.c \
+			parser/quote_remove.c \
 			parser/node_getters.c \
 			lexer/lookahead.c \
 			lexer/lookahead_rules1.c \
@@ -68,6 +69,8 @@ SRCS        = \
 			lexer/lex_heredoc.c \
 			lexer/lex_utils.c \
 			lexer/here_body_read.c \
+			lexer/here_read_line.c \
+			lexer/here_write_line.c \
 			lexer/pair_utils.c \
 			lexer/token_transform_utils.c \
 			lexer/string_utils.c \
@@ -81,6 +84,7 @@ SRCS        = \
 			environment/add_env_defaults.c \
 			environment/env_to_envp.c \
 			error_handling/error_handling.c \
+			error_handling/msh_error.c \
 			builtin/env.c \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \

@@ -1,16 +1,21 @@
 #include "minishell.h"
 
+static void	start_here_body(t_parser_state *parse)
+{
+	parse->flags &= ~PARSE_SAVE_TOKENS;
+	parse->flags |= PARSE_HAS_SAVED_TOKENS | PARSE_HERE_BODY;
+}
+
 bool	get_next_token(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
 {
 	while (true)
 	{
-		if ((parse->flags & PARSE_HERE_BODY)
-			&& !handle_here_body(c, parse, lex))
-			return (false);
+		if (parse->flags & PARSE_HERE_BODY)
+			handle_here_body(c, parse, lex);
 		if (parse->flags & PARSE_HAS_SAVED_TOKENS)
 		{
-			if (handle_saved_tokens(c, parse))
-				return (true);
+			handle_saved_tokens(c, parse);
+			return (true);
 		}
 		if (lex->flags & LEX_AT_EOI)
 		{
@@ -32,16 +37,16 @@ void	report_parse_error(t_ctx *c, t_parser_state *parse)
 
 	parse->flags |= PARSE_ERROR;
 	token = get_token_from_idx(c, parse->token_idx);
-	body = get_ptr_from_offset(&c->arena[AT_STRING], token->offset);
+	body = get_token_body(c, token);
 	if (parse->lookahead_type == SYM_EOF)
-		ft_putendl_fd("minishell: syntax error near unexpected token"
-			" 'end of file'", STDERR_FILENO);
+		msh_error(NULL, NULL, "syntax error near unexpected token"
+			" 'end of file'");
 	else if (parse->lookahead_type == SYM_NEWLINE)
-		ft_putendl_fd("minishell: syntax error near unexpected token"
-			" 'newline'", STDERR_FILENO);
+		msh_error(NULL, NULL, "syntax error near unexpected token"
+			" 'newline'");
 	else
 	{
-		ft_putstr_fd("minishell: syntax error near unexpected token '",
+		ft_putstr_fd(SHELLNAME": syntax error near unexpected token '",
 			STDERR_FILENO);
 		ft_putstr_fd(body, STDERR_FILENO);
 		ft_putendl_fd("'", STDERR_FILENO);
@@ -50,31 +55,31 @@ void	report_parse_error(t_ctx *c, t_parser_state *parse)
 
 bool	get_lookahead(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
 {
+	t_token	*token;
+
 	while (true)
 	{
 		if (get_next_token(c, parse, lex))
 		{
-			parse->lookahead_type = classify_token(c,
-					get_token_from_idx(c, parse->token_idx));
+			token = get_token_from_idx(c, parse->token_idx);
+			parse->lookahead_type = classify_token(c, token);
 			parse->flags |= PARSE_HAS_LOOKAHEAD;
 			return (true);
 		}
 		if (!(parse->flags & PARSE_SAVE_TOKENS))
 			return (false);
-		parse->flags &= ~PARSE_SAVE_TOKENS;
-		parse->flags |= PARSE_HERE_BODY;
+		start_here_body(parse);
 	}
 }
 
 bool	handle_here_doc(t_ctx *c, t_parser_state *parse)
 {
 	t_token	*cur;
+	char	*body;
 
 	cur = get_token_from_idx(c, parse->token_idx);
-	if (c->arena[AT_STRING].buf[cur->offset] == '\n')
-	{
-		parse->flags &= ~PARSE_SAVE_TOKENS;
-		parse->flags |= PARSE_HERE_BODY;
-	}
+	body = get_token_body(c, cur);
+	if (*body == '\n')
+		start_here_body(parse);
 	return (true);
 }

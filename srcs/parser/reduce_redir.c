@@ -31,22 +31,16 @@ uint64_t	reduce_io_file(t_ctx *c, t_parser_state *parse, t_rule *rule)
 	return (node_idx);
 }
 
-static uint8_t	set_here_delim(t_ctx *c, t_parser_state *parse,
-		t_token *token)
+static uint8_t	set_here_delim(t_ctx *c, t_token *token)
 {
 	char	*delim_word;
 	uint8_t	flags;
 
 	delim_word = get_token_body(c, token);
-	parse->here.delim.pos = token->offset;
-	parse->here.delim.len = ft_strlen(delim_word);
+	quote_remove_inplace(delim_word);
 	flags = REDIR_HERE;
 	if (token->flags & TKN_HAS_QUOTES)
-	{	// TODO stefan: needs a better quote removal function
-		parse->here.delim.pos += 1;
-		parse->here.delim.len -= 2;
 		flags |= REDIR_HAS_QUOTES;
-	}
 	return (flags);
 }
 
@@ -60,9 +54,7 @@ uint64_t	reduce_io_here(t_ctx *c, t_parser_state *parse, t_rule *rule)
 
 	symbol = get_symbol_from_rhs(c, parse, rule, 1);
 	token = get_token_from_idx(c, symbol->token_idx);
-	flags = set_here_delim(c, parse, token);
-	parse->here.body.pos = 0;
-	parse->here.body.len = 0;
+	flags = set_here_delim(c, token);
 #ifdef DEBUG
 	if (c->dbg.states & DBG_HEREDOC)
 		print_here_saving();
