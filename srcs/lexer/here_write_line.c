@@ -1,5 +1,11 @@
 #include "minishell.h"
 
+static void	write_here(t_ctx *c, int fd, char *buf, uint64_t len)
+{
+	if (write(fd, buf, len) == -1)
+		fatal(c, "heredoc", strerror(errno));
+}
+
 static char	*get_expansion_value(t_ctx *c, char *name)
 {
 	if (*name == '?')
@@ -24,7 +30,7 @@ static uint64_t	expand_here_var(t_ctx *c, int fd, char *line, uint64_t i)
 	free(name);
 	if (val)
 	{
-		write(fd, val, ft_strlen(val));
+		write_here(c, fd, val, ft_strlen(val));
 		free(val);
 	}
 	return (i + end);
@@ -41,14 +47,14 @@ static void	expand_here_line(t_ctx *c, int fd, char *line, uint64_t len)
 	{
 		if (is_expansion_start(line, i))
 		{
-			write(fd, line + start, i - start);
+			write_here(c, fd, line + start, i - start);
 			i = expand_here_var(c, fd, line, i);
 			start = i;
 		}
 		else
 			++i;
 	}
-	write(fd, line + start, len - start + 1);
+	write_here(c, fd, line + start, len - start + 1);
 }
 
 void	write_here_line(t_ctx *c, int fd, t_lexer_state *lex, t_node *node)
@@ -59,7 +65,7 @@ void	write_here_line(t_ctx *c, int fd, t_lexer_state *lex, t_node *node)
 	line = c->read_line + lex->char_idx;
 	len = word_len(line, '\n');
 	if (node->flags & REDIR_HAS_QUOTES)
-		write(fd, line, len + 1);
+		write_here(c, fd, line, len + 1);
 	else
 		expand_here_line(c, fd, line, len);
 	consume_char(lex, len + 1);
