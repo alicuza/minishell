@@ -42,10 +42,8 @@ typedef struct s_debug
 	uint8_t	scope;				/* SCOPE_TOKENS | SCOPE_STACK | SCOPE_COMMAND */
 	uint8_t	states;				/* DBG_LEXER | DBG_PARSER | DBG_HEREDOC */
 	uint8_t	arenas;				/* DBG_ARENA_* mask */
+	uint8_t	parser;				/* DBG_SHOW_* mask: which parser parts to print */
 	bool	no_exec;
-	bool	awaiting;			/* true while main.c awaits the next lookahead */
-	char	last_action[64];	/* written by print_trace_step; read by print_stack
-								   TODO: move to a debug arena for unbounded length */
 }	t_debug;
 # endif
 

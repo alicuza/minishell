@@ -64,8 +64,8 @@ uint64_t	reduce_io_here(t_ctx *c, t_parser_state *parse, t_rule *rule)
 	parse->here.body.pos = 0;
 	parse->here.body.len = 0;
 #ifdef DEBUG
-	if (c->dbg.states & DBG_PARSER)
-		fprintf(stderr, "--- parse ---\n\theredoc: entering SAVE_TOKENS mode\n");
+	if (c->dbg.states & DBG_HEREDOC)
+		print_here_saving();
 #endif
 	parse->flags |= PARSE_SAVE_TOKENS;
 	node_idx = alloc_node(c, NODE_REDIR);

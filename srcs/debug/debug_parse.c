@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 11:08:25 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 11:26:48 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/08/10 19:13:12 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,7 @@ void	print_stack(FILE *out, t_ctx *c, t_parser_state *parse)
 	t_arena		*stack;
 
 	stack = &c->arena[AT_STACK];
-	fprintf(out, "\n--- stack ---\n(state %d)\n", parse->state);
-	fprintf(out, "--- top -----\n");
+	fprintf(out, "\n--- stack ---\n--- top -----\n");
 	phys = parse->stack_idx;
 	while (phys)
 	{
@@ -94,37 +93,6 @@ void	print_stack(FILE *out, t_ctx *c, t_parser_state *parse)
 		--phys;
 	}
 	fprintf(out, "--- bottom ----\n");
-	fprintf(out, "lookahead: ");
-	if (c->dbg.awaiting)
-		fprintf(out, DBG_LOOKAHEAD_PENDING);
-	else
-		print_lookahead(out, c, parse);
-	fprintf(out, "\naction: %s\n", c->dbg.last_action);
-}
-
-static void	print_stack_symbols(FILE *out, t_ctx *c, t_parser_state *parse)
-{
-	t_symbol	*symbol;
-	uint64_t	phys;
-
-	phys = 1;
-	while (phys <= parse->stack_idx)
-	{
-		symbol = get_ptr_from_idx(&c->arena[AT_STACK], phys);
-		print_symbol_desc(out, c, symbol, phys);
-		fprintf(out, " ");
-		++phys;
-	}
-}
-
-void	print_trace_line(FILE *out, t_ctx *c, t_parser_state *parse,
-		const char *action)
-{
-	fprintf(out, "[bottom] ");
-	print_stack_symbols(out, c, parse);
-	fprintf(out, "[top] | ");
-	print_lookahead(out, c, parse);
-	fprintf(out, " | %s\n", action);
 }
 
 void	print_tokens(FILE *out, t_ctx *c)
@@ -250,62 +218,27 @@ void	print_nodes(FILE *out, t_ctx *c)
 	}
 }
 
-/* -------- parser trace helpers (moved from the parser split) -------------- */
-static size_t	append_uint(char *buf, size_t pos, size_t size, uint32_t n)
+/* -------- parser trace: one compact step line per shift/reduce ----------- */
+/* [la] <lookahead> [shift N] | [reduce N] [goto N] | [accept] */
+static void	fprint_step(FILE *out, t_ctx *c, t_parser_state *parse,
+		t_debug_step step)
 {
-	char	tmp[16];
-	size_t	len;
-
-	len = 0;
-	if (n == 0)
-		tmp[len++] = '0';
-	while (n > 0)
-	{
-		tmp[len++] = (char)('0' + (n % 10));
-		n /= 10;
-	}
-	while (len > 0 && pos + 1 < size)
-		buf[pos++] = tmp[--len];
-	buf[pos] = '\0';
-	return (pos);
-}
-
-void	build_rule_desc(char *buf, size_t size, int32_t action,
-		t_ctx *c, t_rule *rule, t_parser_state *parse)
-{
-	size_t		pos;
-	uint64_t	rhs;
-
-	pos = ft_strlcpy(buf, "reduce ", size);
-	pos = append_uint(buf, pos, size, (uint32_t)action);
-	pos += ft_strlcpy(buf + pos, " (", size - pos);
-	pos += ft_strlcpy(buf + pos, get_symbol_type_name(rule->lhs_type),
-			size - pos);
-	pos += ft_strlcpy(buf + pos, " :=", size - pos);
-	if (rule->rhs_len == 0)
-		pos += ft_strlcpy(buf + pos, " (epsilon)", size - pos);
+	fprintf(out, "[state %d] [la] ", step.from);
+	print_lookahead(out, c, parse);
+	if (step.kind == LALR_SHIFT)
+		fprintf(out, " [shift %d]\n", parse->state);
+	else if (step.kind == LALR_REDUCE)
+		fprintf(out, " [reduce %d] [goto %d]\n", step.rule, parse->state);
 	else
-	{
-		rhs = 0;
-		while (rhs < rule->rhs_len)
-		{
-			pos += ft_strlcpy(buf + pos, " ", size - pos);
-			pos += ft_strlcpy(buf + pos, get_symbol_type_name(
-						get_symbol_from_rhs(c, parse, rule, rhs)->type),
-					size - pos);
-			++rhs;
-		}
-	}
-	ft_strlcpy(buf + pos, ")", size - pos);
+		fprintf(out, " [accept]\n");
 }
 
-void	print_trace_step(t_ctx *c, t_parser_state *parse, const char *label)
+void	print_step(t_ctx *c, t_parser_state *parse, t_debug_step step)
 {
-	ft_strlcpy(c->dbg.last_action, label, sizeof(c->dbg.last_action));
-	if (c->dbg.states & DBG_PARSER)
-		print_trace_line(stderr, c, parse, label);
+	if ((c->dbg.states & DBG_PARSER) && (c->dbg.parser & DBG_SHOW_ACTION))
+		fprint_step(stderr, c, parse, step);
 	if (c->dbg.scope & SCOPE_TRACE)
-		print_trace_line(stdout, c, parse, label);
+		fprint_step(stdout, c, parse, step);
 }
 
 void	log_rhs_symbols(t_ctx *c, t_parser_state *parse, t_rule *rule)
@@ -318,21 +251,14 @@ void	log_rhs_symbols(t_ctx *c, t_parser_state *parse, t_rule *rule)
 	{
 		symbol = get_symbol_from_rhs(c, parse, rule, rhs);
 		if (symbol->node_idx)
+		{
+			fprintf(stderr, "[rhs] ");
 			print_node_line(stderr, c,
 				get_node_from_idx(c, symbol->node_idx),
 				symbol->node_idx);
+		}
 		++rhs;
 	}
-}
-
-void	debug_trace_shift(t_ctx *c, t_parser_state *parse)
-{
-	char	action_desc[64];
-	size_t	pos;
-
-	pos = ft_strlcpy(action_desc, "shift -> state ", sizeof(action_desc));
-	append_uint(action_desc, pos, sizeof(action_desc), (uint32_t)parse->state);
-	print_trace_step(c, parse, action_desc);
 }
 
 void	debug_parse_header(t_parser_state *parse)
@@ -340,7 +266,10 @@ void	debug_parse_header(t_parser_state *parse)
 	uint32_t	bit;
 	uint8_t		flags;
 
-	fprintf(stderr, "\n--- parse ---\ntoken_idx = %lu  flags =", parse->token_idx);
+	fprintf(stderr, "\n--- parse ---\n");
+	if (parse->flags & PARSE_HAS_LOOKAHEAD)
+		fprintf(stderr, "[lookahead] ");
+	fprintf(stderr, "token_idx = %lu  flags =", parse->token_idx);
 	flags = parse->flags;
 	bit = 1;
 	while (bit && !(flags & bit))
@@ -372,8 +301,9 @@ void	debug_parse_action(t_ctx *c, t_parser_state *parse,
 {
 	if (!(c->dbg.states & DBG_PARSER))
 		return ;
-	if (c->dbg.scope & SCOPE_STACK)
+	if (c->dbg.parser & DBG_SHOW_STACK)
 		print_stack(stderr, c, parse);
-	if (action == LALR_REDUCE || action == LALR_ACCEPT)
+	if ((c->dbg.parser & DBG_SHOW_NODES)
+		&& (action == LALR_REDUCE || action == LALR_ACCEPT))
 		print_nodes(stderr, c);
 }

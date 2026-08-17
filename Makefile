@@ -97,7 +97,8 @@ DEBUG_SRCS  = \
 			debug/debug_names.c \
 			debug/debug_arena.c \
 			debug/debug_lex.c \
-			debug/debug_parse.c
+			debug/debug_parse.c \
+			debug/debug_heredoc.c
 
 RELEASE_OBJS = $(addprefix $(RELEASE_DIR)/, $(SRCS:.c=.o))
 DEBUG_OBJS   = $(addprefix $(DEBUG_DIR)/, $(SRCS:.c=.o)) \
@@ -186,7 +187,9 @@ fclean: clean
 	rm -f compile_flags
 	rm -rf log
 
-re: fclean all
+re: 
+	$(MAKE) fclean
+	$(MAKE) all
 
 # ---- phony targets ------------------------------------------------------- #
 .PHONY: all debug run run-debug doc test clean fclean re FORCE

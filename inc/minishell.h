@@ -121,9 +121,25 @@
 #  define DBG_ARENA_COMMAND		0x10
 #  define DBG_ARENA_ALL			0x1f
 
+/* -------- parser output sub-toggles (--parser=) --------------------------- */
+/* which parts of the DBG_PARSER trace to print, per shift/reduce step */
+#  define DBG_SHOW_FLAGS		0x01	/* banner + parse flags line */
+#  define DBG_SHOW_STACK		0x02	/* vertical symbol stack */
+#  define DBG_SHOW_ACTION		0x04	/* the shift/reduce action line */
+#  define DBG_SHOW_NODES		0x08	/* node arena dump after a reduce */
+#  define DBG_SHOW_LINKS		0x10	/* [rhs]/[lhs] node context lines */
+#  define DBG_SHOW_ALL			0x1f
+
 /* -------- lookahead sentinel labels --------------------------------------- */
 #  define DBG_LOOKAHEAD_PENDING "(pending)"
 #  define DBG_LOOKAHEAD_EOF "SYM_EOF"
+
+/* -------- default debug config (edit these to change what shows) ---------- */
+/* applied when the matching --states=/--parser=/--scope=/--arenas= is absent */
+#  define DBG_DEFAULT_STATES	DBG_ALL_STATES
+#  define DBG_DEFAULT_PARSER	DBG_SHOW_ALL
+#  define DBG_DEFAULT_SCOPE		0
+#  define DBG_DEFAULT_ARENAS	0
 # endif
 
 /* -------- grammar constants ----------------------------------------------- */

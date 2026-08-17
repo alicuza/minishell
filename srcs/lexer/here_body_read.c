@@ -54,7 +54,11 @@ bool	is_delim_line(t_ctx *c, t_lexer_state *lex, t_here_state *here)
 void	get_here_doc(t_ctx *c, t_lexer_state *lex, t_here_state *here)
 {
 	uint64_t	len;
+#ifdef DEBUG
+	uint64_t	line;
 
+	line = 0;
+#endif
 	while (true)
 	{
 		if (!c->read_line[lex->char_idx]
@@ -67,6 +71,10 @@ void	get_here_doc(t_ctx *c, t_lexer_state *lex, t_here_state *here)
 			delimit_lex_here(c, here);
 			return;
 		}
+#ifdef DEBUG
+		if (c->dbg.states & DBG_HEREDOC)
+			print_here_line(c, lex, ++line, len);
+#endif
 		grow_here_body(c, lex, here, len);
 	}
 }
