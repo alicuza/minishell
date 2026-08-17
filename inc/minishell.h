@@ -56,6 +56,9 @@
 # define INPUT_DEFAULT 0
 # define INPUT_CONTINUATION 1
 
+/* -------- heredoc --------------------------------------------------------- */
+# define HEREDOC_TMP "/tmp/.msh_heredoc_"
+
 /* -------- operators ------------------------------------------------------- */
 # define NL "\n"
 # define PIPE "|"
@@ -77,9 +80,8 @@
 /* -------- lexer flags ----------------------------------------------------- */
 # define TKN_HAS_QUOTES			0x01
 # define TKN_HAS_EXPANSION		0x02
-# define TKN_IS_HERE_BODY		0x04
-# define LEX_IS_BUILDING		0x08
-# define LEX_AT_EOI				0x10
+# define LEX_IS_BUILDING		0x04
+# define LEX_AT_EOI				0x08
 
 /* -------- parser flags ---------------------------------------------------- */
 # define PARSE_SAVE_TOKENS		0x01
@@ -172,7 +174,7 @@ bool			apply_rule_10(t_ctx *c, t_lexer_state *lex);
 
 /* -------- pair_utils.c ---------------------------------------------------- */
 char			matching_close(char open);
-bool			find_matched_pair(t_ctx *c, t_lexer_state *lex);
+bool			find_matched_pair(t_ctx *c, t_lexer_state *lex, char open);
 
 /* -------- token_transform_utils.c ----------------------------------------- */
 char			*get_token_content(t_ctx *c, t_token *token);
@@ -184,11 +186,18 @@ void			delimit_lex_token(t_ctx *c, t_lexer_state *lex);
 uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
 
 /* -------- lex_heredoc.c --------------------------------------------------- */
-void			get_here_doc(t_ctx *c, t_lexer_state *l, t_here_state *h);
-void			delimit_lex_here(t_ctx *c, t_here_state *here);
-bool			is_delim_line(t_ctx *c, t_lexer_state *l, t_here_state *h);
-bool			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l);
-bool			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
+void			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l);
+void			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
+
+/* -------- here_body_read.c ------------------------------------------------ */
+void			get_here_doc(t_ctx *c, t_lexer_state *l);
+
+/* -------- here_read_line.c ------------------------------------------------ */
+bool			read_here_line(t_ctx *c, t_lexer_state *l, char *here_end);
+bool			here_line_ends(t_ctx *c, t_lexer_state *l, char *here_end);
+
+/* -------- here_write_line.c ----------------------------------------------- */
+void			write_here_line(t_ctx *c, int fd, t_lexer_state *l, t_node *node);
 
 /* -------- lex_utils.c ----------------------------------------------------- */
 uint64_t		consume_char(t_lexer_state *lex, uint64_t len);
@@ -278,6 +287,9 @@ int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- error_handling.c ------------------------------ */
 int				exit_mem_issue(void);
+int				msh_error(char *where, char *what, char *why);
+int				msh_error_errno(char *where, char *what);
+void			fatal(t_ctx *c, char *where, char *why);
 int handle_redirection_error(t_ctx *c, char *filename, int error_code);
 int handle_builtin_error(t_ctx *c, char *error_prefix, int error_code);
 int exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);

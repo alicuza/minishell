@@ -14,7 +14,7 @@
 #            newline.  Pins parser-table behaviour that COMMAND cannot see,
 #            e.g. which lookahead forced which reduction.  (--scope=trace)
 #   COMMAND  the node tree the reductions built (--scope=command)
-#   ERROR    stderr lines that start with "minishell: "
+#   ERROR    stderr lines that start with "shni: "
 #   STATUS   the exit status
 #   STACK    the symbol stack at the end of parse_input(): symbols top-to-
 #            bottom, then the current lookahead and last parser action.
@@ -219,7 +219,6 @@ test_redir_heredoc()
 			TKN_OPERATOR(<<)
 			TKN_WORD(EOF)
 			TKN_OPERATOR(\n)
-			TKN_WORD(hello\n) TKN_IS_HERE_BODY
 		eof
 	)"
 	assert_shell "$input" "$expected"

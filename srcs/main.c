@@ -44,6 +44,7 @@ static void	shell_loop(t_ctx *c)
 		if (!*(c->read_line))
 		{
 			free(c->read_line);
+			c->read_line = NULL;
 			continue ;
 		}
 #ifdef DEBUG
@@ -56,6 +57,7 @@ static void	shell_loop(t_ctx *c)
 		debug_print_after_parse(c, &parse);
 #endif
 		free(c->read_line);
+		c->read_line = NULL;
 	}
 }
 

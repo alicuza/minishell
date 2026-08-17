@@ -47,14 +47,8 @@ bool	apply_rule_4(t_ctx *c, t_lexer_state *lex)
 		grow_lex_token(lex, 1);
 	else
 		start_lex_token(lex, TKN_WORD);
-	lex->pair.open = c->read_line[lex->char_idx];
-	lex->pair.close = matching_close(lex->pair.open);
-	if (!find_matched_pair(c, lex))
-	{
-		lex->pair.open = 0;
-		lex->pair.close = 0;
+	if (!find_matched_pair(c, lex, c->read_line[lex->char_idx]))
 		consume_char(lex, 1);
-	}
 	return (false);
 }
 

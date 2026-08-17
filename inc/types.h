@@ -195,12 +195,6 @@ typedef struct s_node
 	uint8_t		flags;				/* FLAG_AND_IF | FLAG_OR_IF | FLAG_SUBSHELL | REDIR_IN | REDIR_OUT | REDIR_HERE | REDIR_APPEND */
 }	t_node;
 
-typedef struct s_here_state
-{
-	t_slice	delim;					/* delimiter slice in AT_STRING */
-	t_slice	body;					/* accumulated body slice in AT_STRING */
-}	t_here_state;
-
 typedef enum e_lalr_action
 {
 	LALR_SHIFT,
@@ -217,33 +211,16 @@ typedef struct s_parser_state
 	int32_t			state;			/* current state of the stack */
 	t_symbol_type	lookahead_type;	/* classified type of the lookahead token */
 	uint8_t			flags;			/* PARSE_SAVE_TOKENS | PARSE_HERE_BODY | PARSE_ERROR */
-	t_here_state	here;			/* active heredoc: delimiter + body slices */
 }	t_parser_state;
-
-/* TODO: consider whether i want to reference or save the char */
-typedef struct s_pair_state
-{
-	char	open;					/* SQUOTE, DQUOTE, OPAR */
-	char	close;					/* SQUOTE, DQUOTE, CPAR */
-	uint8_t	flags;					/* TKN_HAS_EXPANSION | TKN_HAS_QUOTES */
-}	t_pair_state;
 
 typedef struct s_lexer_state
 {
-	t_pair_state	pair;			/* for use in find_matched_pair */
 	t_slice			token;			/* tracks the position and length of the current token being built */
 	uint64_t		char_idx;		/* offset into the input string */
 	t_token_type	type;
 	uint8_t			flags;			/* TKN_HAS_EXPANSION | TKN_HAS_QUOTES | LEX_IS_BUILDING | LEX_NEW_INPUT */
 }	t_lexer_state;
-/* TODO stefan: delete, if i can't remember what i wanted it for.
-typedef struct s_split_state
-{
-	uint64_t	pos;
-	uint64_t	len;
-	bool		active;
-}	t_split_state;
-*/
+
 typedef struct s_rule	t_rule;
 
 typedef uint64_t	(*t_reduce)(t_ctx *, t_parser_state *, t_rule *);

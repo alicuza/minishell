@@ -15,7 +15,7 @@
 
 # include "types.h"
 
-/* -------- LALR grammar constants (from shni_grammar_reduced.y) ------------ */
+/* -------- LALR grammar constants (from shni_grammar_reduced.output) ------- */
 # define YYPACT_NINF -44
 # define YYFINAL      5
 # define YYLAST       67
@@ -79,6 +79,9 @@ t_token			*get_token_from_idx(t_ctx *c, uint64_t idx);
 char			*get_token_body(t_ctx *c, t_token *token);
 t_symbol		*get_symbol_from_top(t_ctx *c, uint32_t depth);
 t_symbol		*get_symbol_from_idx(t_ctx *c, uint64_t idx);
+
+/* -------- quote_remove.c -------------------------------------------------- */
+void			quote_remove_inplace(char *s);
 
 /* -------- parse_input.c / parse_token_flow.c ------------------------------ */
 t_parser_state	parse_input(t_ctx *c);
