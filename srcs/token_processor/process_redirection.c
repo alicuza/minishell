@@ -8,7 +8,7 @@ void open_in_file(t_ctx *c, t_node *redir_node)
 	ft_close_fd(&c->io_fd[0]);
 	errno = 0;
 	filename = c->arena[AT_STRING].buf
-			+ redir_node->data.redir.arena_offset; //TODO nik:The word following the redirection operator in the following descriptions, unless otherwise noted, is subjected to brace expansion, tilde expansion, parameter and variable expansion, command substitution, arithmetic expansion, quote removal, filename expansion, and word splitting.
+			+ redir_node->data.redir.arena_offset; //TODO nik:The word following the redirection operator in the following descriptions, unless otherwise noted, is subjected to variable expansion, quote removal, (optional )filename expansion, and word splitting.
 	c->io_fd[0] = open(filename , O_RDONLY);// TODO process failure 
 	if (c->io_fd[0] == -1)
 		handle_redirection_error(c, filename, EXIT_FAILURE);

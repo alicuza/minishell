@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/05 21:21:06 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/06 12:43:42 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ static t_ctx	init_ctx(char **envp)
 	c.io_fd[1] = -1;
 	c.pipe_fd[0] = -1;
 	c.pipe_fd[1] = -1;
+	c.is_pipe = false;
 	return (c);
 }
 

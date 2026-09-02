@@ -19,7 +19,7 @@ static bool	is_empty(char *str)
 	return (str == NULL || str[0] == '\0');
 }
 
-char	*add_prefix(char *path, const char *pathname) //TODO add only if missing
+char	*add_prefix(char *path, const char *pathname) //TODO test if it is fine if prefix already added in original string
 {
 	char	*tmp;
 	char	*tmp1;
@@ -87,7 +87,7 @@ int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 			cmd_ctx->pathname = tmp;
 			return (free(path), EXIT_SUCCESS);
 		}
-		return (free(path), EXIT_SUCCESS); // TODO do we need to return somthing else if access is not allowed?
+		return (free(path), EXIT_SUCCESS); // TODO (part of return statuses and error handling) doublecheck if done correctly, do we need to return somthing else if access is not allowed?
 	}
 	else
 	{

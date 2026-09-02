@@ -56,8 +56,14 @@ static int	get_argc(t_ctx *c, t_node *arg_node)
 	}
 	return (i);
 }
-// TODO nik: do all expansions
-//  - read 2.6.6 Pathname Expansion
+/* TODO nik: do all expansions:
+	All values undergo variable expansion,
+	and quote removal (see Shell Parameter Expansion).
+	Word splitting and filename expansion are not performed see 2.6.5 Field Splitting
+
+	(optional) read and do 2.6.6 Pathname Expansion
+	*/
+
 int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
 {
 	int				i;

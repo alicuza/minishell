@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/08/09 22:43:36 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/02 20:39:29 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 new is pseoudo code:
 	- expand args
 	- expend redirects
-	- if it is a pipeline then fork
+	- if it is a pipeline then fork see is_pipe flag
 	- else if builtin return
 
 */
@@ -53,20 +53,13 @@ void wait_return_status(t_ctx *c)
 // c->return_status = 
 }
 
-// TODO nik: if it is not the only comand then it is part of pipeline and all builtins should be executed it fork. Maybe new flag is nessesary or when fork set noninteractice context: Builtin commands that are invoked as part of a pipeline, except possibly in the last element depending on the value of the lastpipe shell option (see The Shopt Builtin), are also executed in a subshell environment. Changes made to the subshell environment cannot affect the shell’s execution environment.
-
-/*
-new pseupocode
- if is not a pipeline then one coman and we just wait 
- if pipeline always wait at the end including the builtin
-*/
 void process_pipeline(t_ctx *c, t_node			*pipeline_node)
 {
 	t_node			*command_node;
 	int status;
 	struct stat	buf;
 
-
+	c->is_pipe = true;
 	command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				pipeline_node->data.pipeline.command_head_idx);
 	while(command_node->type == NODE_COMMAND)
@@ -91,17 +84,24 @@ void process_pipeline(t_ctx *c, t_node			*pipeline_node)
 				command_node->next_idx);
 	}
 	wait_return_status(c);
+	c->is_pipe = false;
 }
 
 //TODO nik: set up https://www.gnu.org/software/bash/manual/bash.html#Signals-1
 void	exec_list(t_ctx *c, uint64_t head_idx)
 {
 	t_node		*pipeline_node;
+	t_node			*command_node;
 
 	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND], head_idx);
 	while (pipeline_node->type == NODE_PIPELINE)
 	{
-		process_pipeline(c, pipeline_node);
+		command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
+				pipeline_node->data.pipeline.command_head_idx);
+		if(command_node->next_idx == 0)
+			process_command(c, command_node);
+		else
+			process_pipeline(c, pipeline_node);
 		pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 			pipeline_node->next_idx);
 	}
