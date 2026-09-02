@@ -36,6 +36,7 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 	return(exit_child(c, cmd_ctx, envp));
 }
 //TODO nik: The return status (see Exit Status) of a simple command is its exit status as provided by the POSIX 1003.1 waitpid function, or 128+n if the command was terminated by signal n.
+//TODO nik: don't wait for each command to finish
 static int	wait_return_status(t_ctx *c, pid_t pid)
 {
 	int wstatus;
