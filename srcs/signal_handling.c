@@ -14,7 +14,7 @@
 /*
 TODO nik:
 • In interactive mode:
-◦ ctrl-C displays a new prompt on a new line. SIGINT
+◦ ctrl-C displays a new prompt on a new line. SIGINT -- stops execution, chiuld will not ignore, and should be handled in main for buildins like checking global signal var
 ◦ ctrl-\ does nothing. ignore  SIGQUIT
 	todo ignore SIGPIPE, how to unset all the defaults / ingnore all
 */

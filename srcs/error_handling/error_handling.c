@@ -13,7 +13,7 @@ In case mem issue,
 
 */
 
-// TODO nik: how we exit and make sure everethinh is closed
+// TODO nik: how we exit and make sure everething is closed (fd)
 int	exit_mem_issue(void)
 {
 	perror("Memory allocation error");
