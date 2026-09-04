@@ -194,7 +194,7 @@ uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
 /* -------- lex_heredoc.c --------------------------------------------------- */
 void			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l);
 void			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
-void	handle_pipe_error(t_ctx *c);
+void			handle_pipe_error(t_ctx *c);
 
 /* -------- here_body_read.c ------------------------------------------------ */
 void			get_here_doc(t_ctx *c, t_lexer_state *l);
@@ -253,13 +253,13 @@ char			**env_to_envp(t_env *env);
 char			**ft_split_key_value(const char *s, char c);
 
 /* -------- execute_list.c -------------------------------------------------- */
-void	execute_list(t_ctx *c, uint64_t head_idx);
+void			execute_list(t_ctx *c, uint64_t head_idx);
 
 /* -------- execute_pipeline.c ---------------------------------------------- */
-void	execute_pipeline(t_ctx *c, t_node *pipeline_node);
+void			execute_pipeline(t_ctx *c, t_node *pipeline_node);
 
 /* -------- execute_simple_command.c ---------------------------------------- */
-void	execute_simple_command(t_ctx *c, t_node *command_node);
+void			execute_simple_command(t_ctx *c, t_node *command_node);
 
 /* -------- build_command.c ------------------------------------------------- */
 int				build_command(t_ctx *c, t_command_ctx *command,
@@ -281,7 +281,7 @@ int				process_redirection(t_ctx *c, t_node *redir_node);
 char			**ft_split_with_empty(char const *s, char c);
 
 /* -------- wait_return_status.c ------------------------------------------- */
-void		wait_return_status(t_ctx *c);
+void			wait_return_status(t_ctx *c);
 
 /* -------- execute_builtin.c ----------------------------------------------- */
 int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,

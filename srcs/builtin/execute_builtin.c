@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+<<<<<<< HEAD
 int* save_fds()
 {
 	int	*saved_fds;

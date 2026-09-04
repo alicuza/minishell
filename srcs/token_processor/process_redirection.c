@@ -1,7 +1,6 @@
 #include "minishell.h"
 
-// A failure to open or create a file shall cause a redirection to fail.
-void open_in_file(t_ctx *c, t_node *redir_node)
+int open_in_file(t_ctx *c, t_node *redir_node)
 {
 	char * filename;
 
@@ -9,12 +8,13 @@ void open_in_file(t_ctx *c, t_node *redir_node)
 	errno = 0;
 	filename = c->arena[AT_STRING].buf
 			+ redir_node->data.redir.arena_offset; //TODO nik:The word following the redirection operator in the following descriptions, unless otherwise noted, is subjected to variable expansion, quote removal, (optional )filename expansion, and word splitting.
-	c->io_fd[0] = open(filename , O_RDONLY);// TODO process failure 
+	c->io_fd[0] = open(filename , O_RDONLY);
 	if (c->io_fd[0] == -1)
-		handle_redirection_error(c, filename, EXIT_FAILURE);
+		return handle_redirection_error(c, filename, EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }
 
-void open_here_file(t_ctx *c, t_node *redir_node)
+int open_here_file(t_ctx *c, t_node *redir_node)
 {
 	(void) c;
 	(void) redir_node;
@@ -26,11 +26,12 @@ void open_here_file(t_ctx *c, t_node *redir_node)
 			+ redir_node->data.redir.arena_offset;
 	c->io_fd[0] = open(filename , O_RDONLY);// TODO process failure 
 	if (c->io_fd[0] == -1)
-	handle_redirection_error(c, filename, EXIT_FAILURE);
+	return handle_redirection_error(c, filename, EXIT_FAILURE);
+	return (EXIT_SUCCESS);
  */
 }
 
-void open_out_file(t_ctx *c, t_node *redir_node, int oflag)
+int open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 {
 	char * filename;
 
@@ -38,28 +39,33 @@ void open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 	errno = 0;
 	filename = c->arena[AT_STRING].buf
 			+ redir_node->data.redir.arena_offset;
-	c->io_fd[1] = open(filename, oflag, 0644);// TODO process failure 
+	c->io_fd[1] = open(filename, oflag, 0644);
 	if (c->io_fd[1] == -1)
-		handle_redirection_error(c, filename, EXIT_FAILURE);
+		return handle_redirection_error(c, filename, EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }
 
-void process_redirection(t_ctx *c, t_node *redir_node)
+int process_redirection(t_ctx *c, t_node *redir_node)
 {	
 	while(redir_node->type == NODE_REDIR)
 	{
 		if(redir_node->flags & REDIR_IN)
 		{
-			open_in_file(c, redir_node);
+			if(open_in_file(c, redir_node) == EXIT_FAILURE);
+				return EXIT_FAILURE;
 		}
 		else if(redir_node->flags & REDIR_OUT)
 		{
-			open_out_file(c, redir_node, O_CREAT | O_WRONLY | O_TRUNC);
+			if(open_out_file(c, redir_node, O_CREAT | O_WRONLY | O_TRUNC) == EXIT_FAILURE)
+				return EXIT_FAILURE;
 		}
 		else if(redir_node->flags & REDIR_HERE)
-			open_here_file(c, redir_node);
+			if(open_here_file(c, redir_node) == EXIT_FAILURE)
+				return EXIT_FAILURE;
 		else if(redir_node->flags & REDIR_APPEND)
 		{
-			open_out_file(c, redir_node, O_CREAT | O_WRONLY | O_APPEND);
+			if(open_out_file(c, redir_node, O_CREAT | O_WRONLY | O_APPEND) == EXIT_FAILURE)
+				return EXIT_FAILURE;
 		}
 		redir_node = get_ptr_from_idx(&c->arena[AT_COMMAND], redir_node->next_idx);
 	}

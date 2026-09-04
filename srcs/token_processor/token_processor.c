@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/02 20:39:29 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/04 17:49:54 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@ new is pseoudo code:
 	- if it is a pipeline then fork see is_pipe flag
 	- else if builtin return
 
+	DOC:
+	- builtin no subshell
+	- builtin in the pipe -> subshell
+	- command / command in pipe -> subshell
+	- no command name -> redirections in subshell
 */
 void process_command(t_ctx *c, t_node			*command_node)
 {
@@ -27,10 +32,12 @@ void process_command(t_ctx *c, t_node			*command_node)
 	t_command_ctx	command;
 
 	arg_node =  get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.arg_head_idx);
-	if(build_command(c, &command, arg_node) == EXIT_FAILURE)
-	return;
-	// expand_redirections(c, get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.redir_head_idx)); TODO nik
-	// TODO nik: check if somthing is left after filed expansion if no just do redirection in subshell
+	if(build_command(c, &command, arg_node) == EXIT_FAILURE ||
+	process_redirection(c, get_ptr_from_idx(&c->arena[AT_COMMAND], command_node->data.command.redir_head_idx)) == EXIT_FAILURE)
+	{
+		c->return_status = 1;
+		return;
+	}
 	c->return_status = command_search_and_execution(c, &command); //TODO nik: make sure it folows the  Exit Status and Errors section and alos see https://www.gnu.org/software/bash/manual/bash.html#Exit-Status-1
 	free(command.pathname);
 	free(command.argv);
@@ -53,7 +60,7 @@ void wait_return_status(t_ctx *c)
 // c->return_status = 
 }
 
-void process_pipeline(t_ctx *c, t_node			*pipeline_node)
+void process_pipeline(t_ctx *c, t_node			*pipeline_node) //TODO clean up fd make sure at the end we set it back
 {
 	t_node			*command_node;
 	int status;
