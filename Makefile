@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/08/09 20:01:33 by nribakov         ###   ########.fr        #
+#    Updated: 2026/09/04 12:50:03 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -86,6 +86,7 @@ SRCS        = \
 			environment/env_to_envp.c \
 			error_handling/error_handling.c \
 			error_handling/msh_error.c \
+			builtin/execute_builtin.c \
 			builtin/env.c \
 			builtin/ft_split_key_value.c \
 			builtin/pwd.c \

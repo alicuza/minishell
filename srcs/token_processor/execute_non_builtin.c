@@ -13,7 +13,7 @@ static int	exit_on_issue(char *error_prefix)
 	close(0);
 	return (EXIT_FAILURE);
 }
-
+// TODO: here we need to reset sigaction for SIGINT and SIGQUITE since we need to interapt child
 static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 {
 #ifdef DEBUG
@@ -24,18 +24,20 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 	ft_close_fd(&c->pipe_fd[0]);
 	if(c->io_fd[0] != -1)
 	{
-		dup2(c->io_fd[0], 0); // TODO nik: what on error
+		if(dup2(c->io_fd[0], 0) < 0)
+			return (handle_dup2_error(c, cmd_ctx, EXIT_FAILURE));
 		ft_close_fd(&c->io_fd[0]);
 	}
 	if(c->io_fd[1] != -1)
 	{
-		dup2(c->io_fd[1], 1);
+		if(dup2(c->io_fd[1], 1) < 0)
+			return (handle_dup2_error(c, cmd_ctx, EXIT_FAILURE));
 		ft_close_fd(&c->io_fd[1]);
 	}
 	execve(cmd_ctx->pathname, cmd_ctx->argv, envp);
 	return(exit_child(c, cmd_ctx, envp));
 }
-//TODO nik: The return status (see Exit Status) of a simple command is its exit status as provided by the POSIX 1003.1 waitpid function, or 128+n if the command was terminated by signal n.
+
 //TODO nik: don't wait for each command to finish
 static int	wait_return_status(t_ctx *c, pid_t pid)
 {
@@ -72,15 +74,13 @@ int	execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx)
 	char **envp;
 	pid_t pid;
 
-	if (env_update_with_copy(&c->env, _, cmd_ctx->pathname) == EXIT_FAILURE)
-		return (exit_mem_issue());
 	envp = env_to_envp(&c->env);
 	if (envp == NULL)
 		return (exit_mem_issue());
 #ifdef DEBUG
 	fprintf(stderr, "\nexecute_non_builtin: %s\n", cmd_ctx->pathname);
 #endif
-	pid = fork(); // TODO nik: exit / or ignore if ERESTARTNOINTR + add to context the pids
+	pid = fork(); // TODO nik: add to context the pids
 	if (pid == -1)
 	{
 		perror("fork");

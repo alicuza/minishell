@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 20:23:21 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/04 17:50:08 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,10 +268,13 @@ int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
 int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
 
 /* -------- process_redirection.c ------------------------------------------- */
-void			process_redirection(t_ctx *c, t_node *redir_node);
+int				process_redirection(t_ctx *c, t_node *redir_node);
 
 /* -------- ft_split_with_empty.c ------------------------------------------- */
 char			**ft_split_with_empty(char const *s, char c);
+
+int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_command_function command);
 
 /* -------- env.c ----------------------------------------------------------- */
 int				env(t_ctx *c, t_command_ctx *command_ctx);

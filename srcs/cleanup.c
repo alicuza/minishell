@@ -12,6 +12,9 @@ int	cleanup(t_ctx *c)
 	ft_close_fd(&c->io_fd[1]);
 	ft_close_fd(&c->pipe_fd[0]);
 	ft_close_fd(&c->pipe_fd[1]);
+	close(0); //TODO will there be double close error
+	close(1);
+	close(2);
 	return (0);
 }
 
