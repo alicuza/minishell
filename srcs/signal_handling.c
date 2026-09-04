@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+
+//TODO nik: The return status (see Exit Status) of a simple command is 128+n if the command was terminated by signal n.
+
 // static void	signal_handler(int signum, siginfo_t *info, void *ucontext)
 // {
 // 	(void) signum;

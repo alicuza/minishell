@@ -73,7 +73,7 @@ int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
 		return (EXIT_FAILURE);
 	while (arg_node->type == NODE_ARG)
 	{
-		// see 3.5 Shell Expansions in bash man
+		// TODO see 3.5 Shell Expansions in bash man
 		if (command->pathname == NULL)
 		{
 			command->pathname = ft_strdup(c->arena[AT_STRING].buf
