@@ -108,7 +108,10 @@ t_parser_state	parse_input(t_ctx *c)
 	init_parser(c, &parse, &lex);
 	while (run_parse_iteration(c, &parse, &lex))
 		;
-	if (!(parse.flags & PARSE_ERROR) && !(parse.flags & PARSE_DONE))
+	if (lex.flags & LEX_INTERRUPTED)
+		parse.flags |= PARSE_INTERRUPTED;
+	if (!(parse.flags & PARSE_ERROR) && !(parse.flags & PARSE_DONE)
+		&& !(parse.flags & PARSE_INTERRUPTED))
 	{
 		parse.lookahead_type = SYM_EOF;
 		final_pass(c, &parse);

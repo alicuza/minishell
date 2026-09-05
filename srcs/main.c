@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 20:02:49 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/05 21:21:06 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,14 @@ static void	shell_loop(t_ctx *c)
 	while (true)
 	{
 		if (!get_user_input(c, INPUT_DEFAULT))
+		{
+			if (sig_consume_sigint(c))
+				continue ;
+			if (c->is_interactive)
+				ft_putendl_fd("exit", STDERR_FILENO);
 			break ;
-		if (!*(c->read_line))
+		}
+		if (!c->read_line || !*(c->read_line))
 		{
 			free(c->read_line);
 			c->read_line = NULL;
@@ -51,8 +57,14 @@ static void	shell_loop(t_ctx *c)
 		debug_print_read_line(c);
 #endif
 		parse = parse_input(c);
-		if (parse.flags & PARSE_ERROR)
-			c->return_status = 2;
+		if (parse.flags & PARSE_INTERRUPTED)
+			sig_consume_sigint(c);
+		else
+		{
+			if (parse.flags & PARSE_ERROR)
+				c->return_status = 2;
+			sig_reset_sigint();
+		}
 #ifdef DEBUG
 		debug_print_after_parse(c, &parse);
 #endif
@@ -68,7 +80,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	c = init_ctx(envp);
-	if (setup_signal_handler(&c))
+	if (sig_setup_handler(&c))
 	{
 		cleanup(&c);
 		return (EXIT_FAILURE);

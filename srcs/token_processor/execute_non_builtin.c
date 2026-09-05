@@ -20,6 +20,7 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 	fprintf(stderr, "\nexecuting in child: %s\n", cmd_ctx->pathname);
 #endif
 	// TODO nik: process_redirection();
+	sig_set_default();
 	ft_close_fd(&c->pipe_fd[0]);
 	if(c->io_fd[0] != -1)
 	{
@@ -44,18 +45,23 @@ static int	wait_return_status(t_ctx *c, pid_t pid)
 	fprintf(stderr, "\nchild pid=%jd\n", (intmax_t)pid);
 #endif
 	wpid = waitpid(pid, &wstatus, 0);
-	while (wpid != -1 && !WIFEXITED(wstatus))
-	{
+	while (wpid == -1 && errno == EINTR)
 		wpid = waitpid(pid, &wstatus, 0);
-	}
 	if (wpid == -1)
 		return (exit_on_issue("waitpid"));
 	else
 	{
 #ifdef DEBUG
-		printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+		if (WIFEXITED(wstatus))
+			printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+		else if (WIFSIGNALED(wstatus))
+			printf("signaled, sig=%d\n", WTERMSIG(wstatus));
 #endif
-		c->return_status = WEXITSTATUS(wstatus);
+		if (WIFSIGNALED(wstatus))
+			c->return_status = 128 + WTERMSIG(wstatus);
+		else if (WIFEXITED(wstatus))
+			c->return_status = WEXITSTATUS(wstatus);
+		g_signal = 0;
 		return (EXIT_SUCCESS);
 	}
 }

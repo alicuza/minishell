@@ -13,7 +13,10 @@ bool	read_here_line(t_ctx *c, t_lexer_state *lex, char *here_end)
 	get_user_input(c, INPUT_CONTINUATION);
 	if (!c->read_line)
 	{
-		warn_here_eof(here_end);
+		if (g_signal == SIGINT)
+			lex->flags |= LEX_INTERRUPTED;
+		else
+			warn_here_eof(here_end);
 		lex->flags |= LEX_AT_EOI;
 		return (false);
 	}
