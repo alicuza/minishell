@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+
+//TODO nik: The return status (see Exit Status) of a simple command is 128+n if the command was terminated by signal n.
+
 // static void	signal_handler(int signum, siginfo_t *info, void *ucontext)
 // {
 // 	(void) signum;
@@ -14,7 +17,7 @@
 /*
 TODO nik:
 • In interactive mode:
-◦ ctrl-C displays a new prompt on a new line. SIGINT
+◦ ctrl-C displays a new prompt on a new line. SIGINT -- stops execution, chiuld will not ignore, and should be handled in main for buildins like checking global signal var
 ◦ ctrl-\ does nothing. ignore  SIGQUIT
 	todo ignore SIGPIPE, how to unset all the defaults / ingnore all
 */

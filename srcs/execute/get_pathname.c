@@ -19,7 +19,7 @@ static bool	is_empty(char *str)
 	return (str == NULL || str[0] == '\0');
 }
 
-char	*add_prefix(char *path, const char *pathname) //TODO add only if missing
+char	*add_prefix(char *path, const char *pathname) //TODO test if it is fine if prefix already added in original string
 {
 	char	*tmp;
 	char	*tmp1;
@@ -68,26 +68,36 @@ static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 	return (EXIT_SUCCESS);
 }
 
+static int get_from_current(t_command_ctx *cmd_ctx)
+{
+	char	*tmp;
+
+	tmp = ft_strjoin("./", cmd_ctx->pathname);
+	if (!tmp)
+		return (EXIT_FAILURE);
+	if (access(tmp, F_OK) == 0)
+	{
+		free(cmd_ctx->pathname);
+		cmd_ctx->pathname = tmp;
+		return (EXIT_SUCCESS);
+	}
+	free(cmd_ctx->pathname);
+	cmd_ctx->pathname = NULL;
+	return (EXIT_SUCCESS);
+} 
+
 int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 {
 	char	*path;
 	char	**paths;
-	char	*tmp;
 	int		status;
 
 	path = env_get(&c->env, PATH);
 	if (is_empty(path))
 	{
-		tmp = ft_strjoin("./", cmd_ctx->pathname);
-		if (!tmp)
-			return (free(path), EXIT_FAILURE);
-		if (access(tmp, X_OK) == 0)
-		{
-			free(cmd_ctx->pathname);
-			cmd_ctx->pathname = tmp;
-			return (free(path), EXIT_SUCCESS);
-		}
-		return (free(path), EXIT_SUCCESS); // TODO do we need to return somthing else if access is not allowed?
+		status =  get_from_current(cmd_ctx);
+		free(path);
+		return (status);
 	}
 	else
 	{

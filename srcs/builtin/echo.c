@@ -20,7 +20,7 @@ static char	*get_exit_status(t_ctx *c)
 	return (ft_itoa(c->return_status));
 }
 
-//TODO add proper arg processing with white space and -n flag see 2.6.5 Field Splitting
+//TODO -n flag 
 int	echo(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char *str;

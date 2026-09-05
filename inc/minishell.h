@@ -6,15 +6,15 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 20:23:21 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/06 00:12:50 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include <stdio.h>             // printf, perror
 # include <readline/readline.h> // readline, rl_clear_history, rl_on_new_line,
+# include <stdio.h>             // printf, perror
 # include <string.h>            // strerror
 								// rl_replace_line, rl_redisplay
 # include <readline/history.h>  // add_history
@@ -34,8 +34,8 @@
 								// tputs
 # include "arena.h"
 # include "libft.h"
-# include "types.h"
 # include "parser.h"
+# include "types.h"
 # include <errno.h> // errno
 
 # ifdef DEBUG
@@ -78,59 +78,59 @@
 # define SPECIAL_PARAM_SET "?"
 
 /* -------- lexer flags ----------------------------------------------------- */
-# define TKN_HAS_QUOTES			0x01
-# define TKN_HAS_EXPANSION		0x02
-# define LEX_IS_BUILDING		0x04
-# define LEX_AT_EOI				0x08
+# define TKN_HAS_QUOTES 0x01
+# define TKN_HAS_EXPANSION 0x02
+# define LEX_IS_BUILDING 0x04
+# define LEX_AT_EOI 0x08
 
 /* -------- parser flags ---------------------------------------------------- */
-# define PARSE_SAVE_TOKENS		0x01
-# define PARSE_HERE_BODY		0x02
-# define PARSE_HAS_SAVED_TOKENS	0x04
-# define PARSE_HAS_LOOKAHEAD	0x08
-# define PARSE_DONE				0x10
-# define PARSE_ERROR			0x20
+# define PARSE_SAVE_TOKENS 0x01
+# define PARSE_HERE_BODY 0x02
+# define PARSE_HAS_SAVED_TOKENS 0x04
+# define PARSE_HAS_LOOKAHEAD 0x08
+# define PARSE_DONE 0x10
+# define PARSE_ERROR 0x20
 
 /* -------- node flags ------------------------------------------------------ */
-# define FLAG_AND_IF			0x01
-# define FLAG_OR_IF				0x02
-# define FLAG_SUBSHELL			0x04
-# define REDIR_IN				0x08
-# define REDIR_OUT				0x10
-# define REDIR_HERE				0x20
-# define REDIR_APPEND			0x40
-# define REDIR_HAS_QUOTES		0x80
+# define FLAG_AND_IF 0x01
+# define FLAG_OR_IF 0x02
+# define FLAG_SUBSHELL 0x04
+# define REDIR_IN 0x08
+# define REDIR_OUT 0x10
+# define REDIR_HERE 0x20
+# define REDIR_APPEND 0x40
+# define REDIR_HAS_QUOTES 0x80
 
 # ifdef DEBUG
 /* -------- test scope flags ------------------------------------------------ */
-#  define SCOPE_TOKENS			0x01
-#  define SCOPE_STACK			0x02
-#  define SCOPE_COMMAND			0x04
-#  define SCOPE_TRACE			0x08
-#  define SCOPE_ALL				0x0f
+#  define SCOPE_TOKENS 0x01
+#  define SCOPE_STACK 0x02
+#  define SCOPE_COMMAND 0x04
+#  define SCOPE_TRACE 0x08
+#  define SCOPE_ALL 0x0f
 
 /* -------- debug state flags (--states=) ----------------------------------- */
-#  define DBG_LEXER				0x01
-#  define DBG_PARSER			0x02
-#  define DBG_HEREDOC			0x04
-#  define DBG_ALL_STATES		0x07
+#  define DBG_LEXER 0x01
+#  define DBG_PARSER 0x02
+#  define DBG_HEREDOC 0x04
+#  define DBG_ALL_STATES 0x07
 
 /* -------- debug arena flags (--arenas=) ----------------------------------- */
-#  define DBG_ARENA_PROMPT		0x01
-#  define DBG_ARENA_STRING		0x02
-#  define DBG_ARENA_TOKENS		0x04
-#  define DBG_ARENA_STACK		0x08
-#  define DBG_ARENA_COMMAND		0x10
-#  define DBG_ARENA_ALL			0x1f
+#  define DBG_ARENA_PROMPT 0x01
+#  define DBG_ARENA_STRING 0x02
+#  define DBG_ARENA_TOKENS 0x04
+#  define DBG_ARENA_STACK 0x08
+#  define DBG_ARENA_COMMAND 0x10
+#  define DBG_ARENA_ALL 0x1f
 
 /* -------- parser output sub-toggles (--parser=) --------------------------- */
 /* which parts of the DBG_PARSER trace to print, per shift/reduce step */
-#  define DBG_SHOW_FLAGS		0x01	/* banner + parse flags line */
-#  define DBG_SHOW_STACK		0x02	/* vertical symbol stack */
-#  define DBG_SHOW_ACTION		0x04	/* the shift/reduce action line */
-#  define DBG_SHOW_NODES		0x08	/* node arena dump after a reduce */
-#  define DBG_SHOW_LINKS		0x10	/* [rhs]/[lhs] node context lines */
-#  define DBG_SHOW_ALL			0x1f
+#  define DBG_SHOW_FLAGS 0x01  /* banner + parse flags line */
+#  define DBG_SHOW_STACK 0x02  /* vertical symbol stack */
+#  define DBG_SHOW_ACTION 0x04 /* the shift/reduce action line */
+#  define DBG_SHOW_NODES 0x08  /* node arena dump after a reduce */
+#  define DBG_SHOW_LINKS 0x10  /* [rhs]/[lhs] node context lines */
+#  define DBG_SHOW_ALL 0x1f
 
 /* -------- lookahead sentinel labels --------------------------------------- */
 #  define DBG_LOOKAHEAD_PENDING "(pending)"
@@ -138,10 +138,10 @@
 
 /* -------- default debug config (edit these to change what shows) ---------- */
 /* applied when the matching --states=/--parser=/--scope=/--arenas= is absent */
-#  define DBG_DEFAULT_STATES	DBG_ALL_STATES
-#  define DBG_DEFAULT_PARSER	DBG_SHOW_ALL
-#  define DBG_DEFAULT_SCOPE		0
-#  define DBG_DEFAULT_ARENAS	0
+#  define DBG_DEFAULT_STATES DBG_ALL_STATES
+#  define DBG_DEFAULT_PARSER DBG_SHOW_ALL
+#  define DBG_DEFAULT_SCOPE 0
+#  define DBG_DEFAULT_ARENAS 0
 # endif
 
 /* -------- grammar constants ----------------------------------------------- */
@@ -150,8 +150,9 @@
 # define RULE_COUNT 46
 
 /* -------- cleanup.c ---------------------------------------------------------- */
-int	cleanup(t_ctx *c);
-void	free_str_arr(char **val);
+int				cleanup(t_ctx *c);
+void			close_io(t_ctx *c);
+void			free_str_arr(char **val);
 
 /* -------- prompt.c -------------------------------------------------------- */
 char			*get_prompt(t_ctx *c, bool with_cwd);
@@ -188,6 +189,7 @@ uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
 /* -------- lex_heredoc.c --------------------------------------------------- */
 void			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l);
 void			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
+void	handle_pipe_error(t_ctx *c);
 
 /* -------- here_body_read.c ------------------------------------------------ */
 void			get_here_doc(t_ctx *c, t_lexer_state *l);
@@ -197,7 +199,8 @@ bool			read_here_line(t_ctx *c, t_lexer_state *l, char *here_end);
 bool			here_line_ends(t_ctx *c, t_lexer_state *l, char *here_end);
 
 /* -------- here_write_line.c ----------------------------------------------- */
-void			write_here_line(t_ctx *c, int fd, t_lexer_state *l, t_node *node);
+void			write_here_line(t_ctx *c, int fd, t_lexer_state *l,
+					t_node *node);
 
 /* -------- lex_utils.c ----------------------------------------------------- */
 uint64_t		consume_char(t_lexer_state *lex, uint64_t len);
@@ -244,15 +247,21 @@ char			**env_to_envp(t_env *env);
 /* -------- ft_split_key_value.c -------------------------------------------- */
 char			**ft_split_key_value(const char *s, char c);
 
-/* -------- token_processor.c ----------------------------------------------- */
-int				process_token(t_ctx *c, t_token *token);
-void			exec_list(t_ctx *c, uint64_t head_idx);
+/* -------- execute_list.c -------------------------------------------------- */
+void	execute_list(t_ctx *c, uint64_t head_idx);
+
+/* -------- execute_pipeline.c ---------------------------------------------- */
+void	execute_pipeline(t_ctx *c, t_node *pipeline_node);
+
+/* -------- execute_simple_command.c ---------------------------------------- */
+void	execute_simple_command(t_ctx *c, t_node *command_node);
 
 /* -------- build_command.c ------------------------------------------------- */
-int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node);
+int				build_command(t_ctx *c, t_command_ctx *command,
+					t_node *arg_node);
 
 /* -------- command_search_and_execution.c ---------------------------------- */
-int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx);
+int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx);
 
 /* -------- execute_non_builtin.c ------------------------------------------- */
 int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
@@ -261,10 +270,21 @@ int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
 int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
 
 /* -------- process_redirection.c ------------------------------------------- */
-void process_redirection(t_ctx *c, t_node *redir_node);
+int				process_redirection(t_ctx *c, t_node *redir_node);
 
 /* -------- ft_split_with_empty.c ------------------------------------------- */
 char			**ft_split_with_empty(char const *s, char c);
+
+/* -------- wait_return_status.c ------------------------------------------- */
+void		wait_return_status(t_ctx *c);
+
+/* -------- execute_builtin.c ----------------------------------------------- */
+int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_command_function command);
+
+/* -------- execute_builtin_in_subshell.c ----------------------------------- */
+int				execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_command_function command);
 
 /* -------- env.c ----------------------------------------------------------- */
 int				env(t_ctx *c, t_command_ctx *command_ctx);
@@ -290,9 +310,10 @@ int				exit_mem_issue(void);
 int				msh_error(char *where, char *what, char *why);
 int				msh_error_errno(char *where, char *what);
 void			fatal(t_ctx *c, char *where, char *why);
-int handle_redirection_error(t_ctx *c, char *filename, int error_code);
-int handle_builtin_error(t_ctx *c, char *error_prefix, int error_code);
-int exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
+int				handle_redirection_error(t_ctx *c, char *filename);
+void			child_cleanup_all(t_ctx *c, t_command_ctx *cmd_ctx,
+					char **envp);
+int				exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
 
 /* -------- cd.c ------------------------------------------------------------ */
 int				cd(t_ctx *c, t_command_ctx *command_ctx);
@@ -310,9 +331,9 @@ int				unset(t_ctx *c, t_command_ctx *command_ctx);
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- signal_handling.c ----------------------------------------------- */
-int	setup_signal_handler(t_ctx *c);
+int				setup_signal_handler(t_ctx *c);
 
 /* -------- ft_close_fd.c ----------------------------------------------- */
-void ft_close_fd(int *fd);
+void			ft_close_fd(int *fd);
 
 #endif

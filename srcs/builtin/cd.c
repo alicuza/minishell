@@ -29,7 +29,8 @@ static int	cd_path(t_ctx *c, char *curpath)
 	}
 	else
 	{
-		return handle_builtin_error(c, "cd: Error during chdir\n", EXIT_FAILURE);
+		perror("cd: Error during chdir\n");
+		return (EXIT_FAILURE);
 	}
 }
 
@@ -42,7 +43,8 @@ static int	cd_home(t_ctx *c)
 	home = env_get(&c->env, HOME);
 	if (is_empty(home))
 	{
-		result = handle_builtin_error(c, "cd: HOME not set\n", EXIT_FAILURE);
+		ft_putstr_fd("cd: HOME not set\n", STDERR_FILENO);
+		result = EXIT_FAILURE;
 	}
 	else
 	{
@@ -60,7 +62,8 @@ int	cd_oldpwd(t_ctx *c)
 	old_path = env_get(&c->env, OLDPWD);
 	if (is_empty(old_path))
 	{
-		return (handle_builtin_error(c, "cd: OLDPWD not set\n", EXIT_FAILURE));
+		ft_putstr_fd("cd: OLDPWD not set\n", STDERR_FILENO);
+		result = EXIT_FAILURE;
 	}
 	else
 	{
@@ -106,8 +109,6 @@ static int	cd_dir(t_ctx *c, const char *dir)
 			ft_putstr_fd("cd: ", STDERR_FILENO);
 			ft_putstr_fd((char *) dir, STDERR_FILENO);
 			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
-			if(c->is_interactive == false)
-				close(0);
 			result = EXIT_FAILURE;
 		}
 		else
@@ -124,8 +125,8 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 
 	if (command_ctx->argc > 2)
 	{
-		
-		return (handle_builtin_error(c, "cd: too many arguments\n", EXIT_FAILURE));
+		ft_putstr_fd("cd: too many arguments\n", STDERR_FILENO);
+		return (2);
 	}
 	dir = command_ctx->argv[1];
 	if (is_empty(dir))

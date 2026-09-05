@@ -23,10 +23,6 @@ static t_command_function	match_builtin(char *name)
 		return (NULL);
 }
 
-/*
-	TODO nik: is it significant? 2.9.1.3 Commands with no Command Name
-	If a simple command has no command name after word expansion (see 2.9.1.1 Order of Processing), any redirections shall be performed in a subshell environment; If any of the redirections performed in the current shell execution environment fail, the command shall immediately fail with an exit status greater than zero, and the shell shall write an error message indicating the failure.
-*/
 int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 {
 	t_command_function	command;
@@ -36,8 +32,8 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 	if (ft_strchr(cmd_ctx->pathname, '/') == NULL)
 	{
 		command = match_builtin(cmd_ctx->pathname);
-		if (command != NULL) //TODO nik: do rederactions and revert them when you done
-			return (command(c, cmd_ctx));
+		if (command != NULL)
+			return (execute_builtin(c, cmd_ctx, command));
 		else
 		{
 			status = get_pathname(c, cmd_ctx);
