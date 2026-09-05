@@ -124,10 +124,7 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 	char	*dir;
 
 	if (command_ctx->argc > 2)
-	{
-		ft_putstr_fd("cd: too many arguments\n", STDERR_FILENO);
-		return (2);
-	}
+		return (handle_builtin_error(c, "cd: too many arguments\n", EXIT_FAILURE));
 	dir = command_ctx->argv[1];
 	if (is_empty(dir))
 		return (cd_home(c));

@@ -58,5 +58,5 @@ int	execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx,
 		return (execute_in_child(c, cmd_ctx, command));
 	c->pid_to_wait = pid;
 	close_io(c);
-	return (wait_return_status(c, pid));
+	return (EXIT_SUCCESS);
 }

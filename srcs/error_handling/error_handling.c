@@ -30,6 +30,13 @@ int	handle_redirection_error(t_ctx *c, char *filename)
 	return (EXIT_FAILURE);
 }
 
+int	handle_builtin_error(t_ctx *c, char *error_prefix, int error_code) //TODO we don't need perror each case
+{
+	(void)c;
+	perror(error_prefix);
+	return (error_code);
+}
+
 void	handle_pipe_error(t_ctx *c)
 {
 	perror("pipe");

@@ -15,12 +15,15 @@
 static t_node	*get_next_after_or(t_ctx *c, t_node *current_pipeline_node)
 {
 	t_node	*pipeline_node;
+	bool	found;
 
+	found = false;
 	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 			current_pipeline_node->next_idx);
-	while (pipeline_node->type == NODE_PIPELINE
-		&& !((pipeline_node->flags & FLAG_OR_IF)))
+	while (pipeline_node->type == NODE_PIPELINE && !found)
 	{
+		if (pipeline_node->flags & FLAG_OR_IF)
+			found = true;
 		pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				current_pipeline_node->next_idx);
 	}
@@ -30,12 +33,15 @@ static t_node	*get_next_after_or(t_ctx *c, t_node *current_pipeline_node)
 static t_node	*get_next_after_and(t_ctx *c, t_node *current_pipeline_node)
 {
 	t_node	*pipeline_node;
+	bool	found;
 
+	found = false;
 	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 			current_pipeline_node->next_idx);
-	while (pipeline_node->type == NODE_PIPELINE
-		&& !(pipeline_node->flags & FLAG_AND_IF))
+	while (pipeline_node->type == NODE_PIPELINE && !found)
 	{
+		if (pipeline_node->flags & FLAG_AND_IF)
+			found = true;
 		pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				current_pipeline_node->next_idx);
 	}

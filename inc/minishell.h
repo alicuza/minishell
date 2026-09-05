@@ -316,6 +316,8 @@ int				msh_error(char *where, char *what, char *why);
 int				msh_error_errno(char *where, char *what);
 void			fatal(t_ctx *c, char *where, char *why);
 int				handle_redirection_error(t_ctx *c, char *filename);
+int				handle_builtin_error(t_ctx *c, char *error_prefix,
+					int error_code);
 void			child_cleanup_all(t_ctx *c, t_command_ctx *cmd_ctx,
 					char **envp);
 int				exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
