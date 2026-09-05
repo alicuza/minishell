@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/09/05 06:35:05 by nribakov         ###   ########.fr        #
+#    Updated: 2026/09/05 23:08:00 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,13 +38,16 @@ SRCS        = \
 			signal_handling.c \
 			ft_close_fd.c \
 			cleanup.c \
-			token_processor/token_processor.c \
-			token_processor/execute_non_builtin.c \
-			token_processor/get_pathname.c \
-			token_processor/process_redirection.c \
-			token_processor/ft_split_with_empty.c \
-			token_processor/command_search_and_execution.c \
-			token_processor/build_command.c \
+			execute/execute_list.c \
+			execute/execute_pipeline.c \
+			execute/execute_simple_command.c \
+			execute/execute_non_builtin.c \
+			execute/get_pathname.c \
+			execute/process_redirection.c \
+			execute/ft_split_with_empty.c \
+			execute/command_search_and_execution.c \
+			execute/build_command.c \
+			execute/wait_return_status.c \
 			parser/parse_input.c \
 			parser/parse_token_flow.c \
 			parser/classify_token.c \

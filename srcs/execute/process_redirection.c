@@ -10,7 +10,7 @@ int open_in_file(t_ctx *c, t_node *redir_node)
 			+ redir_node->data.redir.arena_offset; //TODO nik:The word following the redirection operator in the following descriptions, unless otherwise noted, is subjected to variable expansion, quote removal, (optional )filename expansion, and word splitting.
 	c->io_fd[0] = open(filename , O_RDONLY);
 	if (c->io_fd[0] == -1)
-		return handle_redirection_error(c, filename, EXIT_FAILURE);
+		return handle_redirection_error(c, filename);
 	return (EXIT_SUCCESS);
 }
 
@@ -18,7 +18,7 @@ int open_here_file(t_ctx *c, t_node *redir_node)
 {
 	c->io_fd[0] = redir_node->data.redir.fd;
 	if (c->io_fd[0] == -1)
-		return handle_redirection_error(c, "here-doc", EXIT_FAILURE);
+		return handle_redirection_error(c, "here-doc");
 
 	return (EXIT_SUCCESS);
 }
@@ -33,7 +33,7 @@ int open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 			+ redir_node->data.redir.arena_offset;
 	c->io_fd[1] = open(filename, oflag, 0644);
 	if (c->io_fd[1] == -1)
-		return handle_redirection_error(c, filename, EXIT_FAILURE);
+		return handle_redirection_error(c, filename);
 	return (EXIT_SUCCESS);
 }
 

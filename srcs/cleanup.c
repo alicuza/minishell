@@ -2,6 +2,8 @@
 
 int	cleanup(t_ctx *c)
 {
+	struct stat	buf;
+
 	arena_free(&c->arena[AT_STRING]);
 	arena_free(&c->arena[AT_TOKENS]);
 	arena_free(&c->arena[AT_STACK]);
@@ -12,10 +14,19 @@ int	cleanup(t_ctx *c)
 	ft_close_fd(&c->io_fd[1]);
 	ft_close_fd(&c->pipe_fd[0]);
 	ft_close_fd(&c->pipe_fd[1]);
-	close(0); //TODO will there be double close error
-	close(1);
-	close(2);
+	if (fstat(STDIN_FILENO , &buf) != -1)
+		close(0);
+	if (fstat(STDOUT_FILENO , &buf) != -1)
+		close(1);
+	if (fstat(STDERR_FILENO , &buf) != -1)
+		close(2);
 	return (0);
+}
+
+void	close_io(t_ctx *c)
+{
+	ft_close_fd(&c->io_fd[0]);
+	ft_close_fd(&c->io_fd[1]);
 }
 
 void	free_str_arr(char **val)

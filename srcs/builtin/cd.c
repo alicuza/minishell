@@ -106,8 +106,6 @@ static int	cd_dir(t_ctx *c, const char *dir)
 			ft_putstr_fd("cd: ", STDERR_FILENO);
 			ft_putstr_fd((char *) dir, STDERR_FILENO);
 			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
-			if(c->is_interactive == false)
-				close(0);
 			result = EXIT_FAILURE;
 		}
 		else
@@ -124,7 +122,6 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 
 	if (command_ctx->argc > 2)
 	{
-		
 		return (handle_builtin_error(c, "cd: too many arguments\n", EXIT_FAILURE));
 	}
 	dir = command_ctx->argv[1];
