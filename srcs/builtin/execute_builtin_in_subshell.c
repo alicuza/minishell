@@ -1,4 +1,3 @@
-#include "env.h"
 #include "minishell.h"
 
 static void	close_io(t_ctx *c)
@@ -14,43 +13,52 @@ static int	exit_on_issue(char *error_prefix) // TODO nik make sure it clean ups 
 	return (EXIT_FAILURE);
 }
 
-static int	handle_dup2_error(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
+void	child_cleanup(t_ctx *c, t_command_ctx *cmd_ctx)
+{
+	cleanup(c);
+	free(cmd_ctx->pathname);
+	free(cmd_ctx->argv);
+}
+
+static int	handle_dup2_error(t_ctx *c, t_command_ctx *cmd_ctx, int error_code)
 {
 	ft_putstr_fd("dup2: ", STDERR_FILENO);
 	perror("");
-	child_cleanup_all(c, cmd_ctx, envp);
+	child_cleanup(c, cmd_ctx);
 	exit(EXIT_FAILURE);
-	return (EXIT_FAILURE);
+	return (error_code);
 }
 
 // TODO: here we need to reset sigaction for SIGINT and SIGQUITE since we need to interapt child
-static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
+static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx,
+		t_command_function command)
 {
-#ifdef DEBUG
-	fprintf(stderr, "\nexecuting in child: %s\n", cmd_ctx->pathname);
-#endif
+	int	result_code;
+
+	result_code = 0;
 	ft_close_fd(&c->pipe_fd[0]);
-	if(c->io_fd[0] != -1)
+	if (c->io_fd[0] != -1)
 	{
-		if(dup2(c->io_fd[0], 0) < 0)
-			return (handle_dup2_error(c, cmd_ctx, envp));
+		if (dup2(c->io_fd[0], 0) < 0)
+			return (handle_dup2_error(c, cmd_ctx, EXIT_FAILURE));
 		ft_close_fd(&c->io_fd[0]);
 	}
-	if(c->io_fd[1] != -1)
+	if (c->io_fd[1] != -1)
 	{
-		if(dup2(c->io_fd[1], 1) < 0)
-			return (handle_dup2_error(c, cmd_ctx, envp));
+		if (dup2(c->io_fd[1], 1) < 0)
+			return (handle_dup2_error(c, cmd_ctx, EXIT_FAILURE));
 		ft_close_fd(&c->io_fd[1]);
 	}
-	execve(cmd_ctx->pathname, cmd_ctx->argv, envp);
-	return(exit_child(c, cmd_ctx, envp));
+	result_code = command(c, cmd_ctx);
+	child_cleanup(c, cmd_ctx);
+	exit(result_code);
+	return (result_code);
 }
 
-//TODO nik: don't wait for each command to finish
 static int	wait_return_status(t_ctx *c, pid_t pid)
 {
-	int wstatus;
-	pid_t wpid;
+	int		wstatus;
+	pid_t	wpid;
 
 #ifdef DEBUG
 	fprintf(stderr, "\nchild pid=%jd\n", (intmax_t)pid);
@@ -72,28 +80,20 @@ static int	wait_return_status(t_ctx *c, pid_t pid)
 	}
 }
 
-int	execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx)
+int	execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx,
+		t_command_function command)
 {
-	char **envp;
-	pid_t pid;
+	pid_t	pid;
 
-	envp = env_to_envp(&c->env);
-	if (envp == NULL)
-		return (exit_mem_issue());
-#ifdef DEBUG
-	fprintf(stderr, "\nexecute_non_builtin: %s\n", cmd_ctx->pathname);
-#endif
-	pid = fork(); // TODO nik: add to context the pids
+	pid = fork();
 	if (pid == -1)
 	{
 		perror("fork");
 		close(0);
-		free_str_arr(envp);
-		return (EXIT_FAILURE); 
+		return (EXIT_FAILURE);
 	}
 	if (pid == 0)
-		return (execute_in_child(c, cmd_ctx, envp));
+		return (execute_in_child(c, cmd_ctx, command));
 	close_io(c);
-	free_str_arr(envp);
 	return (wait_return_status(c, pid));
 }

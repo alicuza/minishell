@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/04 17:50:08 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/05 08:21:17 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,8 +266,11 @@ int process_redirection(t_ctx *c, t_node *redir_node);
 /* -------- ft_split_with_empty.c ------------------------------------------- */
 char			**ft_split_with_empty(char const *s, char c);
 
+/* -------- execute_builtin.c ----------------------------------------------- */
 int	execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx, t_command_function	command);
 
+/* -------- execute_builtin_in_subshell.c ----------------------------------- */
+int	execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx, t_command_function command);
 
 /* -------- env.c ----------------------------------------------------------- */
 int				env(t_ctx *c, t_command_ctx *command_ctx);
@@ -295,6 +298,7 @@ int				msh_error_errno(char *where, char *what);
 void			fatal(t_ctx *c, char *where, char *why);
 int handle_redirection_error(t_ctx *c, char *filename, int error_code);
 int handle_builtin_error(t_ctx *c, char *error_prefix, int error_code);
+void	child_cleanup_all(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
 int exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
 
 /* -------- cd.c ------------------------------------------------------------ */
