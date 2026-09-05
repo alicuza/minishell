@@ -19,10 +19,10 @@ static void	check_and_run_pending_exec(t_ctx *c, t_parser_state *parse)
 	if (!parse->exec_root_idx)
 		return ;
 #ifndef DEBUG
-	exec_list(c, parse->exec_root_idx);
+	execute_list(c, parse->exec_root_idx);
 #else
 	if (!c->dbg.no_exec)
-		exec_list(c, parse->exec_root_idx);
+		execute_list(c, parse->exec_root_idx);
 #endif
 	parse->exec_root_idx = 0;
 #ifdef DEBUG

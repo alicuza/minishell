@@ -1,17 +1,6 @@
 #include "minishell.h"
 
-static void	close_io(t_ctx *c)
-{
-	ft_close_fd(&c->io_fd[0]);
-	ft_close_fd(&c->io_fd[1]);
-}
 
-static int	exit_on_issue(char *error_prefix) // TODO nik make sure it clean ups correctly
-{
-	perror(error_prefix);
-	close(0);
-	return (EXIT_FAILURE);
-}
 
 void	child_cleanup(t_ctx *c, t_command_ctx *cmd_ctx)
 {
@@ -55,31 +44,6 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx,
 	return (result_code);
 }
 
-static int	wait_return_status(t_ctx *c, pid_t pid)
-{
-	int		wstatus;
-	pid_t	wpid;
-
-#ifdef DEBUG
-	fprintf(stderr, "\nchild pid=%jd\n", (intmax_t)pid);
-#endif
-	wpid = waitpid(pid, &wstatus, 0);
-	while (wpid != -1 && !WIFEXITED(wstatus))
-	{
-		wpid = waitpid(pid, &wstatus, 0);
-	}
-	if (wpid == -1)
-		return (exit_on_issue("waitpid"));
-	else
-	{
-#ifdef DEBUG
-		printf("exited, status=%d\n", WEXITSTATUS(wstatus));
-#endif
-		c->return_status = WEXITSTATUS(wstatus);
-		return (EXIT_SUCCESS);
-	}
-}
-
 int	execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx,
 		t_command_function command)
 {
@@ -94,6 +58,7 @@ int	execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx,
 	}
 	if (pid == 0)
 		return (execute_in_child(c, cmd_ctx, command));
+	c->pid_to_wait = pid;
 	close_io(c);
-	return (wait_return_status(c, pid));
+	return (EXIT_SUCCESS);
 }

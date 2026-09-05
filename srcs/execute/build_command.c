@@ -11,39 +11,6 @@ static int	init_command(t_command_ctx *command, uint64_t argc)
 	return (EXIT_SUCCESS);
 }
 
-int	build_command_from_token(t_ctx *c, t_parser_state *parse)
-{
-	t_symbol		*sym;
-	uint64_t		stack_idx;
-	t_arena			*stack;
-	t_command_ctx	command;
-	t_token			*token;
-
-	stack = &c->arena[AT_STACK];
-	if (init_command(&command, parse->stack_idx - 1))
-		return (EXIT_FAILURE);
-	stack_idx = 1;
-	sym = get_ptr_from_idx(stack, stack_idx);
-	while (sym && sym->type == SYM_WORD)
-	{
-		token = get_ptr_from_idx(&c->arena[AT_TOKENS], sym->token_idx);
-		if (command.pathname == NULL)
-		{
-			command.pathname = ft_strdup(c->arena[AT_STRING].buf
-					+ token->offset);
-			if (command.pathname == NULL)
-				return (EXIT_FAILURE);
-		}
-		command.argv[stack_idx - 1] = c->arena[AT_STRING].buf + token->offset;
-		stack_idx++;
-		sym = get_ptr_from_idx(stack, stack_idx);
-	}
-	c->return_status = command_search_and_execution(c, &command);
-	free(command.pathname);
-	free(command.argv);
-	return (EXIT_SUCCESS);
-}
-
 static int	get_argc(t_ctx *c, t_node *arg_node)
 {
 	int	i;

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/02 20:33:20 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/05 19:01:38 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ typedef struct s_ctx
 	char	*read_line;
 	int		return_status;
 	bool	is_interactive;
-	bool is_pipe;
+	bool	is_pipe;
+	int pid_to_wait;
 # ifdef DEBUG
 	t_debug	dbg;
 # endif
