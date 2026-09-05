@@ -37,13 +37,6 @@ void	handle_pipe_error(t_ctx *c)
 	exit(EXIT_FAILURE);
 }
 
-void	child_cleanup(t_ctx *c, t_command_ctx *cmd_ctx)
-{
-	cleanup(c);
-	free(cmd_ctx->pathname);
-	free(cmd_ctx->argv);
-}
-
 void	child_cleanup_all(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 {
 	cleanup(c);

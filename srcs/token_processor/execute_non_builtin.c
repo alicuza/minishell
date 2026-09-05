@@ -1,18 +1,28 @@
 #include "env.h"
 #include "minishell.h"
 
-void	close_io(t_ctx *c)
+static void	close_io(t_ctx *c)
 {
 	ft_close_fd(&c->io_fd[0]);
 	ft_close_fd(&c->io_fd[1]);
 }
 
-static int	exit_on_issue(char *error_prefix)
+static int	exit_on_issue(char *error_prefix) // TODO nik make sure it clean ups correctly
 {
 	perror(error_prefix);
 	close(0);
 	return (EXIT_FAILURE);
 }
+
+static int	handle_dup2_error(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
+{
+	ft_putstr_fd("dup2: ", STDERR_FILENO);
+	perror("");
+	child_cleanup_all(c, cmd_ctx, envp);
+	exit(EXIT_FAILURE);
+	return (EXIT_FAILURE);
+}
+
 // TODO: here we need to reset sigaction for SIGINT and SIGQUITE since we need to interapt child
 static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 {
@@ -25,13 +35,13 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 	if(c->io_fd[0] != -1)
 	{
 		if(dup2(c->io_fd[0], 0) < 0)
-			return (handle_dup2_error(c, cmd_ctx, EXIT_FAILURE));
+			return (handle_dup2_error(c, cmd_ctx, envp));
 		ft_close_fd(&c->io_fd[0]);
 	}
 	if(c->io_fd[1] != -1)
 	{
 		if(dup2(c->io_fd[1], 1) < 0)
-			return (handle_dup2_error(c, cmd_ctx, EXIT_FAILURE));
+			return (handle_dup2_error(c, cmd_ctx, envp));
 		ft_close_fd(&c->io_fd[1]);
 	}
 	execve(cmd_ctx->pathname, cmd_ctx->argv, envp);

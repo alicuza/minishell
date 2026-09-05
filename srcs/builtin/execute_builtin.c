@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-<<<<<<< HEAD
 int* save_fds()
 {
 	int	*saved_fds;
@@ -41,14 +40,10 @@ static int	handle_dup2_error(t_ctx *c, t_command_ctx *cmd_ctx, int	*saved_fds)
 }
 int reset_to_saved_fd(t_ctx *c, t_command_ctx *cmd_ctx, int	*saved_fds)
 {
-	struct stat	buf;
-
-	if (fstat(STDIN_FILENO , &buf) != -1)
-		if(dup2(saved_fds[0], 0) < 0)
-			return (handle_dup2_error(c, cmd_ctx, saved_fds));
-	if (fstat(STDOUT_FILENO , &buf) != -1)
-		if(dup2(saved_fds[1], 1) < 0)
-			return (handle_dup2_error(c, cmd_ctx, saved_fds));
+	if(dup2(saved_fds[0], 0) < 0)
+		return (handle_dup2_error(c, cmd_ctx, saved_fds));
+	if(dup2(saved_fds[1], 1) < 0)
+		return (handle_dup2_error(c, cmd_ctx, saved_fds));
 	close(saved_fds[0]);
 	close(saved_fds[1]);
 	free(saved_fds);
