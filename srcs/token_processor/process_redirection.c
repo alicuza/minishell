@@ -16,18 +16,10 @@ int open_in_file(t_ctx *c, t_node *redir_node)
 
 int open_here_file(t_ctx *c, t_node *redir_node)
 {
-	(void) c;
-	(void) redir_node;
-	/* char * filename;
-
-	ft_close_fd(&c->io_fd[0]);
-	errno = 0;
-	filename = c->arena[AT_STRING].buf
-			+ redir_node->data.redir.arena_offset;
-	c->io_fd[0] = open(filename , O_RDONLY);// TODO process failure 
+	c->io_fd[0] = redir_node->data.redir.fd;
 	if (c->io_fd[0] == -1)
-	return handle_redirection_error(c, filename, EXIT_FAILURE);
- */
+		return handle_redirection_error(c, "here-doc", EXIT_FAILURE);
+
 	return (EXIT_SUCCESS);
 }
 
