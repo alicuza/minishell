@@ -42,7 +42,10 @@ int	pwd(t_ctx *c, t_command_ctx *command_ctx)
 	(void)command_ctx;
 	pwd = get_pwd(c);
 	if (!pwd)
-		return (handle_builtin_error(c, "pwd: can't obtain pwd", EXIT_FAILURE));
+	{
+		ft_putstr_fd("pwd: can't obtain pwd\n", STDERR_FILENO);
+		return (EXIT_FAILURE);
+	}
 	printf("%s\n", pwd);
 	free(pwd);
 	return (EXIT_SUCCESS);

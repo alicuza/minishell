@@ -50,7 +50,10 @@ int	builtin_exit(t_ctx *c, t_command_ctx *command_ctx)
 {
 	printf("exit\n");
 	if (command_ctx->argc > 2)
-		return (handle_builtin_error(c, "exit: too many arguments\n", 2));
+	{
+		ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
+		return (2);
+	}
 	else if (command_ctx->argc == 2)
 	{
 		return (exit_with_code(c, command_ctx));
