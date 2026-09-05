@@ -78,18 +78,20 @@
 # define SPECIAL_PARAM_SET "?"
 
 /* -------- lexer flags ----------------------------------------------------- */
-# define TKN_HAS_QUOTES 0x01
-# define TKN_HAS_EXPANSION 0x02
-# define LEX_IS_BUILDING 0x04
-# define LEX_AT_EOI 0x08
+# define TKN_HAS_QUOTES			0x01
+# define TKN_HAS_EXPANSION		0x02
+# define LEX_IS_BUILDING		0x04
+# define LEX_AT_EOI				0x08
+# define LEX_INTERRUPTED		0x10
 
 /* -------- parser flags ---------------------------------------------------- */
-# define PARSE_SAVE_TOKENS 0x01
-# define PARSE_HERE_BODY 0x02
-# define PARSE_HAS_SAVED_TOKENS 0x04
-# define PARSE_HAS_LOOKAHEAD 0x08
-# define PARSE_DONE 0x10
-# define PARSE_ERROR 0x20
+# define PARSE_SAVE_TOKENS		0x01
+# define PARSE_HERE_BODY		0x02
+# define PARSE_HAS_SAVED_TOKENS	0x04
+# define PARSE_HAS_LOOKAHEAD	0x08
+# define PARSE_DONE				0x10
+# define PARSE_ERROR			0x20
+# define PARSE_INTERRUPTED		0x40
 
 /* -------- node flags ------------------------------------------------------ */
 # define FLAG_AND_IF 0x01
@@ -148,6 +150,9 @@
 # define NO_TOKEN 0
 # define MAX_RHS_LEN 4
 # define RULE_COUNT 46
+
+/* -------- globals.c ------------------------------------------------------- */
+extern volatile sig_atomic_t	g_signal;
 
 /* -------- cleanup.c ---------------------------------------------------------- */
 int				cleanup(t_ctx *c);
@@ -305,7 +310,7 @@ t_symbol_type	classify_token(t_ctx *c, t_token *token);
 /* -------- builtin_exit.c -------------------------------------------------- */
 int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- error_handling.c ------------------------------ */
+/* -------- error_handling.c ------------------------------------------------ */
 int				exit_mem_issue(void);
 int				msh_error(char *where, char *what, char *why);
 int				msh_error_errno(char *where, char *what);
@@ -330,10 +335,17 @@ int				unset(t_ctx *c, t_command_ctx *command_ctx);
 /* -------- echo.c ---------------------------------------------------------- */
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- signal_handling.c ----------------------------------------------- */
-int				setup_signal_handler(t_ctx *c);
+/* -------- signal_setup.c -------------------------------------------------- */
+int				sig_setup_handler(t_ctx *c);
+int				sig_set_default(void);
+int				sig_set_interactive(void);
 
-/* -------- ft_close_fd.c ----------------------------------------------- */
+/* -------- signal_helpers.c ------------------------------------------------ */
+int				sig_rl_event_hook(void);
+bool			sig_consume_sigint(t_ctx *c);
+void			sig_reset_sigint(void);
+
+/* -------- ft_close_fd.c --------------------------------------------------- */
 void			ft_close_fd(int *fd);
 
 #endif

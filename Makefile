@@ -35,7 +35,8 @@ SRCS        = \
 			main.c \
 			prompt.c \
 			input.c \
-			signal_handling.c \
+			signals/signal_setup.c \
+			signals/signal_helpers.c \
 			ft_close_fd.c \
 			cleanup.c \
 			execute/execute_list.c \

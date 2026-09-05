@@ -9,3 +9,7 @@
 /notes/proposals
 minishell
 minishell-debug
+*.log
+*.d
+*.o
+*.a
