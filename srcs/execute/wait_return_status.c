@@ -34,6 +34,6 @@ void	wait_return_status(t_ctx *c)
 		printf("exited, status=%d\n", WEXITSTATUS(wstatus));
 #endif
 		c->return_status = WEXITSTATUS(wstatus);
-		return ;
+		c->pid_to_wait = -1;
 	}
 }
