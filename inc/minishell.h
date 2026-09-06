@@ -13,9 +13,9 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include <readline/readline.h> // readline, rl_clear_history, rl_on_new_line,
 # include <stdio.h>             // printf, perror
 # include <string.h>            // strerror
+# include <readline/readline.h> // readline, rl_clear_history, rl_on_new_line,
 								// rl_replace_line, rl_redisplay
 # include <readline/history.h>  // add_history
 # include <stdlib.h>            // malloc, free, exit, getenv
