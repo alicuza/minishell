@@ -34,6 +34,7 @@
 								// tputs
 # include "arena.h"
 # include "libft.h"
+# include "ft_printf.h"
 # include "parser.h"
 # include "types.h"
 # include <errno.h> // errno
@@ -266,10 +267,12 @@ int				build_command(t_ctx *c, t_command_ctx *command,
 					t_node *arg_node);
 
 /* -------- command_search_and_execution.c ---------------------------------- */
-int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx);
+int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_node *redir_node);
 
 /* -------- execute_non_builtin.c ------------------------------------------- */
-int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
+int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_node *redir_node);
 
 /* -------- get_pathname.c -------------------------------------------------- */
 int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
@@ -285,11 +288,11 @@ void		wait_return_status(t_ctx *c);
 
 /* -------- execute_builtin.c ----------------------------------------------- */
 int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
-					t_command_function command);
+					t_command_function command, t_node *redir_node);
 
 /* -------- execute_builtin_in_subshell.c ----------------------------------- */
 int				execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx,
-					t_command_function command);
+					t_command_function command, t_node *redir_node);
 
 /* -------- env.c ----------------------------------------------------------- */
 int				env(t_ctx *c, t_command_ctx *command_ctx);

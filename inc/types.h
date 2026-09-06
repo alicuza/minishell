@@ -57,6 +57,7 @@ typedef struct s_ctx
 	int		return_status;
 	bool	is_interactive;
 	bool	is_pipe;
+	bool	should_exit;
 	int pid_to_wait;
 # ifdef DEBUG
 	t_debug	dbg;

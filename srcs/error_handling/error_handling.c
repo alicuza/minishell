@@ -17,7 +17,6 @@ In case mem issue,
 int	exit_mem_issue(void)
 {
 	perror("Memory allocation error");
-	close(0);
 	return (EXIT_FAILURE);
 }
 

@@ -10,9 +10,9 @@ static bool	is_empty(char *str)
 static void	print_val(char *str)
 {
 	if (is_empty(str))
-		printf("\n");
+		ft_printf("\n");
 	else
-		printf("%s\n", str);
+		ft_printf("%s\n", str);
 }
 
 static char	*get_exit_status(t_ctx *c)
