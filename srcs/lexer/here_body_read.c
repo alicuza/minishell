@@ -28,6 +28,7 @@ static int32_t	create_here_temp(int32_t *wfd)
 	return (rfd);
 }
 
+/* final fd consumed/closed by exec wiring */
 void	get_here_doc(t_ctx *c, t_lexer_state *lex)
 {
 	t_node		*node;
@@ -61,5 +62,5 @@ void	get_here_doc(t_ctx *c, t_lexer_state *lex)
 			write_here_line(c, wfd, lex, node);
 	}
 	ft_close_fd(&wfd);
-	node->data.redir.fd = rfd;	/* TODO: fd consumed/closed by exec wiring */
+	node->data.redir.fd = rfd;
 }

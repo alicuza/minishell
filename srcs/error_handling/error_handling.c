@@ -1,19 +1,5 @@
 #include "minishell.h"
 
-/*
-In builtin export only mem issue can happen.
-In cs:
- - If to many arg, log message, return Failure and continue the next one
- -If nessesary env var is missing, logs error return failure contine execution
-
-In case mem issue,
-	currently writs message and closes input for gracefull clean up at the end of main and return exit_failure for builtin
-- todo maybe stop next comand in pipeline processing
--
-
-*/
-
-// TODO nik: how we exit and make sure everething is closed (fd)
 int	exit_mem_issue(void)
 {
 	perror("Memory allocation error");

@@ -19,7 +19,7 @@ static bool	is_empty(char *str)
 	return (str == NULL || str[0] == '\0');
 }
 
-char	*add_prefix(char *path, const char *pathname) //TODO test if it is fine if prefix already added in original string
+char	*add_prefix(char *path, const char *pathname)
 {
 	char	*tmp;
 	char	*tmp1;
