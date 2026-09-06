@@ -6,7 +6,7 @@ static void	print_val(void *content_void_p)
 
 	content = (t_env_content *)content_void_p;
 	if (content->val != NULL)
-		ft_printf("%s=%s\n", (char *)content->key, content->val);
+		printf("%s=%s\n", (char *)content->key, content->val);
 }
 
 int	env(t_ctx *c, t_command_ctx *command_ctx)

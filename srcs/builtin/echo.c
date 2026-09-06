@@ -2,6 +2,7 @@
 
 #define EQUAL 0
 
+
 static bool	is_empty(char *str)
 {
 	return (str == NULL || str[0] == '\0');
@@ -10,9 +11,9 @@ static bool	is_empty(char *str)
 static void	print_val(char *str)
 {
 	if (is_empty(str))
-		ft_printf("\n");
+		printf("\n");
 	else
-		ft_printf("%s\n", str);
+		printf("%s\n", str);
 }
 
 static char	*get_exit_status(t_ctx *c)
@@ -20,7 +21,7 @@ static char	*get_exit_status(t_ctx *c)
 	return (ft_itoa(c->return_status));
 }
 
-//TODO -n flag 
+// TODO -n flag
 int	echo(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char *str;

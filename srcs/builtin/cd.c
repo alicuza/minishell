@@ -16,8 +16,8 @@ static int	cd_path(t_ctx *c, char *curpath)
 	if (result == EXIT_SUCCESS)
 	{
 		oldpwd = env_get(&c->env, PWD);
-		if (env_update_with_copy(&c->env, OLDPWD, oldpwd) == EXIT_FAILURE || env_update_with_copy(&c->env,
-				PWD, curpath) == EXIT_FAILURE)
+		if (env_update_with_copy(&c->env, OLDPWD, oldpwd) == EXIT_FAILURE
+			|| env_update_with_copy(&c->env, PWD, curpath) == EXIT_FAILURE)
 		{
 			result = chdir(oldpwd);
 			result = EXIT_FAILURE;
@@ -69,7 +69,7 @@ int	cd_oldpwd(t_ctx *c)
 	{
 		result = cd_path(c, old_path);
 		if (result == EXIT_SUCCESS)
-			ft_printf("%s\n", old_path);
+			printf("%s\n", old_path);
 	}
 	free(old_path);
 	return (result);
@@ -100,14 +100,14 @@ static int	cd_dir(t_ctx *c, const char *dir)
 	else
 		curpath = ft_strdup(dir);
 	if (curpath == NULL)
-		return (exit_mem_issue()); 
+		return (exit_mem_issue());
 	else
 	{
 		canonical_form = get_path_canonical_form(curpath, ft_strlen(curpath));
 		if (canonical_form == NULL)
 		{
 			ft_putstr_fd("cd: ", STDERR_FILENO);
-			ft_putstr_fd((char *) dir, STDERR_FILENO);
+			ft_putstr_fd((char *)dir, STDERR_FILENO);
 			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 			result = EXIT_FAILURE;
 		}
