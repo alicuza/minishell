@@ -17,7 +17,6 @@ In case mem issue,
 int	exit_mem_issue(void)
 {
 	perror("Memory allocation error");
-	close(0);
 	return (EXIT_FAILURE);
 }
 
@@ -28,6 +27,13 @@ int	handle_redirection_error(t_ctx *c, char *filename)
 	ft_putstr_fd((char *)filename, STDERR_FILENO);
 	perror("");
 	return (EXIT_FAILURE);
+}
+
+int	handle_builtin_error(t_ctx *c, char *error_prefix, int error_code) //TODO we don't need perror each case
+{
+	(void)c;
+	perror(error_prefix);
+	return (error_code);
 }
 
 void	handle_pipe_error(t_ctx *c)

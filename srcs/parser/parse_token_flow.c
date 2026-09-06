@@ -11,7 +11,11 @@ bool	get_next_token(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
 	while (true)
 	{
 		if (parse->flags & PARSE_HERE_BODY)
+		{
 			handle_here_body(c, parse, lex);
+			if (lex->flags & LEX_INTERRUPTED)
+				return (false);
+		}
 		if (parse->flags & PARSE_HAS_SAVED_TOKENS)
 		{
 			handle_saved_tokens(c, parse);
@@ -66,7 +70,8 @@ bool	get_lookahead(t_ctx *c, t_parser_state *parse, t_lexer_state *lex)
 			parse->flags |= PARSE_HAS_LOOKAHEAD;
 			return (true);
 		}
-		if (!(parse->flags & PARSE_SAVE_TOKENS))
+		if ((lex->flags & LEX_INTERRUPTED)
+			|| !(parse->flags & PARSE_SAVE_TOKENS))
 			return (false);
 		start_here_body(parse);
 	}

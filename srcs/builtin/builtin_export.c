@@ -9,9 +9,9 @@ static void	print_val(void *content_void_p)
 
 	content = (t_env_content *)content_void_p;
 	if (content->val == NULL)
-		printf("declare -x %s\n", (char *)content->key);
+		ft_printf("declare -x %s\n", (char *)content->key);
 	else
-		printf("declare -x %s=\"%s\"\n", (char *)content->key, content->val);
+		ft_printf("declare -x %s=\"%s\"\n", (char *)content->key, content->val);
 }
 
 static bool	is_valid_name(char *name)

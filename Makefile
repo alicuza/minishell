@@ -17,7 +17,7 @@ NAME       = minishell
 CC         = cc
 CFLAGS     = -Wall -Wextra -Werror -MMD -MP
 ARENA_SIZE ?= 64
-CPPFLAGS   = -I inc -I $(LIBFT_DIR) -I $(LIBFT_DIR)/arena -D ARENA_SIZE=$(ARENA_SIZE)
+CPPFLAGS   = -I inc -I $(LIBFT_DIR) -I $(LIBFT_DIR)/arena -I $(LIBFT_DIR)/printf -D ARENA_SIZE=$(ARENA_SIZE)
 LDFLAGS    =
 LDLIBS     = -lreadline
 
@@ -35,7 +35,6 @@ SRCS        = \
 			main.c \
 			prompt.c \
 			input.c \
-			signal_handling.c \
 			ft_close_fd.c \
 			cleanup.c \
 			execute/execute_list.c \
@@ -98,7 +97,9 @@ SRCS        = \
 			builtin/get_path_canonical_form.c \
 			builtin/builtin_export.c \
 			builtin/unset.c \
-			builtin/echo.c
+			builtin/echo.c \
+			signals/signal_setup.c \
+			signals/signal_helpers.c
 
 DEBUG_SRCS  = \
 			debug/debug_main.c \

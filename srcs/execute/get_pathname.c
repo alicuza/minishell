@@ -95,7 +95,7 @@ int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 	path = env_get(&c->env, PATH);
 	if (is_empty(path))
 	{
-		status =  get_from_current(cmd_ctx);
+		status = get_from_current(cmd_ctx);
 		free(path);
 		return (status);
 	}

@@ -34,6 +34,7 @@
 								// tputs
 # include "arena.h"
 # include "libft.h"
+# include "ft_printf.h"
 # include "parser.h"
 # include "types.h"
 # include <errno.h> // errno
@@ -78,18 +79,20 @@
 # define SPECIAL_PARAM_SET "?"
 
 /* -------- lexer flags ----------------------------------------------------- */
-# define TKN_HAS_QUOTES 0x01
-# define TKN_HAS_EXPANSION 0x02
-# define LEX_IS_BUILDING 0x04
-# define LEX_AT_EOI 0x08
+# define TKN_HAS_QUOTES			0x01
+# define TKN_HAS_EXPANSION		0x02
+# define LEX_IS_BUILDING		0x04
+# define LEX_AT_EOI				0x08
+# define LEX_INTERRUPTED		0x10
 
 /* -------- parser flags ---------------------------------------------------- */
-# define PARSE_SAVE_TOKENS 0x01
-# define PARSE_HERE_BODY 0x02
-# define PARSE_HAS_SAVED_TOKENS 0x04
-# define PARSE_HAS_LOOKAHEAD 0x08
-# define PARSE_DONE 0x10
-# define PARSE_ERROR 0x20
+# define PARSE_SAVE_TOKENS		0x01
+# define PARSE_HERE_BODY		0x02
+# define PARSE_HAS_SAVED_TOKENS	0x04
+# define PARSE_HAS_LOOKAHEAD	0x08
+# define PARSE_DONE				0x10
+# define PARSE_ERROR			0x20
+# define PARSE_INTERRUPTED		0x40
 
 /* -------- node flags ------------------------------------------------------ */
 # define FLAG_AND_IF 0x01
@@ -149,6 +152,9 @@
 # define MAX_RHS_LEN 4
 # define RULE_COUNT 46
 
+/* -------- globals.c ------------------------------------------------------- */
+extern volatile sig_atomic_t	g_signal;
+
 /* -------- cleanup.c ---------------------------------------------------------- */
 int				cleanup(t_ctx *c);
 void			close_io(t_ctx *c);
@@ -189,7 +195,7 @@ uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
 /* -------- lex_heredoc.c --------------------------------------------------- */
 void			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l);
 void			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
-void	handle_pipe_error(t_ctx *c);
+void			handle_pipe_error(t_ctx *c);
 
 /* -------- here_body_read.c ------------------------------------------------ */
 void			get_here_doc(t_ctx *c, t_lexer_state *l);
@@ -248,23 +254,25 @@ char			**env_to_envp(t_env *env);
 char			**ft_split_key_value(const char *s, char c);
 
 /* -------- execute_list.c -------------------------------------------------- */
-void	execute_list(t_ctx *c, uint64_t head_idx);
+void			execute_list(t_ctx *c, uint64_t head_idx);
 
 /* -------- execute_pipeline.c ---------------------------------------------- */
-void	execute_pipeline(t_ctx *c, t_node *pipeline_node);
+void			execute_pipeline(t_ctx *c, t_node *pipeline_node);
 
 /* -------- execute_simple_command.c ---------------------------------------- */
-void	execute_simple_command(t_ctx *c, t_node *command_node);
+void			execute_simple_command(t_ctx *c, t_node *command_node);
 
 /* -------- build_command.c ------------------------------------------------- */
 int				build_command(t_ctx *c, t_command_ctx *command,
 					t_node *arg_node);
 
 /* -------- command_search_and_execution.c ---------------------------------- */
-int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx);
+int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_node *redir_node);
 
 /* -------- execute_non_builtin.c ------------------------------------------- */
-int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx);
+int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_node *redir_node);
 
 /* -------- get_pathname.c -------------------------------------------------- */
 int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
@@ -276,15 +284,15 @@ int				process_redirection(t_ctx *c, t_node *redir_node);
 char			**ft_split_with_empty(char const *s, char c);
 
 /* -------- wait_return_status.c ------------------------------------------- */
-void		wait_return_status(t_ctx *c);
+void			wait_return_status(t_ctx *c);
 
 /* -------- execute_builtin.c ----------------------------------------------- */
 int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
-					t_command_function command);
+					t_command_function command, t_node *redir_node);
 
 /* -------- execute_builtin_in_subshell.c ----------------------------------- */
 int				execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx,
-					t_command_function command);
+					t_command_function command, t_node *redir_node);
 
 /* -------- env.c ----------------------------------------------------------- */
 int				env(t_ctx *c, t_command_ctx *command_ctx);
@@ -305,12 +313,14 @@ t_symbol_type	classify_token(t_ctx *c, t_token *token);
 /* -------- builtin_exit.c -------------------------------------------------- */
 int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- error_handling.c ------------------------------ */
+/* -------- error_handling.c ------------------------------------------------ */
 int				exit_mem_issue(void);
 int				msh_error(char *where, char *what, char *why);
 int				msh_error_errno(char *where, char *what);
 void			fatal(t_ctx *c, char *where, char *why);
 int				handle_redirection_error(t_ctx *c, char *filename);
+int				handle_builtin_error(t_ctx *c, char *error_prefix,
+					int error_code);
 void			child_cleanup_all(t_ctx *c, t_command_ctx *cmd_ctx,
 					char **envp);
 int				exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
@@ -330,10 +340,17 @@ int				unset(t_ctx *c, t_command_ctx *command_ctx);
 /* -------- echo.c ---------------------------------------------------------- */
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- signal_handling.c ----------------------------------------------- */
-int				setup_signal_handler(t_ctx *c);
+/* -------- signal_setup.c -------------------------------------------------- */
+int				sig_setup_handler(t_ctx *c);
+int				sig_set_default(void);
+int				sig_set_interactive(void);
 
-/* -------- ft_close_fd.c ----------------------------------------------- */
+/* -------- signal_helpers.c ------------------------------------------------ */
+int				sig_rl_event_hook(void);
+bool			sig_consume_sigint(t_ctx *c);
+void			sig_reset_sigint(void);
+
+/* -------- ft_close_fd.c --------------------------------------------------- */
 void			ft_close_fd(int *fd);
 
 #endif
