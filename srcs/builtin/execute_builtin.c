@@ -27,8 +27,7 @@ int* save_fds()
 
 static int	handle_dup2_error(t_ctx *c, t_command_ctx *cmd_ctx, int	*saved_fds)
 {
-	ft_putstr_fd("dup2: ", STDERR_FILENO);
-	perror("");
+	perror("dup2");
 	cleanup(c);
 	free(cmd_ctx->pathname);
 	free(cmd_ctx->argv);
@@ -78,10 +77,10 @@ static int	execute(t_ctx *c, t_command_ctx *cmd_ctx,
 }
 
 int	execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
-		t_command_function command)
+		t_command_function command, t_node *redir_node)
 {
 	if (c->is_pipe)
-		execute_builtin_in_subshell(c, cmd_ctx, command);
+		execute_builtin_in_subshell(c, cmd_ctx, command, redir_node);
 	else
 		execute(c, cmd_ctx, command);
 	return (0);

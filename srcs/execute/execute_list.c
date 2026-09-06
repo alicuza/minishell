@@ -81,7 +81,7 @@ void	execute_list(t_ctx *c, uint64_t head_idx)
 		if (command_node->next_idx == 0)
 		{
 			execute_simple_command(c, command_node);
-			if (c->pid_to_wait > 0 && c->return_status == EXIT_SUCCESS)
+			if (c->pid_to_wait != -1)
 				wait_return_status(c);
 		}
 		else

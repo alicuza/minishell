@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/05 19:11:15 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/05 19:21:55 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/06 13:27:39 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,7 @@ static int	set_action(int signum, void (*handler)(int))
 int	sig_set_interactive(void)
 {
 	if (set_action(SIGINT, &sig_record_sigint)
-		|| set_action(SIGQUIT, SIG_IGN)
-		|| set_action(SIGPIPE, SIG_IGN))
+		|| set_action(SIGQUIT, SIG_IGN))
 		return (msh_error_errno("sigaction", "interactive"));
 	return (EXIT_SUCCESS);
 }

@@ -22,17 +22,22 @@ static t_ctx	init_ctx(char **envp)
 	c.arena[AT_TOKENS] = arena_init(ARENA_SIZE, sizeof(t_token));
 	c.arena[AT_STACK] = arena_init(ARENA_SIZE, sizeof(t_symbol));
 	c.arena[AT_COMMAND] = arena_init(ARENA_SIZE, sizeof(t_node));
-	if (init_env(&c.env, envp))
-		printf("Error init_env");
-	if (isatty(STDIN_FILENO))
-		c.is_interactive = true;
 	c.io_fd[0] = -1;
 	c.io_fd[1] = -1;
 	c.pipe_fd[0] = -1;
 	c.pipe_fd[1] = -1;
 	c.is_pipe = false;
+	c.should_exit = false;
 	c.pid_to_wait = -1;
 	c.return_status = 0;
+	if (isatty(STDIN_FILENO))
+		c.is_interactive = true;
+	if (init_env(&c.env, envp))
+	{
+		msh_error_errno("init_env", "env");
+		cleanup(&c);
+		exit(EXIT_FAILURE);
+	}
 	return (c);
 }
 
@@ -73,6 +78,8 @@ static void	shell_loop(t_ctx *c)
 #endif
 		free(c->read_line);
 		c->read_line = NULL;
+		if (c->should_exit)
+			break ;
 	}
 }
 

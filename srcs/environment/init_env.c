@@ -41,6 +41,7 @@ int	init_env(t_env *env, char **envp)
 			free(tmp);
 			i++;
 		}
-	add_env_defaults(env);
+	if (add_env_defaults(env) == EXIT_FAILURE)
+		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }

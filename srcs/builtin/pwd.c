@@ -46,7 +46,7 @@ int	pwd(t_ctx *c, t_command_ctx *command_ctx)
 		ft_putstr_fd("pwd: can't obtain pwd\n", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
-	printf("%s\n", pwd);
+	ft_printf("%s\n", pwd);
 	free(pwd);
 	return (EXIT_SUCCESS);
 }
