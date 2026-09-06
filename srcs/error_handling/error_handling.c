@@ -11,7 +11,7 @@ int	handle_redirection_error(t_ctx *c, char *filename)
 	(void)c;
 	ft_putstr_fd("redirection: ", STDERR_FILENO);
 	ft_putstr_fd((char *)filename, STDERR_FILENO);
-	perror("");
+	perror(": ");
 	return (EXIT_FAILURE);
 }
 
@@ -38,7 +38,7 @@ int	exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 	error_code = errno;
 	error = ft_strjoin("execve: ", cmd_ctx->pathname);
 	if (error == NULL)
-	perror("Memory allocation error");
+		perror("Memory allocation error");
 	else
 	{
 		errno = error_code;

@@ -3,8 +3,7 @@
 void	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 {
 	t_node		*command_node;
-	int			status;
-	struct stat	buf;
+	int			result;
 
 	c->is_pipe = true;
 	command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
@@ -13,8 +12,7 @@ void	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 	{
 		if (command_node->next_idx != 0)
 		{
-			status = pipe(c->pipe_fd);
-			if (status == -1)
+			if (pipe(c->pipe_fd) == -1)
 			{
 				ft_close_fd(&c->io_fd[0]);
 				ft_close_fd(&c->io_fd[1]);
@@ -22,15 +20,9 @@ void	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 			}
 			c->io_fd[1] = c->pipe_fd[1];
 			c->pipe_fd[1] = -1;
-			execute_simple_command(c, command_node);
-			if (fstat(STDIN_FILENO, &buf) == -1)
-			{
-				ft_close_fd(&c->io_fd[0]);
-				ft_close_fd(&c->io_fd[1]);
-				ft_close_fd(&c->pipe_fd[0]);
-				ft_close_fd(&c->pipe_fd[1]);
+			result = execute_simple_command(c, command_node);
+			if (c->should_exit)
 				return ;
-			}
 			ft_close_fd(&c->io_fd[0]);
 			ft_close_fd(&c->io_fd[1]);
 			c->io_fd[0] = c->pipe_fd[0];
@@ -38,14 +30,14 @@ void	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 		}
 		else
 		{
-			execute_simple_command(c, command_node);
-			if (fstat(STDIN_FILENO, &buf) == -1)
+			result = execute_simple_command(c, command_node);
+			if (c->should_exit)
 				return ;
 		}
 		command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				command_node->next_idx);
 	}
-	if (c->pid_to_wait != -1 && c->return_status == EXIT_SUCCESS) //TODO now check
+	if (result == EXIT_SUCCESS && c->pid_to_wait != -1)
 		wait_return_status(c);
 	c->is_pipe = false;
 }

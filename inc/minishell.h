@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/06 19:44:57 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/06 20:23:56 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,7 +259,7 @@ void			execute_list(t_ctx *c, uint64_t head_idx);
 void			execute_pipeline(t_ctx *c, t_node *pipeline_node);
 
 /* -------- execute_simple_command.c ---------------------------------------- */
-void			execute_simple_command(t_ctx *c, t_node *command_node);
+int			execute_simple_command(t_ctx *c, t_node *command_node);
 
 /* -------- build_command.c ------------------------------------------------- */
 int				build_command(t_ctx *c, t_command_ctx *command,

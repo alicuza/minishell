@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/06 19:59:39 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/06 20:23:33 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,7 @@ void	execute_list(t_ctx *c, uint64_t head_idx)
 				pipeline_node->data.pipeline.command_head_idx);
 		if (command_node->next_idx == 0)
 		{
-			execute_simple_command(c, command_node);
-			if (c->pid_to_wait != -1 && c->return_status == EXIT_SUCCESS) //TODO now check if it works correctly 
+			if (execute_simple_command(c, command_node) == EXIT_SUCCESS && c->pid_to_wait != -1)
 				wait_return_status(c);
 		}
 		else
