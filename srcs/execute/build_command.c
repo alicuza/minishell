@@ -35,12 +35,12 @@ int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
 {
 	int				i;
 
+	char **argv = expand(c, arg_node);
 	i = 0;
 	if (init_command(command, get_argc(c, arg_node)))
 		return (EXIT_FAILURE);
 	while (arg_node->type == NODE_ARG)
 	{
-		// TODO see 3.5 Shell Expansions in bash man
 		if (command->pathname == NULL)
 		{
 			command->pathname = ft_strdup(c->arena[AT_STRING].buf

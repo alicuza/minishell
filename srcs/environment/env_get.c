@@ -1,7 +1,7 @@
 #include "minishell.h"
 #define EQUAL 0
 
-char	*env_get(t_env *env, char *key)
+int env_get(t_env *env, char *key, char** result) //TODO now check if key alweys existis
 {
 	t_list *vals;
 	size_t key_size;
@@ -12,8 +12,17 @@ char	*env_get(t_env *env, char *key)
 		while (vals)
 		{
 			if (ft_strncmp(((t_env_content*) vals->content)->key, key, key_size) == EQUAL)
-				return (ft_strdup(((t_env_content*) vals->content)->val));
+			{
+				if(((t_env_content*) vals->content)->val != NULL)
+				{
+					*result = ft_strdup(((t_env_content*) vals->content)->val);
+					if(*result == NULL)
+						return (EXIT_FAILURE);
+					return (EXIT_SUCCESS);
+				}
+				return (EXIT_SUCCESS);
+			}
 			vals = vals->next;
 		}
-	return (NULL);
+	return (EXIT_SUCCESS);
 }

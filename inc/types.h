@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/06 19:45:15 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/06 21:44:29 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,12 +173,14 @@ typedef struct s_node_command
 typedef struct s_node_arg
 {
 	uint64_t	arena_offset;
+	uint8_t	flags;
 }	t_node_arg;
 
 typedef struct s_node_redir
 {
 	uint64_t	arena_offset;
 	int32_t		fd;					// NOTE: only for heredocs?
+	uint8_t	flags;
 }	t_node_redir;
 
 typedef union u_node_data
