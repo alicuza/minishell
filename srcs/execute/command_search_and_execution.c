@@ -23,7 +23,8 @@ static t_command_function	match_builtin(char *name)
 		return (NULL);
 }
 
-int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
+int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
+		t_node *redir_node)
 {
 	t_command_function	command;
 	int					status;
@@ -33,18 +34,23 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx)
 	{
 		command = match_builtin(cmd_ctx->pathname);
 		if (command != NULL)
-			return (execute_builtin(c, cmd_ctx, command));
+		{
+			if (!c->is_pipe
+				&& process_redirection(c, redir_node) == EXIT_FAILURE)
+				return (1);
+			return (execute_builtin(c, cmd_ctx, command, redir_node));
+		}
 		else
 		{
 			status = get_pathname(c, cmd_ctx);
 			if (status == EXIT_FAILURE)
 				return (exit_mem_issue());
 			else if (status == EXIT_SUCCESS && cmd_ctx->pathname != NULL)
-				return (execute_non_builtin(c, cmd_ctx));
+				return (execute_non_builtin(c, cmd_ctx, redir_node));
 			else
 				return (127);
 		}
 	}
 	else
-		return (execute_non_builtin(c, cmd_ctx));
+		return (execute_non_builtin(c, cmd_ctx, redir_node));
 }

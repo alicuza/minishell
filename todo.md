@@ -11,3 +11,6 @@ Nik:
 - ls error message when it cant execute 
 - signaling how we revice it from readline 
 - heredog process not in child process but in the parrent, othervice both processes will wait for the input in same time
+
+
+6.09 look when we wait for all clid pid

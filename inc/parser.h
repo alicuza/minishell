@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/08 15:10:00 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/09 15:12:28 by sancuta          ###   ########.fr       */
+/*   Created: 2026/09/05 18:41:57 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/05 18:42:39 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 # include "types.h"
 
 /* -------- LALR grammar constants (from shni_grammar_reduced.output) ------- */
-# define YYPACT_NINF -44
-# define YYFINAL      5
-# define YYLAST       67
-# define NTERM_OFFSET 14
+# define YYPACT_NINF	-44
+# define YYFINAL		5
+# define YYLAST			67
+# define NTERM_OFFSET	14
 
 /* -------- yy_pact.c / yy_table.c ------------------------------------------ */
 int32_t			get_yypact(uint64_t idx);

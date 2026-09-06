@@ -62,5 +62,7 @@ void	get_here_doc(t_ctx *c, t_lexer_state *lex)
 			write_here_line(c, wfd, lex, node);
 	}
 	ft_close_fd(&wfd);
+	if (lex->flags & LEX_INTERRUPTED)
+		ft_close_fd(&rfd);
 	node->data.redir.fd = rfd;
 }
