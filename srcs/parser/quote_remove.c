@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void	quote_remove_inplace(char *s)
+char *quote_remove_inplace(char *s)
 {
 	size_t	r;
 	size_t	w;
@@ -24,4 +24,5 @@ void	quote_remove_inplace(char *s)
 		}
 	}
 	s[w] = '\0';
+	return s;
 }

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/06 20:23:56 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/07 00:43:28 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@
 # define BLANK_SET " \t"
 # define QUOTE_SET "\"'"
 # define SPECIAL_PARAM_SET "?"
+# define IFS " \t\n"
 
 /* -------- lexer flags ----------------------------------------------------- */
 # define TKN_HAS_QUOTES			0x01
@@ -204,6 +205,7 @@ bool			read_here_line(t_ctx *c, t_lexer_state *l, char *here_end);
 bool			here_line_ends(t_ctx *c, t_lexer_state *l, char *here_end);
 
 /* -------- here_write_line.c ----------------------------------------------- */
+char	*get_expansion_value(t_ctx *c, char *name);
 void			write_here_line(t_ctx *c, int fd, t_lexer_state *l,
 					t_node *node);
 
@@ -349,5 +351,11 @@ void			sig_reset_sigint(void);
 
 /* -------- ft_close_fd.c --------------------------------------------------- */
 void			ft_close_fd(int *fd);
+
+/* -------- expand_args.c ---------------------------------------------------- */
+t_list	*expand_args(t_ctx *c, t_node *arg_node)
+
+/* -------- field_split.c ---------------------------------------------------- */
+char	**field_split(const char *s)
 
 #endif

@@ -35,7 +35,8 @@ int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
 {
 	int				i;
 
-	char **argv = expand(c, arg_node);
+	t_list *argv = expand_args(c, arg_node);
+	(void) argv;
 	i = 0;
 	if (init_command(command, get_argc(c, arg_node)))
 		return (EXIT_FAILURE);

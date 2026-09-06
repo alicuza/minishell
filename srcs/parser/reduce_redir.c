@@ -37,7 +37,7 @@ static uint8_t	set_here_delim(t_ctx *c, t_token *token)
 	uint8_t	flags;
 
 	delim_word = get_token_body(c, token);
-	quote_remove_inplace(delim_word);
+	delim_word = quote_remove_inplace(delim_word);
 	flags = REDIR_HERE;
 	if (token->flags & TKN_HAS_QUOTES)
 		flags |= REDIR_HAS_QUOTES;

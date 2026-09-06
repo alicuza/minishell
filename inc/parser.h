@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/05 18:41:57 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/05 18:42:39 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/07 00:21:38 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ t_symbol		*get_symbol_from_top(t_ctx *c, uint32_t depth);
 t_symbol		*get_symbol_from_idx(t_ctx *c, uint64_t idx);
 
 /* -------- quote_remove.c -------------------------------------------------- */
-void			quote_remove_inplace(char *s);
+char 			*quote_remove_inplace(char *s);
 
 /* -------- parse_input.c / parse_token_flow.c ------------------------------ */
 t_parser_state	parse_input(t_ctx *c);

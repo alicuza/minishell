@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/09/05 23:08:00 by nribakov         ###   ########.fr        #
+#    Updated: 2026/09/07 00:35:52 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,7 @@ SRCS        = \
 			input.c \
 			ft_close_fd.c \
 			cleanup.c \
+			expansions/expand_args.c \
 			execute/execute_list.c \
 			execute/execute_pipeline.c \
 			execute/execute_simple_command.c \
