@@ -58,18 +58,17 @@ static void expand_word(t_ctx *c, t_list **list, char *word, uint64_t len) //TOD
 			{
 				new_word = ft_substr(word, 0, i);
 				// if (new_word == NULL) TODO clean list
-				// 	return (EXIT_FAILURE);
+				//	return (EXIT_FAILURE);
 			}
 			else
 				new_word = ft_strjoin(new_word, ft_substr(word, start, i - start));
-			i = expand_var(c, word, &new_word, i);
-			start = i;
+			start = expand_var(c, word, &new_word, i);
 		}
 		else
 			++i;
 	}
 	new_word = ft_strjoin(new_word, ft_substr(word, start, len - start + 1));
-	field_split(list, new_word);
+	field_split(list, new_word); // TODO error handling
 	//quote remove if (ft_strchr(val, '"') != NULL)
 	//return new_word;
 }

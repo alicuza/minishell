@@ -19,84 +19,96 @@ static char	**on_alloc_fail_free_str_arr(char **arr, size_t ind)
 void	field_split(t_list **list, char *s)
 {
 	size_t	i;
-	char	close;
-	size_t	len;
-	ssize_t	quote_index;
+	size_t	open_quote_idx;
+	size_t	close_quote_idx;
 
 	if (!s)
 		return (NULL);
+	open_quote_idx = 0;
+	close_quote_idx = 0;
 	i = 0;
 	while (s[i])
 	{
-		quote_index = get_quote(s + i);
-		if (quote_index != -1)
-			split_to_last_ifs(list, s, quote_index);
-		ft_lstadd_back();
-		while (*s == c)
-			s++;
-		len = word_len(s, c);
-		res[i] = ft_substr(s, 0, len);
-		if (!res[i])
-			return (on_alloc_fail_free_str_arr(res, i));
-		s += len;
-		i++;
+		if (get_quote_pair(s + i, &open_quote_idx, &close_quote_idx) == EXIT_FAILURE)
+		{
+			split_to_last_ifs(list, s + i, 0, 0);
+			return ;
+		}
+		split_to_last_ifs(list, s + i, open_quote_idx, close_quote_idx);
+		i = close_quote_idx + 1;
 	}
-	res[word_nr] = NULL;
-	return (res);
 }
 
-ssize_t	get_quote(const char *s)
+int	get_quote_pair(const char *s, size_t *open, size_t *close)
 {
-	ssize_t	i;
+	size_t	o;
+	size_t	c;
 
-	i = 0;
-	while (s[i])
+	o = -1;
+	c = -1;
+	while (s[++o])
 	{
-		if (is_char_in_set(s + i, QUOTE_SET))
-			return (i);
-		i++;
+		if (is_char_in_set(s[o], QUOTE_SET))
+		{
+			c = o;
+			break;
+		}
 	}
-	return (-1);
-}
-/*
-ssize_t	get_last_ifs(const char *s, ssize_t idx)
-{
-	while (idx > 0)
+	if (c == -1)
+		return (EXIT_FAILURE);
+	while (s[++c])
 	{
-		if (is_char_in_set(s + idx, IFS))
-			return (idx);
-		--idx;
+		if(is_char_in_set(s[c], QUOTE_SET))
+		{
+			*open = o;
+			*close = c;
+			return (EXIT_SUCCESS);
+		}
 	}
-	return (-1);
+	return (EXIT_FAILURE);
 }
-*/
 
-ssize_t	get_first_ifs_until(const char *s, ssize_t idx)
+size_t	get_first_ifs_until(const char *s, size_t idx)
 {
-	ssize_t	i;
+	size_t	i;
 
 	i = 0;
 	while (i < idx)
 	{
-		if (is_char_in_set(s + i, IFS))
+		if (is_char_in_set(s[i], IFS))
 			return (i);
 		++i;
 	}
-	return (-1);
+	return (i);
 }
 
-t_list	*split_to_last_ifs(t_list **list, char *s, ssize_t quote_idx)
+void	split_to_last_ifs(t_list **list, char *s, size_t open_quote_idx, size_t close_quote_idx)
 {
-	ssize_t	word_start;
-	ssize_t	word_end;
+	size_t	word_start;
+	size_t	ifs_idx;
+	size_t	len;
 
+	len = ft_strlen(s);
+	if (open_quote_idx < close_quote_idx)
+		len = open_quote_idx;
 	word_start = 0;
-	word_end = get_first_ifs_until(s, quote_idx);
-	while (word_end != -1)
+	ifs_idx = get_first_ifs_until(s, len);
+	while (ifs_idx < len)
 	{
-		append_node(list, ft_substr(s, word_start, word_end - word_start));
-		word_start = word_end + 1;
-		word_end = get_first_ifs_until(s + word_start, quote_idx);
+		while (is_char_in_set(s[word_start], IFS) && word_start < ifs_idx)
+			++word_start;
+		if (word_start != ifs_idx)
+			append_node(list, ft_substr(s, word_start, ifs_idx - word_start));
+		while (is_char_in_set(s + ifs_idx, IFS))
+			++ifs_idx;
+		word_start = ifs_idx;
+		ifs_idx = get_first_ifs_until(s + word_start, len);
 	}
-	if ()
+	if (ifs_idx == len)
+	{
+		while (is_char_in_set(s[word_start], IFS) && word_start < ifs_idx)
+			++word_start;
+		if (word_start != ifs_idx)
+			append_node(list, ft_substr(s, word_start, ifs_idx - word_start));
+	}
 }
