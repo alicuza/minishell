@@ -8,7 +8,7 @@ static bool	is_empty(char *str)
 static void	init_command(t_command_ctx *command) //, uint64_t argc)
 {
 	command->pathname = NULL;
-	command->argc = -1;
+	command->argc = 0;
 	command->argv = NULL;
 	// command->argv = malloc(sizeof(char *) * (argc + 1));
 	// if (command->argv == NULL)
@@ -24,6 +24,13 @@ static int set_expanded_args(t_ctx *c, t_command_ctx *command, t_list **argv)
 	
 	command->argc = ft_lstsize(*argv);
 	command->argv = malloc(sizeof(char *) * (command->argc + 1));
+	if (command->argv == NULL)
+	{
+		ft_lstclear(argv, &free);
+		c->should_exit = true;
+		return (exit_mem_issue());
+	}
+	command->argv[command->argc] = NULL;
 	tmp = *argv;
 	i = 0;
 	while (tmp != NULL)
