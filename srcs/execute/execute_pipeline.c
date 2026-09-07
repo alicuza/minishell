@@ -37,7 +37,8 @@ void	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 		command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				command_node->next_idx);
 	}
-	if (result == EXIT_SUCCESS && c->pid_to_wait != -1)
+	c->return_status = result;
+	if (c->return_status == EXIT_SUCCESS && c->pid_to_wait != -1)
 		wait_return_status(c);
 	c->is_pipe = false;
 }

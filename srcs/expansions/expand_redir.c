@@ -15,10 +15,10 @@ char	*expand_redir(t_ctx *c, t_node *redir_node)
 	if (redir_node->data.redir.flags & TKN_HAS_EXPANSION)
 	{
 		expand_word(c, &list, filename, ft_strlen(filename));
-		if(ft_lstsize(list) > 1)
+		if(ft_lstsize(list) != 1)
 		{
 			ft_putstr_fd(filename, STDERR_FILENO);
-			ft_putstr_fd(": ambiguous redirect", STDERR_FILENO);
+			ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
 			c->should_exit = true;
 			return NULL;
 		}
