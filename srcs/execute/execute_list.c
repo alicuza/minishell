@@ -6,28 +6,28 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/07 08:17:17 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/07 22:48:55 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static t_node	*get_next_after_or(t_ctx *c, t_node *current_pipeline_node) //TODO nik maybe infinite loop
+static t_node	*get_next_with_or(t_ctx *c, t_node *current_pipeline_node) //TODO nik maybe infinite loop
 {
 	t_node	*pipeline_node;
 
 	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 			current_pipeline_node->next_idx);
 	while (pipeline_node->type == NODE_PIPELINE
-		&& !((pipeline_node->flags & FLAG_OR_IF)))
+		&& !(pipeline_node->flags & FLAG_OR_IF))
 	{
 		pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
-				current_pipeline_node->next_idx);
+				pipeline_node->next_idx);
 	}
 	return (pipeline_node);
 }
 
-static t_node	*get_next_after_and(t_ctx *c, t_node *current_pipeline_node)
+static t_node	*get_next_with_and(t_ctx *c, t_node *current_pipeline_node)
 {
 	t_node	*pipeline_node;
 
@@ -37,7 +37,7 @@ static t_node	*get_next_after_and(t_ctx *c, t_node *current_pipeline_node)
 		&& !(pipeline_node->flags & FLAG_AND_IF))
 	{
 		pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
-				current_pipeline_node->next_idx);
+				pipeline_node->next_idx);
 	}
 	return (pipeline_node);
 }
@@ -48,7 +48,8 @@ static t_node	*get_next(t_ctx *c, t_node *current_pipeline_node)
 
 	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 			current_pipeline_node->next_idx);
-	if ((!(pipeline_node->flags & FLAG_AND_IF)
+	if (pipeline_node->type != NODE_PIPELINE
+		|| (!(pipeline_node->flags & FLAG_AND_IF)
 			&& !(pipeline_node->flags & FLAG_OR_IF))
 		|| ((pipeline_node->flags & FLAG_AND_IF)
 			&& c->return_status == EXIT_SUCCESS)
@@ -56,9 +57,9 @@ static t_node	*get_next(t_ctx *c, t_node *current_pipeline_node)
 			&& c->return_status != EXIT_SUCCESS))
 		return (pipeline_node);
 	else if (pipeline_node->flags & FLAG_AND_IF)
-		return (get_next_after_or(c, pipeline_node));
+		return (get_next_with_or(c, pipeline_node));
 	else
-		return (get_next_after_and(c, pipeline_node));
+		return (get_next_with_and(c, pipeline_node));
 }
 
 // TODO nik: set up https://www.gnu.org/software/bash/manual/bash.html#Signals-1
