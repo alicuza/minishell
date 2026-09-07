@@ -1,13 +1,46 @@
 #include "minishell.h"
 
-static int	init_command(t_command_ctx *command, uint64_t argc)
+static bool	is_empty(char *str)
+{
+	return (str == NULL || str[0] == '\0');
+}
+
+static void	init_command(t_command_ctx *command) //, uint64_t argc)
 {
 	command->pathname = NULL;
-	command->argc = argc;
-	command->argv = malloc(sizeof(char *) * (argc + 1));
-	if (command->argv == NULL)
-		return (exit_mem_issue());
-	command->argv[argc] = NULL;
+	command->argc = -1;
+	command->argv = NULL;
+	// command->argv = malloc(sizeof(char *) * (argc + 1));
+	// if (command->argv == NULL)
+	// 	return (exit_mem_issue());
+	// command->argv[argc] = NULL;
+	//return (EXIT_SUCCESS);
+}
+
+static int set_expanded_arg(t_ctx *c, t_command_ctx *command, t_list *argv)
+{
+	uint64_t i;
+	t_list *tmp;
+	
+	command->argc = ft_lstsize(argv);
+	command->argv = malloc(sizeof(char *) * (command->argc + 1));
+	tmp = argv;
+	i = 0;
+	while (tmp != NULL)
+	{
+		if (command->pathname == NULL)
+		{
+			command->pathname = ft_strdup(tmp->content);
+			if (command->pathname == NULL)
+			{
+				ft_lstclear(argv, &free);
+				return (EXIT_FAILURE);
+			}
+		}
+		command->argv[i] = tmp->content;
+		i++;
+		tmp = tmp->next;
+	}
 	return (EXIT_SUCCESS);
 }
 
@@ -23,36 +56,21 @@ static int	get_argc(t_ctx *c, t_node *arg_node)
 	}
 	return (i);
 }
-/* TODO nik: do all expansions:
-	All values undergo variable expansion,
-	and quote removal (see Shell Parameter Expansion).
-	Word splitting and filename expansion are not performed see 2.6.5 Field Splitting
-
-	(optional) read and do 2.6.6 Pathname Expansion
-	*/
 
 int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
 {
-	int				i;
+	t_list *argv;
 
-	t_list *argv = expand_args(c, arg_node);
-	(void) argv;
-	i = 0;
-	if (init_command(command, get_argc(c, arg_node)))
+	init_command(command);
+	if(arg_node->type != NODE_ARG)
+		return (EXIT_SUCCESS);
+	argv = expand_args(c, arg_node);
+	if(argv == NULL)
 		return (EXIT_FAILURE);
-	while (arg_node->type == NODE_ARG)
+	if(is_empty(argv->content))
 	{
-		if (command->pathname == NULL)
-		{
-			command->pathname = ft_strdup(c->arena[AT_STRING].buf
-					+ arg_node->data.arg.arena_offset);
-			if (command->pathname == NULL)
-				return (EXIT_FAILURE);
-		}
-		command->argv[i] = c->arena[AT_STRING].buf
-			+ arg_node->data.arg.arena_offset;
-		i++;
-		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->next_idx);
+		ft_lstclear(argv, &free);
+		return (EXIT_SUCCESS);
 	}
-	return (EXIT_SUCCESS);
+	return (set_expanded_args(c, command, argv));
 }

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/07 00:43:28 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/07 04:01:05 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -353,9 +353,9 @@ void			sig_reset_sigint(void);
 void			ft_close_fd(int *fd);
 
 /* -------- expand_args.c ---------------------------------------------------- */
-t_list	*expand_args(t_ctx *c, t_node *arg_node)
+t_list	*expand_args(t_ctx *c, t_node *arg_node);
 
 /* -------- field_split.c ---------------------------------------------------- */
-char	**field_split(const char *s)
+char	**field_split(const char *s);
 
 #endif
