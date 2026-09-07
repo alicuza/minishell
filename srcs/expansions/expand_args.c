@@ -17,7 +17,7 @@ void	append_node(t_list **list, char *val)
 	return ;
 }
 
-static uint64_t	expand_var(t_ctx *c, char *word, char **new_word,  uint64_t i)
+static uint64_t	expand_var(t_ctx *c, char *word, char **new_word, uint64_t i)
 {
 	uint64_t	end;
 	char		*name;
@@ -40,13 +40,14 @@ static uint64_t	expand_var(t_ctx *c, char *word, char **new_word,  uint64_t i)
 	}
 	return (i + end);
 }
-static void expand_word(t_ctx *c, t_list **list, char *word, uint64_t len) //TODO now protect memmory
+static void	expand_word(t_ctx *c, t_list **list, char *word, uint64_t len)
+		// TODO now protect memmory
 {
-	uint64_t	i;
-	uint64_t	start;
-	char		*new_word;
+	uint64_t i;
+	uint64_t start;
+	char *new_word;
 
-	(void) list;
+	(void)list;
 	i = 0;
 	start = 0;
 	new_word = NULL;
@@ -61,8 +62,10 @@ static void expand_word(t_ctx *c, t_list **list, char *word, uint64_t len) //TOD
 				//	return (EXIT_FAILURE);
 			}
 			else
-				new_word = ft_strjoin(new_word, ft_substr(word, start, i - start));
-			start = expand_var(c, word, &new_word, i);
+				new_word = ft_strjoin(new_word, ft_substr(word, start, i
+							- start));
+			i = expand_var(c, word, &new_word, i);
+			start = i;
 		}
 		else
 			++i;

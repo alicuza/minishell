@@ -8,39 +8,75 @@ static bool	is_empty(char *str)
 	return (str == NULL || str[0] == '\0');
 }
 
-static void	print_val(char *str)
+static void	print_val(char *str, bool is_print_nl)
 {
-	if (is_empty(str))
-		printf("\n");
+	if (is_print_nl)
+	{
+		if (is_empty(str))
+			printf("\n");
+		else
+			printf("%s\n", str);
+	}
+	else if (!is_empty(str))
+		printf("%s", str);
+}
+
+static int64_t	find_n_flag(t_command_ctx *command_ctx)
+{
+	int64_t i;
+	int64_t j;
+	int64_t found_at;
+
+	found_at = -1;
+	i = 1;
+	j = 1;
+	while (i < command_ctx->argc && command_ctx->argv[i][0] == '-')
+	{
+		while (command_ctx->argv[i][j] != '\0'
+			&& command_ctx->argv[i][j] != 'n')
+		{
+			j++;
+		}
+		if (command_ctx->argv[i][j] == 'n')
+			found = i;
+		j = 1;
+		i++;
+	}
+	return (found_at);
+}
+
+static bool	is_print_nl(uint64_t argc, int64_t i, int64_t n_flag_found_at)
+{
+	if (n_flag_found_at != -1)
+		return (false);
 	else
-		printf("%s\n", str);
+		return (i + 1 == argc);
 }
 
-static char	*get_exit_status(t_ctx *c)
-{
-	return (ft_itoa(c->return_status));
-}
-
-// TODO -n flag
 int	echo(t_ctx *c, t_command_ctx *command_ctx)
 {
+	int64_t i;
+	int64_t n_flag_found_at;
 	char *str;
 	char *tmp;
 
 	if (command_ctx->argc == 1)
-		str = "";
+		print_val("");
 	else
-		str = command_ctx->argv[1];
-	if (str[0] == '$')
 	{
-		if (ft_strncmp(str + 1, "?", 2) == EQUAL)
-			tmp = get_exit_status(c);
+		n_flag_found_at = find_n_flag(command_ctx);
+		if (n_flag_found_at != -1)
+			i = n_flag_found_at;
 		else
-			tmp = env_get(&c->env, str + 1);
-		print_val(tmp);
-		free(tmp);
-		return (0);
+			i = 1;
+		while (i < command_ctx->argc)
+		{
+			print_val(command_ctx->argv[i], is_print_nl(command_ctx->argc, i,
+					n_flag_found_at));
+			if (i + 1 < command_ctx->argc)
+				printf(" ");
+			i++;
+		}
 	}
-	print_val(str);
 	return (0);
 }
