@@ -6,13 +6,13 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/07 06:09:29 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/07 08:17:17 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static t_node	*get_next_after_or(t_ctx *c, t_node *current_pipeline_node)
+static t_node	*get_next_after_or(t_ctx *c, t_node *current_pipeline_node) //TODO nik maybe infinite loop
 {
 	t_node	*pipeline_node;
 

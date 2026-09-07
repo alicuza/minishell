@@ -49,6 +49,7 @@ static int set_expanded_args(t_ctx *c, t_command_ctx *command, t_list **argv)
 		i++;
 		tmp = tmp->next;
 	}
+	//ft_lstclear(argv, &free); TODO nik missing free
 	return (EXIT_SUCCESS);
 }
 

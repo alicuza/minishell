@@ -61,6 +61,8 @@ static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 		{
 			first_found = tmp;
 		}
+		if(first_found != tmp)
+			free(tmp);
 		i++;
 	}
 	free(cmd_ctx->pathname);
