@@ -1,13 +1,19 @@
 #include "minishell.h"
 
+static bool	is_empty(char *str)
+{
+	return (str == NULL || str[0] == '\0');
+}
+
 int open_in_file(t_ctx *c, t_node *redir_node)
 {
 	char * filename;
 
 	ft_close_fd(&c->io_fd[0]);
+	filename = expand_redir(c, redir_node);
+	if(is_empty(filename) || c->should_exit)
+		return (EXIT_FAILURE);
 	errno = 0;
-	filename = c->arena[AT_STRING].buf
-			+ redir_node->data.redir.arena_offset; //TODO nik:The word following the redirection operator in the following descriptions, unless otherwise noted, is subjected to variable expansion, quote removal, (optional )filename expansion, and word splitting.
 	c->io_fd[0] = open(filename , O_RDONLY);
 	if (c->io_fd[0] == -1)
 		return handle_redirection_error(c, filename);
@@ -28,9 +34,10 @@ int open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 	char * filename;
 
 	ft_close_fd(&c->io_fd[1]);
+	filename = expand_redir(c, redir_node);
+	if(is_empty(filename) || c->should_exit)
+		return (EXIT_FAILURE);
 	errno = 0;
-	filename = c->arena[AT_STRING].buf
-			+ redir_node->data.redir.arena_offset;
 	c->io_fd[1] = open(filename, oflag, 0644);
 	if (c->io_fd[1] == -1)
 		return handle_redirection_error(c, filename);

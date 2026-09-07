@@ -13,4 +13,5 @@ Nik:
 - heredog process not in child process but in the parrent, othervice both processes will wait for the input in same time
 
 
-6.09 look when we wait for all clid pid
+7.09
+//TODO look into the exit code  and non existing commands

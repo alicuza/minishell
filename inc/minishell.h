@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/07 04:01:05 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/07 05:48:00 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -354,8 +354,12 @@ void			ft_close_fd(int *fd);
 
 /* -------- expand_args.c ---------------------------------------------------- */
 t_list	*expand_args(t_ctx *c, t_node *arg_node);
+void	append_node(t_list **list, char *val);
+void	expand_word(t_ctx *c, t_list **list, char *word, uint64_t len);
 
 /* -------- field_split.c ---------------------------------------------------- */
-char	**field_split(const char *s);
+void	field_split(t_list **list, char *s);
 
+/* -------- expand_redir.c --------------------------------------------------- */
+char	*expand_redir(t_ctx *c, t_node *redir_node);
 #endif

@@ -17,14 +17,14 @@ static void	init_command(t_command_ctx *command) //, uint64_t argc)
 	//return (EXIT_SUCCESS);
 }
 
-static int set_expanded_arg(t_ctx *c, t_command_ctx *command, t_list *argv)
+static int set_expanded_args(t_ctx *c, t_command_ctx *command, t_list **argv)
 {
 	uint64_t i;
 	t_list *tmp;
 	
-	command->argc = ft_lstsize(argv);
+	command->argc = ft_lstsize(*argv);
 	command->argv = malloc(sizeof(char *) * (command->argc + 1));
-	tmp = argv;
+	tmp = *argv;
 	i = 0;
 	while (tmp != NULL)
 	{
@@ -34,6 +34,7 @@ static int set_expanded_arg(t_ctx *c, t_command_ctx *command, t_list *argv)
 			if (command->pathname == NULL)
 			{
 				ft_lstclear(argv, &free);
+				c->should_exit = true;
 				return (EXIT_FAILURE);
 			}
 		}
@@ -44,19 +45,6 @@ static int set_expanded_arg(t_ctx *c, t_command_ctx *command, t_list *argv)
 	return (EXIT_SUCCESS);
 }
 
-static int	get_argc(t_ctx *c, t_node *arg_node)
-{
-	int	i;
-
-	i = 0;
-	while (arg_node->type == NODE_ARG)
-	{
-		arg_node = get_ptr_from_idx(&c->arena[AT_COMMAND], arg_node->next_idx);
-		i++;
-	}
-	return (i);
-}
-
 int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
 {
 	t_list *argv;
@@ -65,12 +53,12 @@ int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
 	if(arg_node->type != NODE_ARG)
 		return (EXIT_SUCCESS);
 	argv = expand_args(c, arg_node);
-	if(argv == NULL)
+	if(c->should_exit)
 		return (EXIT_FAILURE);
 	if(is_empty(argv->content))
 	{
-		ft_lstclear(argv, &free);
+		ft_lstclear(&argv, &free);
 		return (EXIT_SUCCESS);
 	}
-	return (set_expanded_args(c, command, argv));
+	return (set_expanded_args(c, command, &argv));
 }

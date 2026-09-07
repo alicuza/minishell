@@ -40,14 +40,14 @@ static uint64_t	expand_var(t_ctx *c, char *word, char **new_word, uint64_t i)
 	}
 	return (i + end);
 }
-static void	expand_word(t_ctx *c, t_list **list, char *word, uint64_t len)
-		// TODO now protect memmory
+
+// TODO now protect memmory
+void	expand_word(t_ctx *c, t_list **list, char *word, uint64_t len)
 {
 	uint64_t i;
 	uint64_t start;
 	char *new_word;
 
-	(void)list;
 	i = 0;
 	start = 0;
 	new_word = NULL;
@@ -71,9 +71,7 @@ static void	expand_word(t_ctx *c, t_list **list, char *word, uint64_t len)
 			++i;
 	}
 	new_word = ft_strjoin(new_word, ft_substr(word, start, len - start + 1));
-	field_split(list, new_word); // TODO error handling
-	//quote remove if (ft_strchr(val, '"') != NULL)
-	//return new_word;
+	field_split(list, new_word);
 }
 
 static void	append_expanded_nodes(t_ctx *c, t_list **list, t_node *arg_node)
@@ -83,6 +81,7 @@ static void	append_expanded_nodes(t_ctx *c, t_list **list, t_node *arg_node)
 	val = ft_strdup(c->arena[AT_STRING].buf + arg_node->data.arg.arena_offset);
 	if (val == NULL)
 	{
+		c->should_exit = true;
 		ft_lstclear(list, &free);
 		*list = NULL;
 		return ;
