@@ -37,9 +37,11 @@ SRCS        = \
 			input.c \
 			ft_close_fd.c \
 			cleanup.c \
-			expansions/expand_args.c \
-			expansions/field_split.c \
-			expansions/expand_redir.c \
+			expansions/expansion.c \
+			expansions/expand_field.c \
+			expansions/expand_quote.c \
+			expansions/expand_var.c \
+			expansions/expand_helpers.c \
 			execute/execute_list.c \
 			execute/execute_pipeline.c \
 			execute/execute_simple_command.c \

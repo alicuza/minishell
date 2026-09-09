@@ -12,10 +12,8 @@ int	execute_simple_command(t_ctx *c, t_node *command_node)
 			command_node->data.command.arg_head_idx);
 	redir_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 			command_node->data.command.redir_head_idx);
-	if (build_command(c, &command, arg_node) == EXIT_FAILURE)
-	{
+	if (build_command_arena(c, &command, arg_node, redir_node) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
-	}
 	if (command.pathname == NULL)
 	{
 		if (process_redirection(c, redir_node) == EXIT_FAILURE)
@@ -25,6 +23,5 @@ int	execute_simple_command(t_ctx *c, t_node *command_node)
 		result = command_search_and_execution(c, &command,
 				redir_node);
 	free(command.pathname);
-	free(command.argv);
 	return (result);
 }

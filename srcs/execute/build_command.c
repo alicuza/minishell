@@ -1,10 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   build_command.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/09 17:30:48 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/09 17:30:51 by sancuta          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-/*static bool	is_empty(char *str)
-{
-	return (str == NULL || str[0] == '\0');
-}
-*/
 void	init_command(t_ctx *c, t_command_ctx *command, t_expand_state *exp)
 {
 	ft_memset(command, 0, sizeof(*command));
@@ -13,72 +20,39 @@ void	init_command(t_ctx *c, t_command_ctx *command, t_expand_state *exp)
 	arena_reset(&c->arena[AT_ARGV]);
 }
 
-static void	free_list_nodes(t_list **argv)
+static int	set_command_pathname(t_ctx *c, t_command_ctx *command)
 {
-	t_list *tmp;
-	t_list *next;
-
-	tmp = *argv;
-	while (tmp != NULL)
+	if (command->argc == 0)
+		return (EXIT_SUCCESS);
+	command->pathname = ft_strdup(command->argv[0]);
+	if (command->pathname == NULL)
 	{
-		next = tmp->next;
-		free(tmp);
-		tmp = next;
-	}
-	*argv = NULL;
-}
-
-static int set_expanded_args(t_ctx *c, t_command_ctx *command, t_list **argv)
-{
-	uint64_t i;
-	t_list *tmp;
-	
-	command->argc = ft_lstsize(*argv);
-	command->argv = malloc(sizeof(char *) * (command->argc + 1));
-	if (command->argv == NULL)
-	{
-		ft_lstclear(argv, &free);
 		c->should_exit = true;
 		return (exit_mem_issue());
 	}
-	command->argv[command->argc] = NULL;
-	tmp = *argv;
-	i = 0;
-	while (tmp != NULL)
-	{
-		if (command->pathname == NULL)
-		{
-			command->pathname = ft_strdup(tmp->content);
-			if (command->pathname == NULL)
-			{
-				ft_lstclear(argv, &free);
-				c->should_exit = true;
-				return (EXIT_FAILURE);
-			}
-		}
-		command->argv[i] = tmp->content;
-		i++;
-		tmp = tmp->next;
-	}
-	free_list_nodes(argv);
 	return (EXIT_SUCCESS);
 }
 
-int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
+int	build_command_arena(t_ctx *c, t_command_ctx *command,
+		t_node *arg_node, t_node *redir_node)
 {
-	t_list			*argv;
 	t_expand_state	exp;
+	t_node		*node;
 
 	init_command(c, command, &exp);
-	if (arg_node->type != NODE_ARG)
-		return (EXIT_SUCCESS);
-	argv = expand_args(c, arg_node);
-	if (c->should_exit)
+	expand_args_arena(c, command, &exp, arg_node);
+	node = redir_node;
+	while (node->type == NODE_REDIR)
 	{
-		ft_lstclear(&argv, &free);
-		return (EXIT_FAILURE);
+		if (expand_redir_arena(c, node, &exp) == EXIT_FAILURE)
+		{
+			ft_putstr_fd(c->arena[AT_STRING].buf
+				+ node->data.redir.arena_offset, STDERR_FILENO);
+			ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+			return (EXIT_FAILURE);
+		}
+		node = get_ptr_from_idx(&c->arena[AT_COMMAND], node->next_idx);
 	}
-	//if (argv == NULL)
-	//	return (EXIT_SUCCESS);
-	return (set_expanded_args(c, command, &argv));
+	finish_args(c, command);
+	return (set_command_pathname(c, command));
 }

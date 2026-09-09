@@ -270,10 +270,6 @@ void			execute_pipeline(t_ctx *c, t_node *pipeline_node);
 /* -------- execute_simple_command.c ---------------------------------------- */
 int				execute_simple_command(t_ctx *c, t_node *command_node);
 
-/* -------- build_command.c ------------------------------------------------- */
-int				build_command(t_ctx *c, t_command_ctx *command,
-					t_node *arg_node);
-
 /* -------- command_search_and_execution.c ---------------------------------- */
 int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
 					t_node *redir_node);
@@ -287,6 +283,12 @@ int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
 
 /* -------- process_redirection.c ------------------------------------------- */
 int				process_redirection(t_ctx *c, t_node *redir_node);
+
+/* -------- arena_build_command.c ------------------------------------------- */
+void			init_command(t_ctx *c, t_command_ctx *command,
+					t_expand_state *exp);
+int				build_command_arena(t_ctx *c, t_command_ctx *command,
+					t_node *arg_node, t_node *redir_node);
 
 /* -------- ft_split_with_empty.c ------------------------------------------- */
 char			**ft_split_with_empty(char const *s, char c);
@@ -359,24 +361,37 @@ void			sig_reset_sigint(void);
 /* -------- ft_close_fd.c --------------------------------------------------- */
 void			ft_close_fd(int *fd);
 
-/* -------- expand_args.c ---------------------------------------------------- */
-t_list			*expand_args(t_ctx *c, t_node *arg_node);
-void			append_node(t_list **list, char *val);
-void			expand_word(t_ctx *c, t_list **list, char *word, uint64_t len);
-
-/* -------- field_split.c ---------------------------------------------------- */
-void			field_split(t_list **list, char *s);
-
-/* -------- expand_redir.c --------------------------------------------------- */
-char			*expand_redir(t_ctx *c, t_node *redir_node);
-
-/* -------- arena_expand.c --------------------------------------------------- */
-void			init_command(t_ctx *c, t_command_ctx *cmd, t_expand_state *exp);
+/* -------- expansion.c ------------------------------------------------------- */
+void			finish_args(t_ctx *c, t_command_ctx *command);
 void			expand_args_arena(t_ctx *c, t_command_ctx *command,
 					t_expand_state *exp, t_node *arg_node);
-void			finish_args(t_ctx *c, t_command_ctx *command);
 int				expand_redir_arena(t_ctx *c, t_node *redir_node,
 					t_expand_state *exp);
-int				build_command_arena(t_ctx *c, t_command_ctx *command,
-					t_node *arg_node, t_node *redir_node);
+
+/* -------- expand_field.c -------------------------------------------------- */
+void			start_field(t_ctx *c, t_expand_state *exp,
+					const char *src, size_t len);
+void			append_field(t_ctx *c, t_expand_state *exp,
+					const char *src, size_t len);
+void			record_reference(t_ctx *c, t_command_ctx *cmd,
+					t_arena_type arena, uint32_t offset);
+void			delimit_field(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp);
+
+/* -------- expand_quote.c -------------------------------------------------- */
+char			*handle_squote(t_ctx *c, t_expand_state *exp, char *src);
+char			*handle_dquote(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, char *src);
+char			*handle_unquoted(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, char *src);
+
+/* -------- expand_var.c ---------------------------------------------------- */
+char			*expand_var(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, char *src);
+
+/* -------- expand_helpers.c ------------------------------------------------ */
+void			append_segment(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, const char *val);
+void			scan_word(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, char *word);
 #endif

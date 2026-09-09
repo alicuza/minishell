@@ -4,7 +4,6 @@ void	child_cleanup(t_ctx *c, t_command_ctx *cmd_ctx)
 {
 	cleanup(c);
 	free(cmd_ctx->pathname);
-	free(cmd_ctx->argv);
 }
 
 static int	handle_dup2_error(t_ctx *c, t_command_ctx *cmd_ctx, int error_code)

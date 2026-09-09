@@ -30,7 +30,6 @@ static int	handle_dup2_error(t_ctx *c, t_command_ctx *cmd_ctx, int	*saved_fds)
 	perror("dup2");
 	cleanup(c);
 	free(cmd_ctx->pathname);
-	free(cmd_ctx->argv);
 	close(saved_fds[0]);
 	close(saved_fds[1]);
 	free(saved_fds);
