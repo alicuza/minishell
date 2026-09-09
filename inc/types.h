@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/06 21:44:29 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/08 23:33:36 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ typedef enum e_arena_type
 	AT_TOKENS,
 	AT_STACK,
 	AT_COMMAND,
+	AT_FIELDS,
+	AT_ARGV,
 	AT_COUNT,
 }	t_arena_type;
 
@@ -76,6 +78,24 @@ typedef struct s_command_ctx
 	uint64_t	argc;
 	char		**argv;
 }	t_command_ctx;
+
+typedef struct s_expand_state
+{
+	t_slice	field;
+	uint8_t	flags;
+}	t_expand_state;
+
+typedef struct s_field_ref
+{
+	t_arena_type	arena;
+	uint32_t		offset;
+}	t_field_ref;
+
+typedef union u_argv_slot
+{
+	t_field_ref	ref;
+	char		*ptr;
+}	t_argv_slot;
 
 typedef int	(*t_command_function)(t_ctx *c, t_command_ctx *command_ctx);
 

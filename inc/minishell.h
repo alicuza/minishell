@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/07 05:48:00 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/09 13:56:16 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,14 +95,19 @@
 # define PARSE_INTERRUPTED		0x40
 
 /* -------- node flags ------------------------------------------------------ */
-# define FLAG_AND_IF 0x01
-# define FLAG_OR_IF 0x02
-# define FLAG_SUBSHELL 0x04
-# define REDIR_IN 0x08
-# define REDIR_OUT 0x10
-# define REDIR_HERE 0x20
-# define REDIR_APPEND 0x40
-# define REDIR_HAS_QUOTES 0x80
+# define FLAG_AND_IF			0x01
+# define FLAG_OR_IF				0x02
+# define FLAG_SUBSHELL			0x04
+# define REDIR_IN				0x08
+# define REDIR_OUT				0x10
+# define REDIR_HERE				0x20
+# define REDIR_APPEND			0x40
+# define REDIR_HAS_QUOTES		0x80
+
+/* -------- expansion flags --------------------------------------------------- */
+# define EXP_HAS_FIELD			0x01
+# define EXP_IN_SQUOTE			0x02
+# define EXP_IN_DQUOTE			0x04
 
 # ifdef DEBUG
 /* -------- test scope flags ------------------------------------------------ */
@@ -124,7 +129,9 @@
 #  define DBG_ARENA_TOKENS 0x04
 #  define DBG_ARENA_STACK 0x08
 #  define DBG_ARENA_COMMAND 0x10
-#  define DBG_ARENA_ALL 0x1f
+#  define DBG_ARENA_FIELDS 0x20
+#  define DBG_ARENA_ARGV 0x40
+#  define DBG_ARENA_ALL 0x7f
 
 /* -------- parser output sub-toggles (--parser=) --------------------------- */
 /* which parts of the DBG_PARSER trace to print, per shift/reduce step */
@@ -205,7 +212,7 @@ bool			read_here_line(t_ctx *c, t_lexer_state *l, char *here_end);
 bool			here_line_ends(t_ctx *c, t_lexer_state *l, char *here_end);
 
 /* -------- here_write_line.c ----------------------------------------------- */
-char	*get_expansion_value(t_ctx *c, char *name);
+char			*get_expansion_value(t_ctx *c, char *name);
 void			write_here_line(t_ctx *c, int fd, t_lexer_state *l,
 					t_node *node);
 
@@ -261,7 +268,7 @@ void			execute_list(t_ctx *c, uint64_t head_idx);
 void			execute_pipeline(t_ctx *c, t_node *pipeline_node);
 
 /* -------- execute_simple_command.c ---------------------------------------- */
-int			execute_simple_command(t_ctx *c, t_node *command_node);
+int				execute_simple_command(t_ctx *c, t_node *command_node);
 
 /* -------- build_command.c ------------------------------------------------- */
 int				build_command(t_ctx *c, t_command_ctx *command,
@@ -285,7 +292,7 @@ int				process_redirection(t_ctx *c, t_node *redir_node);
 char			**ft_split_with_empty(char const *s, char c);
 
 /* -------- wait_return_status.c ------------------------------------------- */
-void		wait_return_status(t_ctx *c);
+void			wait_return_status(t_ctx *c);
 
 /* -------- execute_builtin.c ----------------------------------------------- */
 int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
@@ -353,13 +360,23 @@ void			sig_reset_sigint(void);
 void			ft_close_fd(int *fd);
 
 /* -------- expand_args.c ---------------------------------------------------- */
-t_list	*expand_args(t_ctx *c, t_node *arg_node);
-void	append_node(t_list **list, char *val);
-void	expand_word(t_ctx *c, t_list **list, char *word, uint64_t len);
+t_list			*expand_args(t_ctx *c, t_node *arg_node);
+void			append_node(t_list **list, char *val);
+void			expand_word(t_ctx *c, t_list **list, char *word, uint64_t len);
 
 /* -------- field_split.c ---------------------------------------------------- */
-void	field_split(t_list **list, char *s);
+void			field_split(t_list **list, char *s);
 
 /* -------- expand_redir.c --------------------------------------------------- */
-char	*expand_redir(t_ctx *c, t_node *redir_node);
+char			*expand_redir(t_ctx *c, t_node *redir_node);
+
+/* -------- arena_expand.c --------------------------------------------------- */
+void			init_command(t_ctx *c, t_command_ctx *cmd, t_expand_state *exp);
+void			expand_args_arena(t_ctx *c, t_command_ctx *command,
+					t_expand_state *exp, t_node *arg_node);
+void			finish_args(t_ctx *c, t_command_ctx *command);
+int				expand_redir_arena(t_ctx *c, t_node *redir_node,
+					t_expand_state *exp);
+int				build_command_arena(t_ctx *c, t_command_ctx *command,
+					t_node *arg_node, t_node *redir_node);
 #endif

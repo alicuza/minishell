@@ -9,6 +9,8 @@ int	cleanup(t_ctx *c)
 	arena_free(&c->arena[AT_STACK]);
 	arena_free(&c->arena[AT_PROMPT]);
 	arena_free(&c->arena[AT_COMMAND]);
+	arena_free(&c->arena[AT_FIELDS]);
+	arena_free(&c->arena[AT_ARGV]);
 	free_env(&c->env);
 	ft_close_fd(&c->io_fd[0]);
 	ft_close_fd(&c->io_fd[1]);

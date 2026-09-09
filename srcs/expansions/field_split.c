@@ -28,18 +28,18 @@ void	split_to_last_ifs(t_list **list, char *s, size_t open_quote_idx, size_t clo
 	size_t	ifs_idx;
 	size_t	len;
 
-	len = ft_strlen(s);
+	len = open_quote_idx;
 	if (open_quote_idx < close_quote_idx)
-		len = open_quote_idx;
+		len = ft_strlen(s);
 	word_start = 0;
 	ifs_idx = get_first_ifs_until(s, len);
 	while (ifs_idx < len)
 	{
 		append_splited(list, s, word_start, ifs_idx);
-		while (is_char_in_set(*(s + ifs_idx), IFS))
+		while (ifs_idx < len && is_char_in_set(*(s + ifs_idx), IFS))
 			++ifs_idx;
 		word_start = ifs_idx;
-		ifs_idx = get_first_ifs_until(s + word_start, len);
+		ifs_idx = word_start + get_first_ifs_until(s + word_start, len - word_start);
 	}
 	if (ifs_idx == len)
 	{
@@ -66,7 +66,7 @@ int	get_quote_pair(const char *s, size_t *open, size_t *close)
 		return (EXIT_FAILURE);
 	while (s[++c])
 	{
-		if(is_char_in_set(s[c], QUOTE_SET))
+		if (s[o] == s[c])
 		{
 			*open = o;
 			*close = c;
@@ -95,6 +95,6 @@ void	field_split(t_list **list, char *s)
 			return ;
 		}
 		split_to_last_ifs(list, s + i, open_quote_idx, close_quote_idx);
-		i = close_quote_idx + 1;
+		i += close_quote_idx + 1;
 	}
 }

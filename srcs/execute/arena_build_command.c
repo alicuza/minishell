@@ -1,0 +1,38 @@
+#include "minishell.h"
+
+static int	set_command_pathname(t_ctx *c, t_command_ctx *command)
+{
+	if (command->argc == 0)
+		return (EXIT_SUCCESS);
+	command->pathname = ft_strdup(command->argv[0]);
+	if (command->pathname == NULL)
+	{
+		c->should_exit = true;
+		return (exit_mem_issue());
+	}
+	return (EXIT_SUCCESS);
+}
+
+int	build_command_arena(t_ctx *c, t_command_ctx *command,
+		t_node *arg_node, t_node *redir_node)
+{
+	t_expand_state	exp;
+	t_node		*node;
+
+	init_command(c, command, &exp);
+	expand_args_arena(c, command, &exp, arg_node);
+	node = redir_node;
+	while (node->type == NODE_REDIR)
+	{
+		if (expand_redir_arena(c, node, &exp) == EXIT_FAILURE)
+		{
+			ft_putstr_fd(c->arena[AT_STRING].buf
+				+ node->data.redir.arena_offset, STDERR_FILENO);
+			ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+			return (EXIT_FAILURE);
+		}
+		node = get_ptr_from_idx(&c->arena[AT_COMMAND], node->next_idx);
+	}
+	finish_args(c, command);
+	return (set_command_pathname(c, command));
+}

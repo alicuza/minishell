@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/06 20:05:31 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/09 12:46:45 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ static t_ctx	init_ctx(char **envp)
 	c.arena[AT_TOKENS] = arena_init(ARENA_SIZE, sizeof(t_token));
 	c.arena[AT_STACK] = arena_init(ARENA_SIZE, sizeof(t_symbol));
 	c.arena[AT_COMMAND] = arena_init(ARENA_SIZE, sizeof(t_node));
+	c.arena[AT_FIELDS] = arena_init(ARENA_SIZE, sizeof(char));
+	c.arena[AT_ARGV] = arena_init(ARENA_SIZE, sizeof(t_argv_slot));
 	c.io_fd[0] = -1;
 	c.io_fd[1] = -1;
 	c.pipe_fd[0] = -1;
