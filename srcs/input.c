@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:45:50 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 14:09:29 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/11 15:53:05 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static char	*read_interactive(t_ctx *c, bool is_continuation)
 	line = readline(prompt);
 	if (!is_empty_str(line))
 		add_history(line);
-	if (g_signal == SIGINT)
+	if (!line || g_signal == SIGINT)
 		return (free(line), NULL);
 	line = ft_strjoin(line, "\n");
 	return (line);
@@ -54,13 +54,12 @@ void	init_input(t_ctx *c)
 
 char	*get_user_input(t_ctx *c, bool is_continuation)
 {
-	char		*read_line;
 	struct stat	buf;
 
 	free(c->read_line);
 	c->read_line = NULL;
 	if (fstat(STDIN_FILENO , &buf) == -1)
 		return (0);
-	read_line = c->read_handler(c, is_continuation);
-	return (free(read_line), c->read_line);
+	c->read_line = c->read_handler(c, is_continuation);
+	return (c->read_line);
 }

@@ -5,8 +5,8 @@ int	cleanup(t_ctx *c)
 	struct stat		buf;
 	t_arena_type	i;
 
-	i = 0;
-	while (i < AT_COUNT)
+	i = -1;
+	while (++i < AT_COUNT)
 		arena_free(&c->arena[i]);
 	free(c->read_line);
 	free_env(&c->env);
