@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-char	matching_close(char open)
+static char	matching_close(char open)
 {
 	char	close;
 

@@ -6,13 +6,13 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/09 17:29:40 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/09 17:29:45 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/11 12:46:29 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static uint64_t	skip_ifs_run(const char *s, uint64_t i)
+static uint64_t	get_ifs_end_idx(const char *s, uint64_t i)
 {
 	while (s[i] && is_char_in_set(s[i], IFS))
 		i++;
@@ -22,10 +22,10 @@ static uint64_t	skip_ifs_run(const char *s, uint64_t i)
 static uint64_t	delimit_segment(t_ctx *c, t_command_ctx *cmd,
 		t_expand_state *exp, uint64_t i)
 {
-	t_arena	*expand;
+	t_arena	*fields;
 
-	expand = &c->arena[AT_FIELDS];
-	expand->buf[i] = '\0';
+	fields = &c->arena[AT_FIELDS];
+	fields->buf[i] = '\0';
 	if (i > exp->field.pos)
 	{
 		exp->field.len = i - exp->field.pos;
@@ -33,7 +33,7 @@ static uint64_t	delimit_segment(t_ctx *c, t_command_ctx *cmd,
 	}
 	else
 		exp->flags &= ~EXP_HAS_FIELD;
-	i = skip_ifs_run(expand->buf, i + 1);
+	i = get_ifs_end_idx(fields->buf, i + 1);
 	exp->field.pos = i;
 	return (i);
 }

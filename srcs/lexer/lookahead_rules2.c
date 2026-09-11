@@ -21,7 +21,7 @@ bool	apply_rule_7(t_ctx *c, t_lexer_state *lex)
 	print_lex_rule(c, 7);
 #endif
 	consume_char(lex, 1);
-	if(lex->flags & LEX_IS_BUILDING)
+	if (lex->flags & LEX_IS_BUILDING)
 	{
 		delimit_lex_token(c, lex);
 		return (true);

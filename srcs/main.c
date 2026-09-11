@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/09 12:46:45 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/11 14:02:25 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,8 @@ static t_ctx	init_ctx(char **envp)
 	c.io_fd[1] = -1;
 	c.pipe_fd[0] = -1;
 	c.pipe_fd[1] = -1;
-	c.is_pipe = false;
-	c.should_exit = false;
 	c.pid_to_wait = -1;
-	c.return_status = 0;
-	if (isatty(STDIN_FILENO))
-		c.is_interactive = true;
+	init_input(&c);
 	if (init_env(&c.env, envp) == EXIT_FAILURE)
 	{
 		msh_error_errno("init_env", "env");

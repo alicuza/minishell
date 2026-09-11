@@ -6,41 +6,31 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/09 17:29:22 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/09 17:29:25 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/11 12:46:18 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	start_field(t_ctx *c, t_expand_state *exp,
-		const char *src, size_t len)
-{
-	t_arena	*expand;
-
-	expand = &c->arena[AT_FIELDS];
-	exp->field.pos = arena_strlcpy(expand, src, len + 1);
-	exp->field.len = len;
-	exp->flags |= EXP_HAS_FIELD;
-}
-
-static void	grow_field(t_ctx *c, t_expand_state *exp,
-		const char *src, size_t len)
-{
-	t_arena	*expand;
-
-	expand = &c->arena[AT_FIELDS];
-	arena_strlcat(expand, src, len + 1);
-	exp->field.len += len;
-	exp->flags |= EXP_HAS_FIELD;
-}
-
 void	append_field(t_ctx *c, t_expand_state *exp,
 		const char *src, size_t len)
 {
+	t_arena	*fields;
+
+	fields = &c->arena[AT_FIELDS];
 	if (!(exp->flags & EXP_HAS_FIELD))
-		start_field(c, exp, src, len);
+	{
+		exp->field.pos = arena_strlcpy(fields, src, len + 1);
+		exp->field.len = len;
+	}
 	else if (len > 0)
-		grow_field(c, exp, src, len);
+	{
+		arena_strlcat(fields, src, len + 1);
+		exp->field.len += len;
+	}
+	else
+		return ;
+	exp->flags |= EXP_HAS_FIELD;
 }
 
 void	record_reference(t_ctx *c, t_command_ctx *cmd,

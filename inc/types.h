@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/08 23:33:36 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/11 13:35:39 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,18 +49,23 @@ typedef struct s_debug
 }	t_debug;
 # endif
 
+typedef struct s_ctx	t_ctx;
+
+typedef char	*(*t_read)(t_ctx *c, bool is_continuation);
+
 typedef struct s_ctx
 {
 	t_env	env;
 	int		pipe_fd[2];
 	int		io_fd[2];
 	t_arena	arena[AT_COUNT];
+	t_read	read_handler;
 	char	*read_line;
 	int		return_status;
 	bool	is_interactive;
 	bool	is_pipe;
 	bool	should_exit;
-	int pid_to_wait;
+	int		pid_to_wait;
 # ifdef DEBUG
 	t_debug	dbg;
 # endif

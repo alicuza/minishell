@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/09 17:29:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/09 17:29:57 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/11 12:46:40 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static char	*open_quote(t_ctx *c, t_expand_state *exp, char *src)
 {
 	if (!(exp->flags & EXP_HAS_FIELD))
-		start_field(c, exp, "", 0);
+		append_field(c, exp, "", 0);
 	if (*src == '\'')
 		exp->flags |= EXP_IN_SQUOTE;
 	else
@@ -23,7 +23,7 @@ static char	*open_quote(t_ctx *c, t_expand_state *exp, char *src)
 	return (src + 1);
 }
 
-static bool	is_quote_border(char *word, uint64_t i)
+static bool	has_closing_quote(char *word, uint64_t i)
 {
 	char	quote;
 
@@ -76,12 +76,12 @@ char	*handle_unquoted(t_ctx *c, t_command_ctx *cmd,
 {
 	uint64_t	i;
 
-	if (is_quote_border(src, 0))
+	if (has_closing_quote(src, 0))
 		return (open_quote(c, exp, src));
 	if (is_expansion_start(src, 0))
 		return (expand_var(c, cmd, exp, src));
 	i = 0;
-	while (src[i] && !is_quote_border(src, i)
+	while (src[i] && !has_closing_quote(src, i)
 		&& !is_expansion_start(src, i))
 		i++;
 	append_field(c, exp, src, i);

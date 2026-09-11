@@ -21,7 +21,19 @@
 # define YYLAST			67
 # define NTERM_OFFSET	14
 
-/* -------- yy_pact.c / yy_table.c ------------------------------------------ */
+/* -------- parser/parse_input.c -------------------------------------------- */
+t_parser_state	parse_input(t_ctx *c);
+
+/* -------- parser/parse_token_flow.c --------------------------------------- */
+bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l);
+bool			get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l);
+bool			handle_here_doc(t_ctx *c, t_parser_state *p);
+void			report_parse_error(t_ctx *c, t_parser_state *p);
+
+/* -------- parser/classify_token.c ----------------------------------------- */
+t_symbol_type	classify_token(t_ctx *c, t_token *token);
+
+/* -------- parser/yy_pact.c / parser/yy_table.c ---------------------------- */
 int32_t			get_yypact(uint64_t idx);
 int32_t			get_yydefact(uint64_t idx);
 int32_t			get_yypgoto(uint64_t idx);
@@ -29,23 +41,25 @@ int32_t			get_yydefgoto(uint64_t idx);
 int32_t			get_yytable(uint64_t idx);
 int32_t			get_yycheck(uint64_t idx);
 
-/* -------- rule_dispatch.c ------------------------------------------------- */
+/* -------- parser/rule_dispatch.c ------------------------------------------ */
 t_rule			get_rule(int32_t action);
 
-/* -------- stack_ops.c ----------------------------------------------------- */
+/* -------- parser/stack_ops.c ---------------------------------------------- */
 void			push_symbol(t_ctx *c, t_parser_state *p, t_symbol *src);
 void			pop_symbols(t_ctx *c, t_parser_state *p, uint32_t len);
 void			reduce_apply_goto(t_parser_state *p, t_rule *r);
 
-/* -------- shift_reduce.c -------------------------------------------------- */
+/* -------- parser/shift_reduce.c ------------------------------------------- */
 t_lalr_action	shift_reduce(t_ctx *c, t_parser_state *p);
 
-/* -------- reduce_helpers.c ------------------------------------------------ */
+/* -------- parser/reduce_helpers.c ----------------------------------------- */
 uint64_t		reduce_compute_result(t_ctx *c, t_parser_state *p, t_rule *r,
 					uint64_t *token_idx);
 uint64_t		get_exec_root(t_ctx *c, t_parser_state *p, t_rule *r);
+void			init_parser(t_ctx *c, t_parser_state *p, t_lexer_state *l);
 
-/* -------- reduce_*.c handlers --------------------------------------------- */
+/* -------- parser/reduce_*.c handlers -------------------------------------- */
+uint64_t		reduce_from_term(t_ctx *c, t_parser_state *p, t_rule *r);
 uint64_t		reduce_program(t_ctx *c, t_parser_state *p, t_rule *r);
 uint64_t		reduce_list_append(t_ctx *c, t_parser_state *p, t_rule *r);
 uint64_t		reduce_and_or_conditional(t_ctx *c, t_parser_state *p,
@@ -63,32 +77,22 @@ uint64_t		reduce_subshell_redirects(t_ctx *c, t_parser_state *p,
 					t_rule *r);
 uint64_t		reduce_compound_list(t_ctx *c, t_parser_state *p, t_rule *r);
 uint64_t		reduce_subshell(t_ctx *c, t_parser_state *p, t_rule *r);
-uint64_t		reduce_from_term(t_ctx *c, t_parser_state *p, t_rule *r);
 
-/* -------- node_utils.c ---------------------------------------------------- */
+/* -------- parser/node_utils.c --------------------------------------------- */
 uint64_t		alloc_node(t_ctx *c, t_node_type type);
 t_node			*get_node_from_idx(t_ctx *c, uint64_t idx);
 uint64_t		get_node_tail_idx(t_ctx *c, uint64_t head_idx);
 uint64_t		append_node_to_tail(t_ctx *c, uint64_t head_idx,
 					uint64_t new_idx);
 
-/* -------- node_getters.c -------------------------------------------------- */
+/* -------- parser/quote_remove.c ------------------------------------------- */
+char 			*quote_remove_inplace(char *s);
+
+/* -------- parser/node_getters.c ------------------------------------------- */
 t_symbol		*get_symbol_from_rhs(t_ctx *c, t_parser_state *p, t_rule *r,
 					uint32_t rhs_pos);
 t_token			*get_token_from_idx(t_ctx *c, uint64_t idx);
 char			*get_token_body(t_ctx *c, t_token *token);
 t_symbol		*get_symbol_from_top(t_ctx *c, uint32_t depth);
 t_symbol		*get_symbol_from_idx(t_ctx *c, uint64_t idx);
-
-/* -------- quote_remove.c -------------------------------------------------- */
-char 			*quote_remove_inplace(char *s);
-
-/* -------- parse_input.c / parse_token_flow.c ------------------------------ */
-t_parser_state	parse_input(t_ctx *c);
-void			init_parser(t_ctx *c, t_parser_state *p, t_lexer_state *l);
-bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l);
-bool			get_lookahead(t_ctx *c, t_parser_state *p, t_lexer_state *l);
-bool			handle_here_doc(t_ctx *c, t_parser_state *p);
-void			report_parse_error(t_ctx *c, t_parser_state *p);
-
 #endif

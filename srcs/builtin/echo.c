@@ -3,14 +3,9 @@
 #define EQUAL 0
 
 
-static bool	is_empty(char *str)
-{
-	return (str == NULL || str[0] == '\0');
-}
-
 static void	print_val(char *str)
 {
-	if (!is_empty(str))
+	if (!is_empty_str(str))
 		printf("%s", str);
 }
 

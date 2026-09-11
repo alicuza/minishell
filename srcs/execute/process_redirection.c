@@ -1,10 +1,5 @@
 #include "minishell.h"
 
-static bool	is_empty(char *str)
-{
-	return (str == NULL || str[0] == '\0');
-}
-
 static char	*resolve_redir(t_ctx *c, t_node *redir_node)
 {
 	if (redir_node->data.redir.flags & (TKN_HAS_QUOTES | TKN_HAS_EXPANSION))
@@ -20,7 +15,7 @@ int open_in_file(t_ctx *c, t_node *redir_node)
 
 	ft_close_fd(&c->io_fd[0]);
 	filename = resolve_redir(c, redir_node);
-	if(is_empty(filename) || c->should_exit)
+	if(is_empty_str(filename) || c->should_exit)
 		return (EXIT_FAILURE);
 	errno = 0;
 	c->io_fd[0] = open(filename , O_RDONLY);
@@ -44,7 +39,7 @@ int open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 
 	ft_close_fd(&c->io_fd[1]);
 	filename = resolve_redir(c, redir_node);
-	if(is_empty(filename) || c->should_exit)
+	if(is_empty_str(filename) || c->should_exit)
 		return (EXIT_FAILURE);
 	errno = 0;
 	c->io_fd[1] = open(filename, oflag, 0644);

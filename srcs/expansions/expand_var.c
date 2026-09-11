@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/09 17:30:04 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/09 17:30:05 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/11 12:46:52 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,15 @@ static const char	*get_env_from_slice(t_env *env, const char *key,
 
 static void	arena_itoa_cat(t_ctx *c, t_expand_state *exp, int status)
 {
-	t_arena	*expand;
-	size_t	off;
+	t_arena	*fields;
+	size_t	offset;
 
-	expand = &c->arena[AT_FIELDS];
+	fields = &c->arena[AT_FIELDS];
 	if (!(exp->flags & EXP_HAS_FIELD))
-		start_field(c, exp, "", 0);
-	expand->offset -= 1;
-	off = arena_itoa(expand, status);
-	exp->field.len += expand->offset - off - 1;
+		append_field(c, exp, "", 0);
+	fields->offset -= 1;
+	offset = arena_itoa(fields, status);
+	exp->field.len += fields->offset - offset - 1;
 	exp->flags |= EXP_HAS_FIELD;
 }
 
