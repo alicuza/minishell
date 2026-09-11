@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/09 17:29:22 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 12:46:18 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/11 17:40:24 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,13 @@ void	append_field(t_ctx *c, t_expand_state *exp,
 	{
 		exp->field.pos = arena_strlcpy(fields, src, len + 1);
 		exp->field.len = len;
+		exp->flags |= EXP_HAS_FIELD;
 	}
 	else if (len > 0)
 	{
 		arena_strlcat(fields, src, len + 1);
 		exp->field.len += len;
 	}
-	else
-		return ;
-	exp->flags |= EXP_HAS_FIELD;
 }
 
 void	record_reference(t_ctx *c, t_command_ctx *cmd,
