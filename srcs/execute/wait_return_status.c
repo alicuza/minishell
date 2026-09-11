@@ -32,9 +32,9 @@ void	wait_return_status(t_ctx *c)
 #ifdef DEBUG
 		fprintf(stderr, "\nreaped pid=%jd\n", (intmax_t)wpid);
 		if (WIFEXITED(wstatus))
-			printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+			fprintf(stderr, "exited, status=%d\n", WEXITSTATUS(wstatus));
 		else if (WIFSIGNALED(wstatus))
-			printf("signaled, sig=%d\n", WTERMSIG(wstatus));
+			fprintf(stderr, "signaled, sig=%d\n", WTERMSIG(wstatus));
 #endif
 	}
 	c->pid_to_wait = -1;

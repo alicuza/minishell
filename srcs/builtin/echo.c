@@ -6,7 +6,7 @@
 static void	print_val(char *str)
 {
 	if (!is_empty_str(str))
-		printf("%s", str);
+		ft_putstr_fd(str, STDOUT_FILENO);
 }
 
 static int64_t	find_n_flag(t_command_ctx *command_ctx)
@@ -56,11 +56,11 @@ int	echo(t_ctx *c, t_command_ctx *command_ctx)
 		{
 			print_val(command_ctx->argv[i]);
 			if (i + 1 < command_ctx->argc)
-				printf(" ");
+				ft_putstr_fd(" ", STDOUT_FILENO);
 			i++;
 		}
 		if (n_flag_found_at == -1)
-			printf("\n");
+			ft_putendl_fd("", STDOUT_FILENO);
 	}
 	return (0);
 }

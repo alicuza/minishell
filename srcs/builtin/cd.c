@@ -64,7 +64,7 @@ int	cd_oldpwd(t_ctx *c)
 	{
 		result = cd_path(c, old_path);
 		if (result == EXIT_SUCCESS)
-			printf("%s\n", old_path);
+			ft_putendl_fd(old_path, STDOUT_FILENO);
 	}
 	free(old_path);
 	return (result);

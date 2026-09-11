@@ -9,9 +9,18 @@ static void	print_val(void *content_void_p)
 
 	content = (t_env_content *)content_void_p;
 	if (content->val == NULL)
-		printf("declare -x %s\n", (char *)content->key);
+	{
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		ft_putendl_fd((char *)content->key, STDOUT_FILENO);
+	}
 	else
-		printf("declare -x %s=\"%s\"\n", (char *)content->key, content->val);
+	{
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		ft_putstr_fd((char *)content->key, STDOUT_FILENO);
+		ft_putstr_fd("=\"", STDOUT_FILENO);
+		ft_putstr_fd((char *)content->val, STDOUT_FILENO);
+		ft_putendl_fd("\"", STDOUT_FILENO);
+	}
 }
 
 int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)

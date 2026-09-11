@@ -1,9 +1,8 @@
 #include "minishell.h"
-
-/* #include "../../libs/libft/libft.h"
+/*
+#include "../../libs/libft/libft.h"
 #include <stdio.h>
 #include <stdlib.h> */
-
 
 typedef struct s_builder
 {
@@ -12,17 +11,24 @@ typedef struct s_builder
 	size_t	dir_start;
 }			t_builder;
 
-static void	skip_dup_slash(char *curpath, size_t len, t_builder *b)
+static void	skip_last_slash(char *canonical_form, t_builder *b)
 {
-	while (b->i_orig < len && curpath[b->i_orig] == '/' && curpath[b->i_orig
-		+ 1] == '/')
-		b->i_orig++;
+	size_t	len;
+
+	if (b->i_new != 1)
+	{
+		len = ft_strlen(canonical_form);
+		if (canonical_form[len - 1] == '/')
+			canonical_form[len - 1] = '\0';
+	}
 }
 
 static void	process_slash(char *curpath, size_t len, t_builder *b)
 {
 	b->dir_start = b->i_orig;
-	skip_dup_slash(curpath, len, b);
+	while (b->i_orig < len && curpath[b->i_orig] == '/' && curpath[b->i_orig
+		+ 1] == '/')
+		b->i_orig++;
 }
 
 static int	process_dot(char *curpath, char *canonical_form, t_builder *b)
@@ -38,6 +44,12 @@ static int	process_dot(char *curpath, char *canonical_form, t_builder *b)
 		if (b->i_new - 1 != 0)
 			canonical_form[b->i_new - 1] = 0;
 		b->i_new = ft_strrchr(canonical_form, '/') - canonical_form + 1;
+		b->i_orig++;
+	}
+	else
+	{
+		canonical_form[b->i_new] = curpath[b->i_orig];
+		b->i_new++;
 		b->i_orig++;
 	}
 	return (0);
@@ -74,6 +86,7 @@ char	*get_path_canonical_form(char *curpath, size_t len)
 		b.i_orig++;
 	}
 	canonical_form[b.i_new] = '\0';
+	skip_last_slash(canonical_form, &b);
 	return (canonical_form);
 }
 
