@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   shift_reduce.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/11 12:41:20 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/11 12:41:27 by sancuta          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
+static t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
 {
 	t_rule		rule;
 	t_symbol	sym;

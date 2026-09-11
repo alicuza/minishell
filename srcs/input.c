@@ -6,38 +6,60 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:45:50 by sancuta           #+#    #+#             */
-/*   Updated: 2026/08/31 15:08:10 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/11 15:53:05 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-#define GREEN "\001\033[38;5;40m\002"
-#define RESET "\001\033[0m\002"
+static char	*read_interactive(t_ctx *c, bool is_continuation)
+{
+	char	*prompt;
+	char	*line;
+
+	rl_outstream = stderr;
+	if (is_continuation)
+		prompt = GREEN"> "RESET;
+	else
+		prompt = get_prompt(c, true);
+	line = readline(prompt);
+	if (!is_empty_str(line))
+		add_history(line);
+	if (!line || g_signal == SIGINT)
+		return (free(line), NULL);
+	line = ft_strjoin(line, "\n");
+	return (line);
+}
+
+static char	*read_noninteractive(t_ctx *c, bool is_continuation)
+{
+	char	*line;
+
+	(void)c;
+	(void)is_continuation;
+	line = get_next_line(STDIN_FILENO);
+	return (line);
+}
+
+void	init_input(t_ctx *c)
+{
+	if (isatty(STDIN_FILENO))
+	{
+		c->is_interactive = true;
+		c->read_handler = read_interactive;
+	}
+	else
+		c->read_handler = read_noninteractive;
+}
 
 char	*get_user_input(t_ctx *c, bool is_continuation)
 {
-	char		*prompt;
-	char		*read_line;
 	struct stat	buf;
 
-	rl_outstream = stderr;
 	free(c->read_line);
 	c->read_line = NULL;
 	if (fstat(STDIN_FILENO , &buf) == -1)
 		return (0);
-	if (!c->is_interactive)
-		prompt = NULL;
-	else if (is_continuation)
-		prompt = GREEN"> "RESET;
-	else
-		prompt = get_prompt(c, true);
-	read_line = readline(prompt);
-	if (g_signal == SIGINT)
-		return (free(read_line), NULL);
-	if (read_line && *read_line && c->is_interactive)
-		add_history(read_line);
-	c->read_line = ft_strjoin(read_line, "\n");
-	free(read_line);
+	c->read_line = c->read_handler(c, is_continuation);
 	return (c->read_line);
 }

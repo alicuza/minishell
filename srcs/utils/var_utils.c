@@ -1,31 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expand_utils.c                                     :+:      :+:    :+:   */
+/*   var_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/11 12:47:24 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 12:47:25 by sancuta          ###   ########.fr       */
+/*   Created: 2026/09/11 12:42:22 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/11 12:42:24 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-bool	is_expansion_start(char *buf, uint64_t idx)
+bool	is_name_start(char c)
 {
-	return (buf[idx] == '$' && (is_name_start(buf[idx + 1])
-			|| is_char_in_set(buf[idx + 1], SPECIAL_PARAM_SET)));
+	return (ft_isalpha((unsigned char)c) || c == '_');
 }
 
-uint64_t	get_expansion_len(char *expansion)
+bool	is_name_body(char c)
 {
-	uint64_t	i;
+	return (ft_isalnum((unsigned char)c) || c == '_');
+}
 
-	if (is_char_in_set(expansion[1], SPECIAL_PARAM_SET))
-		return (2);
-	i = 2;
-	while (expansion[i] && is_name_body(expansion[i]))
-		++i;
-	return (i);
+bool	is_valid_var_name(char *name)
+{
+	if (!is_name_start(*name))
+		return (false);
+	name++;
+	while (*name != '\0')
+	{
+		if (!is_name_body(*name))
+			return (false);
+		name++;
+	}
+	return (true);
 }

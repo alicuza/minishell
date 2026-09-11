@@ -35,7 +35,6 @@ static int exit_with_code(t_ctx *c, t_command_ctx *command_ctx)
 		{
 			cleanup(c);
 			free(command_ctx->pathname);
-			free(command_ctx->argv);
 			exit(exit_code);
 		}
 	}

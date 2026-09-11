@@ -1,72 +1,57 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   build_command.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/09 17:30:48 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/11 12:45:35 by sancuta          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-static bool	is_empty(char *str)
+void	init_command(t_ctx *c, t_command_ctx *command, t_expand_state *exp)
 {
-	return (str == NULL || str[0] == '\0');
+	ft_memset(command, 0, sizeof(*command));
+	ft_memset(exp, 0, sizeof(*exp));
+	arena_reset(&c->arena[AT_FIELDS]);
+	arena_reset(&c->arena[AT_ARGV]);
 }
 
-static void	init_command(t_command_ctx *command) //, uint64_t argc)
+static int	set_command_pathname(t_ctx *c, t_command_ctx *command)
 {
-	command->pathname = NULL;
-	command->argc = 0;
-	command->argv = NULL;
-	// command->argv = malloc(sizeof(char *) * (argc + 1));
-	// if (command->argv == NULL)
-	// 	return (exit_mem_issue());
-	// command->argv[argc] = NULL;
-	//return (EXIT_SUCCESS);
-}
-
-static int set_expanded_args(t_ctx *c, t_command_ctx *command, t_list **argv)
-{
-	uint64_t i;
-	t_list *tmp;
-	
-	command->argc = ft_lstsize(*argv);
-	command->argv = malloc(sizeof(char *) * (command->argc + 1));
-	if (command->argv == NULL)
+	if (is_empty_str(command->argv[0]))
+		return (EXIT_SUCCESS);
+	command->pathname = ft_strdup(command->argv[0]);
+	if (command->pathname == NULL)
 	{
-		ft_lstclear(argv, &free);
 		c->should_exit = true;
 		return (exit_mem_issue());
 	}
-	command->argv[command->argc] = NULL;
-	tmp = *argv;
-	i = 0;
-	while (tmp != NULL)
-	{
-		if (command->pathname == NULL)
-		{
-			command->pathname = ft_strdup(tmp->content);
-			if (command->pathname == NULL)
-			{
-				ft_lstclear(argv, &free);
-				c->should_exit = true;
-				return (EXIT_FAILURE);
-			}
-		}
-		command->argv[i] = tmp->content;
-		i++;
-		tmp = tmp->next;
-	}
-	//ft_lstclear(argv, &free); TODO nik missing free
 	return (EXIT_SUCCESS);
 }
 
-int	build_command(t_ctx *c, t_command_ctx *command, t_node *arg_node)
+int	build_command_arena(t_ctx *c, t_command_ctx *command,
+		t_node *arg_node, t_node *redir_node)
 {
-	t_list *argv;
+	t_expand_state	exp;
 
-	init_command(command);
-	if(arg_node->type != NODE_ARG)
-		return (EXIT_SUCCESS);
-	argv = expand_args(c, arg_node);
-	if(c->should_exit)
-		return (EXIT_FAILURE);
-	if(is_empty(argv->content))
+	init_command(c, command, &exp);
+	expand_args_arena(c, command, &exp, arg_node);
+	while (redir_node->type == NODE_REDIR)
 	{
-		ft_lstclear(&argv, &free);
-		return (EXIT_SUCCESS);
+		if (expand_redir_arena(c, redir_node, &exp) == EXIT_FAILURE)
+		{
+			ft_putstr_fd(c->arena[AT_STRING].buf
+				+ redir_node->data.redir.arena_offset, STDERR_FILENO);
+			ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+			return (EXIT_FAILURE);
+		}
+		redir_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
+				redir_node->next_idx);
 	}
-	return (set_expanded_args(c, command, &argv));
+	finish_args(c, command);
+	return (set_command_pathname(c, command));
 }

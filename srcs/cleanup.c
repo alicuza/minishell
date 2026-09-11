@@ -2,13 +2,13 @@
 
 int	cleanup(t_ctx *c)
 {
-	struct stat	buf;
+	struct stat		buf;
+	t_arena_type	i;
 
-	arena_free(&c->arena[AT_STRING]);
-	arena_free(&c->arena[AT_TOKENS]);
-	arena_free(&c->arena[AT_STACK]);
-	arena_free(&c->arena[AT_PROMPT]);
-	arena_free(&c->arena[AT_COMMAND]);
+	i = -1;
+	while (++i < AT_COUNT)
+		arena_free(&c->arena[i]);
+	free(c->read_line);
 	free_env(&c->env);
 	ft_close_fd(&c->io_fd[0]);
 	ft_close_fd(&c->io_fd[1]);

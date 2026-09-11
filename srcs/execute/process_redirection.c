@@ -1,8 +1,12 @@
 #include "minishell.h"
 
-static bool	is_empty(char *str)
+static char	*resolve_redir(t_ctx *c, t_node *redir_node)
 {
-	return (str == NULL || str[0] == '\0');
+	if (redir_node->data.redir.flags & (TKN_HAS_QUOTES | TKN_HAS_EXPANSION))
+		return (get_ptr_from_offset(&c->arena[AT_FIELDS],
+				redir_node->data.redir.arena_offset));
+	return (get_ptr_from_offset(&c->arena[AT_STRING],
+			redir_node->data.redir.arena_offset));
 }
 
 int open_in_file(t_ctx *c, t_node *redir_node)
@@ -10,8 +14,8 @@ int open_in_file(t_ctx *c, t_node *redir_node)
 	char * filename;
 
 	ft_close_fd(&c->io_fd[0]);
-	filename = expand_redir(c, redir_node);
-	if(is_empty(filename) || c->should_exit)
+	filename = resolve_redir(c, redir_node);
+	if(is_empty_str(filename) || c->should_exit)
 		return (EXIT_FAILURE);
 	errno = 0;
 	c->io_fd[0] = open(filename , O_RDONLY);
@@ -34,8 +38,8 @@ int open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 	char * filename;
 
 	ft_close_fd(&c->io_fd[1]);
-	filename = expand_redir(c, redir_node);
-	if(is_empty(filename) || c->should_exit)
+	filename = resolve_redir(c, redir_node);
+	if(is_empty_str(filename) || c->should_exit)
 		return (EXIT_FAILURE);
 	errno = 0;
 	c->io_fd[1] = open(filename, oflag, 0644);

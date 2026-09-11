@@ -6,7 +6,7 @@ static void	write_here(t_ctx *c, int fd, char *buf, uint64_t len)
 		fatal(c, "heredoc", strerror(errno));
 }
 
-char	*get_expansion_value(t_ctx *c, char *name)
+static char	*get_expansion_value(t_ctx *c, char *name)
 {
 	if (*name == '?')
 		return (ft_itoa(c->return_status));

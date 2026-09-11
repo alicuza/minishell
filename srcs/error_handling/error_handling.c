@@ -26,7 +26,6 @@ void	child_cleanup_all(t_ctx *c, t_command_ctx *cmd_ctx, char **envp)
 {
 	cleanup(c);
 	free(cmd_ctx->pathname);
-	free(cmd_ctx->argv);
 	free_str_arr(envp);
 }
 

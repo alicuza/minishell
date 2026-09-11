@@ -17,7 +17,7 @@ NAME       = minishell
 CC         = cc
 CFLAGS     = -Wall -Wextra -Werror -MMD -MP
 ARENA_SIZE ?= 64
-CPPFLAGS   = -I inc -I $(LIBFT_DIR) -I $(LIBFT_DIR)/arena -I $(LIBFT_DIR)/printf -D ARENA_SIZE=$(ARENA_SIZE)
+CPPFLAGS   = -I inc -I $(LIBFT_DIR) -I $(LIBFT_DIR)/arena -I $(LIBFT_DIR)/gnl -D ARENA_SIZE=$(ARENA_SIZE)
 LDFLAGS    =
 LDLIBS     = -lreadline
 
@@ -37,9 +37,11 @@ SRCS        = \
 			input.c \
 			ft_close_fd.c \
 			cleanup.c \
-			expansions/expand_args.c \
-			expansions/field_split.c \
-			expansions/expand_redir.c \
+			expansions/expansion.c \
+			expansions/expand_field.c \
+			expansions/expand_quote.c \
+			expansions/expand_var.c \
+			expansions/expand_helpers.c \
 			execute/execute_list.c \
 			execute/execute_pipeline.c \
 			execute/execute_simple_command.c \
@@ -77,8 +79,6 @@ SRCS        = \
 			lexer/here_read_line.c \
 			lexer/here_write_line.c \
 			lexer/pair_utils.c \
-			lexer/token_transform_utils.c \
-			lexer/string_utils.c \
 			lexer/expand_utils.c \
 			environment/env_add.c \
 			environment/env_update.c \
@@ -101,6 +101,8 @@ SRCS        = \
 			builtin/builtin_export.c \
 			builtin/unset.c \
 			builtin/echo.c \
+			utils/str_utils.c \
+			utils/var_utils.c \
 			signals/signal_setup.c \
 			signals/signal_helpers.c
 
@@ -115,7 +117,7 @@ DEBUG_SRCS  = \
 
 RELEASE_OBJS = $(addprefix $(RELEASE_DIR)/, $(SRCS:.c=.o))
 DEBUG_OBJS   = $(addprefix $(DEBUG_DIR)/, $(SRCS:.c=.o)) \
-                $(addprefix $(DEBUG_DIR)/, $(DEBUG_SRCS:.c=.o))
+               $(addprefix $(DEBUG_DIR)/, $(DEBUG_SRCS:.c=.o))
 
 # ---- source lookup ------------------------------------------------------- #
 vpath %.c srcs

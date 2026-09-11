@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/07 05:48:00 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/11 14:08:03 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # include <termios.h>           // tcgetattr, tcsetattr
 								// tputs
 # include "arena.h"
+# include "get_next_line.h"
 # include "libft.h"
 # include "parser.h"
 # include "types.h"
@@ -55,6 +56,10 @@
 /* -------- prompt type ----------------------------------------------------- */
 # define INPUT_DEFAULT 0
 # define INPUT_CONTINUATION 1
+
+/* -------- prompt colors --------------------------------------------------- */
+#define GREEN "\001\033[38;5;40m\002"
+#define RESET "\001\033[0m\002"
 
 /* -------- heredoc --------------------------------------------------------- */
 # define HEREDOC_TMP "/tmp/.msh_heredoc_"
@@ -95,14 +100,19 @@
 # define PARSE_INTERRUPTED		0x40
 
 /* -------- node flags ------------------------------------------------------ */
-# define FLAG_AND_IF 0x01
-# define FLAG_OR_IF 0x02
-# define FLAG_SUBSHELL 0x04
-# define REDIR_IN 0x08
-# define REDIR_OUT 0x10
-# define REDIR_HERE 0x20
-# define REDIR_APPEND 0x40
-# define REDIR_HAS_QUOTES 0x80
+# define FLAG_AND_IF			0x01
+# define FLAG_OR_IF				0x02
+# define FLAG_SUBSHELL			0x04
+# define REDIR_IN				0x08
+# define REDIR_OUT				0x10
+# define REDIR_HERE				0x20
+# define REDIR_APPEND			0x40
+# define REDIR_HAS_QUOTES		0x80
+
+/* -------- expansion flags ------------------------------------------------- */
+# define EXP_HAS_FIELD			0x01
+# define EXP_IN_SQUOTE			0x02
+# define EXP_IN_DQUOTE			0x04
 
 # ifdef DEBUG
 /* -------- test scope flags ------------------------------------------------ */
@@ -124,7 +134,9 @@
 #  define DBG_ARENA_TOKENS 0x04
 #  define DBG_ARENA_STACK 0x08
 #  define DBG_ARENA_COMMAND 0x10
-#  define DBG_ARENA_ALL 0x1f
+#  define DBG_ARENA_FIELDS 0x20
+#  define DBG_ARENA_ARGV 0x40
+#  define DBG_ARENA_ALL 0x7f
 
 /* -------- parser output sub-toggles (--parser=) --------------------------- */
 /* which parts of the DBG_PARSER trace to print, per shift/reduce step */
@@ -152,214 +164,234 @@
 # define MAX_RHS_LEN 4
 # define RULE_COUNT 46
 
-/* -------- globals.c ------------------------------------------------------- */
+/* -------- globals --------------------------------------------------------- */
 extern volatile sig_atomic_t	g_signal;
-
-/* -------- cleanup.c ---------------------------------------------------------- */
-int				cleanup(t_ctx *c);
-void			close_io(t_ctx *c);
-void			free_str_arr(char **val);
 
 /* -------- prompt.c -------------------------------------------------------- */
 char			*get_prompt(t_ctx *c, bool with_cwd);
 
 /* -------- input.c --------------------------------------------------------- */
+void			init_input(t_ctx *c);
 char			*get_user_input(t_ctx *c, bool is_continuation);
 
-/* -------- lookahead.c ----------------------------------------------------- */
+/* -------- ft_close_fd.c --------------------------------------------------- */
+void			ft_close_fd(int *fd);
+
+/* -------- cleanup.c ------------------------------------------------------- */
+int				cleanup(t_ctx *c);
+void			close_io(t_ctx *c);
+void			free_str_arr(char **val);
+
+/* -------- expansions/expansion.c ------------------------------------------ */
+void			finish_args(t_ctx *c, t_command_ctx *command);
+void			expand_args_arena(t_ctx *c, t_command_ctx *command,
+					t_expand_state *exp, t_node *arg_node);
+int				expand_redir_arena(t_ctx *c, t_node *redir_node,
+					t_expand_state *exp);
+
+/* -------- expansions/expand_field.c --------------------------------------- */
+void			append_field(t_ctx *c, t_expand_state *exp,
+					const char *src, size_t len);
+void			record_reference(t_ctx *c, t_command_ctx *cmd,
+					t_arena_type arena, uint32_t offset);
+void			delimit_field(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp);
+
+/* -------- expansions/expand_quote.c --------------------------------------- */
+char			*handle_squote(t_ctx *c, t_expand_state *exp, char *src);
+char			*handle_dquote(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, char *src);
+char			*handle_unquoted(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, char *src);
+
+/* -------- expansions/expand_var.c ----------------------------------------- */
+char			*expand_var(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, char *src);
+
+/* -------- expansions/expand_helpers.c ------------------------------------- */
+void			append_segment(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, const char *val);
+void			scan_word(t_ctx *c, t_command_ctx *cmd,
+					t_expand_state *exp, char *word);
+
+/* -------- execute/execute_list.c ------------------------------------------ */
+void			execute_list(t_ctx *c, uint64_t head_idx);
+
+/* -------- execute/execute_pipeline.c -------------------------------------- */
+void			execute_pipeline(t_ctx *c, t_node *pipeline_node);
+
+/* -------- execute/execute_simple_command.c -------------------------------- */
+int				execute_simple_command(t_ctx *c, t_node *command_node);
+
+/* -------- execute/command_search_and_execution.c -------------------------- */
+int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_node *redir_node);
+
+/* -------- execute/execute_non_builtin.c ----------------------------------- */
+int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_node *redir_node);
+
+/* -------- execute/get_pathname.c ------------------------------------------ */
+int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
+
+/* -------- execute/process_redirection.c ----------------------------------- */
+int				process_redirection(t_ctx *c, t_node *redir_node);
+
+/* -------- execute/build_command.c ----------------------------------------- */
+void			init_command(t_ctx *c, t_command_ctx *command,
+					t_expand_state *exp);
+int				build_command_arena(t_ctx *c, t_command_ctx *command,
+					t_node *arg_node, t_node *redir_node);
+
+/* -------- execute/ft_split_with_empty.c ----------------------------------- */
+char			**ft_split_with_empty(char const *s, char c);
+
+/* -------- execute/wait_return_status.c ------------------------------------ */
+void			wait_return_status(t_ctx *c);
+
+/* -------- lexer/lookahead.c ----------------------------------------------- */
 bool			lex_token(t_ctx *c, t_lexer_state *lex);
+
+/* -------- lexer/lookahead_rules1.c ---------------------------------------- */
 bool			apply_rule_1(t_ctx *c, t_lexer_state *lex);
 bool			apply_rule_2(t_ctx *c, t_lexer_state *lex);
 bool			apply_rule_3(t_ctx *c, t_lexer_state *lex);
 bool			apply_rule_4(t_ctx *c, t_lexer_state *lex);
 bool			apply_rule_5(t_ctx *c, t_lexer_state *lex);
+
+/* -------- lexer/lookahead_rules2.c ---------------------------------------- */
 bool			apply_rule_6(t_ctx *c, t_lexer_state *lex);
 bool			apply_rule_7(t_ctx *c, t_lexer_state *lex);
 bool			apply_rule_8(t_ctx *c, t_lexer_state *lex);
 bool			apply_rule_9(t_ctx *c, t_lexer_state *lex);
 bool			apply_rule_10(t_ctx *c, t_lexer_state *lex);
 
-/* -------- pair_utils.c ---------------------------------------------------- */
-char			matching_close(char open);
-bool			find_matched_pair(t_ctx *c, t_lexer_state *lex, char open);
-
-/* -------- token_transform_utils.c ----------------------------------------- */
-char			*get_token_content(t_ctx *c, t_token *token);
-
-/* -------- lex_tokens.c ---------------------------------------------------- */
+/* -------- lexer/lex_tokens.c ---------------------------------------------- */
 void			start_lex_token(t_lexer_state *lex, t_token_type type);
 uint64_t		alloc_token(t_ctx *c);
 void			delimit_lex_token(t_ctx *c, t_lexer_state *lex);
 uint64_t		grow_lex_token(t_lexer_state *lex, uint64_t len);
 
-/* -------- lex_heredoc.c --------------------------------------------------- */
+/* -------- lexer/lex_heredoc.c --------------------------------------------- */
 void			handle_here_body(t_ctx *c, t_parser_state *p, t_lexer_state *l);
 void			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
-void			handle_pipe_error(t_ctx *c);
 
-/* -------- here_body_read.c ------------------------------------------------ */
-void			get_here_doc(t_ctx *c, t_lexer_state *l);
-
-/* -------- here_read_line.c ------------------------------------------------ */
-bool			read_here_line(t_ctx *c, t_lexer_state *l, char *here_end);
-bool			here_line_ends(t_ctx *c, t_lexer_state *l, char *here_end);
-
-/* -------- here_write_line.c ----------------------------------------------- */
-char	*get_expansion_value(t_ctx *c, char *name);
-void			write_here_line(t_ctx *c, int fd, t_lexer_state *l,
-					t_node *node);
-
-/* -------- lex_utils.c ----------------------------------------------------- */
+/* -------- lexer/lex_utils.c ----------------------------------------------- */
 uint64_t		consume_char(t_lexer_state *lex, uint64_t len);
 t_slice			save_lex_token_slice(t_lexer_state *lex);
 void			restore_lex_token_slice(t_lexer_state *lex, t_slice len);
-
-/* -------- string_utils.c -------------------------------------------------- */
 const char		**get_operator_strs(void);
-bool			is_char_in_set(char c, const char *set);
-bool			is_str_in_set(char *c, const char **set);
-bool			is_name_start(char c);
-bool			is_name_body(char c);
 
-/* -------- expand_utils.c -------------------------------------------------- */
+/* -------- lexer/here_body_read.c ------------------------------------------ */
+void			get_here_doc(t_ctx *c, t_lexer_state *l);
+
+/* -------- lexer/here_read_line.c ------------------------------------------ */
+bool			read_here_line(t_ctx *c, t_lexer_state *l, char *here_end);
+bool			here_line_ends(t_ctx *c, t_lexer_state *l, char *here_end);
+
+/* -------- lexer/here_write_line.c ----------------------------------------- */
+void			write_here_line(t_ctx *c, int fd, t_lexer_state *l,
+					t_node *node);
+
+/* -------- lexer/pair_utils.c ---------------------------------------------- */
+bool			find_matched_pair(t_ctx *c, t_lexer_state *lex, char open);
+
+/* -------- lexer/expand_utils.c -------------------------------------------- */
 bool			is_expansion_start(char *buffer, uint64_t idx);
 uint64_t		get_expansion_len(char *expansion);
 
-/* -------- env_add.c ------------------------------------------------------- */
+/* -------- environment/env_add.c ------------------------------------------- */
 int				env_add(t_env *env, char *key, char *value);
 
-/* -------- env_update.c ---------------------------------------------------- */
+/* -------- environment/env_update.c ---------------------------------------- */
 int				env_update(t_env *env, char *key, char *value);
 int				env_update_with_copy(t_env *env, char *key, char *value);
 
-/* -------- env_get.c ------------------------------------------------------- */
+/* -------- environment/env_get.c ------------------------------------------- */
 char			*env_get(t_env *env, char *key);
 
-/* -------- env_delete.c ---------------------------------------------------- */
+/* -------- environment/env_delete.c ---------------------------------------- */
 void			env_delete(t_env *env, char *key);
 
-/* -------- free_env.c ------------------------------------------------------ */
+/* -------- environment/free_env.c ------------------------------------------ */
 void			free_env_content(void *content_void_p);
 void			free_env(t_env *env);
 
-/* -------- init_env.c ------------------------------------------------------ */
+/* -------- environment/init_env.c ------------------------------------------ */
 int				init_env(t_env *env, char **envp);
 
-/* -------- add_env_defaults.c ---------------------------------------------- */
+/* -------- environment/add_env_defaults.c ---------------------------------- */
 int				add_env_defaults(t_env *env);
 
-/* -------- env_to_envp.c --------------------------------------------------- */
+/* -------- environment/env_to_envp.c --------------------------------------- */
 char			**env_to_envp(t_env *env);
 
-/* -------- ft_split_key_value.c -------------------------------------------- */
-char			**ft_split_key_value(const char *s, char c);
-
-/* -------- execute_list.c -------------------------------------------------- */
-void			execute_list(t_ctx *c, uint64_t head_idx);
-
-/* -------- execute_pipeline.c ---------------------------------------------- */
-void			execute_pipeline(t_ctx *c, t_node *pipeline_node);
-
-/* -------- execute_simple_command.c ---------------------------------------- */
-int			execute_simple_command(t_ctx *c, t_node *command_node);
-
-/* -------- build_command.c ------------------------------------------------- */
-int				build_command(t_ctx *c, t_command_ctx *command,
-					t_node *arg_node);
-
-/* -------- command_search_and_execution.c ---------------------------------- */
-int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
-					t_node *redir_node);
-
-/* -------- execute_non_builtin.c ------------------------------------------- */
-int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
-					t_node *redir_node);
-
-/* -------- get_pathname.c -------------------------------------------------- */
-int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
-
-/* -------- process_redirection.c ------------------------------------------- */
-int				process_redirection(t_ctx *c, t_node *redir_node);
-
-/* -------- ft_split_with_empty.c ------------------------------------------- */
-char			**ft_split_with_empty(char const *s, char c);
-
-/* -------- wait_return_status.c ------------------------------------------- */
-void		wait_return_status(t_ctx *c);
-
-/* -------- execute_builtin.c ----------------------------------------------- */
-int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
-					t_command_function command, t_node *redir_node);
-
-/* -------- execute_builtin_in_subshell.c ----------------------------------- */
-int				execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx,
-					t_command_function command, t_node *redir_node);
-
-/* -------- env.c ----------------------------------------------------------- */
-int				env(t_ctx *c, t_command_ctx *command_ctx);
-
-/* -------- pwd.c ----------------------------------------------------------- */
-int				pwd(t_ctx *c, t_command_ctx *command_ctx);
-char			*get_pwd(t_ctx *c);
-
-/* -------- parse_token_flow.c ---------------------------------------------- */
-bool			get_next_token(t_ctx *c, t_parser_state *p, t_lexer_state *l);
-
-/* -------- parse_input.c --------------------------------------------------- */
-t_parser_state	parse_input(t_ctx *c);
-
-/* -------- classify_token.c ------------------------------------------------ */
-t_symbol_type	classify_token(t_ctx *c, t_token *token);
-
-/* -------- builtin_exit.c -------------------------------------------------- */
-int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
-
-/* -------- error_handling.c ------------------------------------------------ */
+/* -------- error_handling/error_handling.c --------------------------------- */
 int				exit_mem_issue(void);
-int				msh_error(char *where, char *what, char *why);
-int				msh_error_errno(char *where, char *what);
-void			fatal(t_ctx *c, char *where, char *why);
 int				handle_redirection_error(t_ctx *c, char *filename);
+void			handle_pipe_error(t_ctx *c);
 void			child_cleanup_all(t_ctx *c, t_command_ctx *cmd_ctx,
 					char **envp);
 int				exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
 
-/* -------- cd.c ------------------------------------------------------------ */
+/* -------- error_handling/msh_error.c -------------------------------------- */
+int				msh_error(char *where, char *what, char *why);
+int				msh_error_errno(char *where, char *what);
+void			fatal(t_ctx *c, char *where, char *why);
+
+/* -------- builtin/execute_builtin.c --------------------------------------- */
+int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_command_function command, t_node *redir_node);
+
+/* -------- builtin/execute_builtin_in_subshell.c --------------------------- */
+int				execute_builtin_in_subshell(t_ctx *c, t_command_ctx *cmd_ctx,
+					t_command_function command, t_node *redir_node);
+
+/* -------- builtin/env.c --------------------------------------------------- */
+int				env(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- builtin/ft_split_key_value.c ------------------------------------ */
+char			**ft_split_key_value(const char *s, char c);
+
+/* -------- builtin/pwd.c --------------------------------------------------- */
+int				pwd(t_ctx *c, t_command_ctx *command_ctx);
+char			*get_pwd(t_ctx *c);
+
+/* -------- builtin/builtin_exit.c ------------------------------------------ */
+int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- builtin/cd.c ---------------------------------------------------- */
 int				cd(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- get_path_canonical_form.c --------------------------------------- */
+/* -------- builtin/get_path_canonical_form.c ------------------------------- */
 char			*get_path_canonical_form(char *curpath, size_t len);
 
-/* -------- builtin_export.c ------------------------------------------------ */
+/* -------- builtin/builtin_export.c ---------------------------------------- */
 int				builtin_export(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- unset.c --------------------------------------------------------- */
+/* -------- builtin/unset.c ------------------------------------------------- */
 int				unset(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- echo.c ---------------------------------------------------------- */
+/* -------- builtin/echo.c -------------------------------------------------- */
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- signal_setup.c -------------------------------------------------- */
+/* -------- utils/str_utils.c ----------------------------------------------- */
+bool			is_empty_str(char *str);
+bool			is_char_in_set(char c, const char *set);
+bool			is_str_in_set(char *c, const char **set);
+
+/* -------- utils/var_utils.c ----------------------------------------------- */
+bool			is_name_start(char c);
+bool			is_name_body(char c);
+bool			is_valid_var_name(char *name);
+
+/* -------- signals/signal_setup.c ------------------------------------------ */
 int				sig_setup_handler(t_ctx *c);
 int				sig_set_default(void);
 int				sig_set_interactive(void);
 
-/* -------- signal_helpers.c ------------------------------------------------ */
+/* -------- signals/signal_helpers.c ---------------------------------------- */
 int				sig_rl_event_hook(void);
 bool			sig_consume_sigint(t_ctx *c);
 void			sig_reset_sigint(void);
-
-/* -------- ft_close_fd.c --------------------------------------------------- */
-void			ft_close_fd(int *fd);
-
-/* -------- expand_args.c ---------------------------------------------------- */
-t_list	*expand_args(t_ctx *c, t_node *arg_node);
-void	append_node(t_list **list, char *val);
-void	expand_word(t_ctx *c, t_list **list, char *word, uint64_t len);
-
-/* -------- field_split.c ---------------------------------------------------- */
-void	field_split(t_list **list, char *s);
-
-/* -------- expand_redir.c --------------------------------------------------- */
-char	*expand_redir(t_ctx *c, t_node *redir_node);
 #endif

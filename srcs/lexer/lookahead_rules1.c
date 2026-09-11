@@ -19,7 +19,7 @@ bool	apply_rule_2(t_ctx *c, t_lexer_state *lex)
 #ifdef DEBUG
 	print_lex_rule(c, 2);
 #endif
-	if(lex->flags & LEX_IS_BUILDING)
+	if (lex->flags & LEX_IS_BUILDING)
 	{
 		consume_char(lex, 1);
 		grow_lex_token(lex, 1);

@@ -1,24 +1,6 @@
 #include "env.h"
 #include "minishell.h"
 
-static void	ft_free_str_arr(char **arr)
-{
-	int	i;
-
-	i = 0;
-	while (arr[i] != NULL)
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
-}
-
-static bool	is_empty(char *str)
-{
-	return (str == NULL || str[0] == '\0');
-}
-
 char	*add_prefix(char *path, const char *pathname)
 {
 	char	*tmp;
@@ -95,7 +77,7 @@ int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 	int		status;
 
 	path = env_get(&c->env, PATH);
-	if (is_empty(path))
+	if (is_empty_str(path))
 	{
 		status =  get_from_current(cmd_ctx);
 		free(path);
@@ -107,7 +89,7 @@ int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 		if (!paths)
 			return (free(path), EXIT_FAILURE);
 		status = search_in_paths(paths, cmd_ctx);
-		ft_free_str_arr(paths);
+		free_str_arr(paths);
 		return (free(path), status);
 	}
 }

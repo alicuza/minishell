@@ -14,20 +14,6 @@ static void	print_val(void *content_void_p)
 		printf("declare -x %s=\"%s\"\n", (char *)content->key, content->val);
 }
 
-static bool	is_valid_name(char *name)
-{
-	if (!ft_isalpha(*name) && *name != '_')
-		return (false);
-	name++;
-	while (*name != '\0')
-	{
-		if (!ft_isalnum(*name) && *name != '_')
-			return (false);
-		name++;
-	}
-	return (true);
-}
-
 int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char		**tmp;
@@ -39,8 +25,8 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 		tmp = ft_split_key_value(command_ctx->argv[i], '=');
 		if (tmp == NULL)
 			return (exit_mem_issue());
-		if (is_valid_name(tmp[0]) == false || ft_strncmp(tmp[0], SHLVL,
-				6) == EQUAL)
+		if (is_valid_var_name(tmp[0]) == false || ft_strncmp(tmp[0], SHLVL, 6)
+			== EQUAL)
 		{
 			free_str_arr(tmp);
 			i++;
