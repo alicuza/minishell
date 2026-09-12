@@ -1,14 +1,16 @@
 #include "minishell.h"
 
-static void	soft_exit_on_issue(char *error_prefix)
+static int	soft_exit_on_issue(char *error_prefix)
 {
 	perror(error_prefix);
+	return (EXIT_FAILURE);
 }
-void	wait_return_status(t_ctx *c)
+int	wait_return_status(t_ctx *c)
 {
 	int		wstatus;
 	pid_t	wpid;
 	pid_t	pid_to_wait;
+	int		result;
 
 	pid_to_wait = c->pid_to_wait;
 	while (1)
@@ -25,9 +27,9 @@ void	wait_return_status(t_ctx *c)
 		if (wpid == pid_to_wait)
 		{
 			if (WIFSIGNALED(wstatus))
-				c->return_status = 128 + WTERMSIG(wstatus);
+				result = 128 + WTERMSIG(wstatus);
 			else if (WIFEXITED(wstatus))
-				c->return_status = WEXITSTATUS(wstatus);
+				result = WEXITSTATUS(wstatus);
 		}
 #ifdef DEBUG
 		fprintf(stderr, "\nreaped pid=%jd\n", (intmax_t)wpid);
@@ -39,4 +41,5 @@ void	wait_return_status(t_ctx *c)
 	}
 	c->pid_to_wait = -1;
 	g_signal = 0;
+	return (result);
 }

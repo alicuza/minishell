@@ -33,13 +33,8 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
 	if (ft_strchr(cmd_ctx->pathname, '/') == NULL)
 	{
 		command = match_builtin(cmd_ctx->pathname);
-		if (command != NULL)
-		{
-			if (!c->is_pipe
-				&& process_redirection(c, redir_node) == EXIT_FAILURE)
-				return (1);
+		if (command != NULL)		
 			return (execute_builtin(c, cmd_ctx, command, redir_node));
-		}
 		else
 		{
 			status = get_pathname(c, cmd_ctx);

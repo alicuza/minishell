@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 14:08:03 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/12 12:46:47 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,7 @@ void			scan_word(t_ctx *c, t_command_ctx *cmd,
 void			execute_list(t_ctx *c, uint64_t head_idx);
 
 /* -------- execute/execute_pipeline.c -------------------------------------- */
-void			execute_pipeline(t_ctx *c, t_node *pipeline_node);
+int			execute_pipeline(t_ctx *c, t_node *pipeline_node);
 
 /* -------- execute/execute_simple_command.c -------------------------------- */
 int				execute_simple_command(t_ctx *c, t_node *command_node);
@@ -247,7 +247,7 @@ int				build_command_arena(t_ctx *c, t_command_ctx *command,
 char			**ft_split_with_empty(char const *s, char c);
 
 /* -------- execute/wait_return_status.c ------------------------------------ */
-void			wait_return_status(t_ctx *c);
+int			wait_return_status(t_ctx *c);
 
 /* -------- lexer/lookahead.c ----------------------------------------------- */
 bool			lex_token(t_ctx *c, t_lexer_state *lex);
