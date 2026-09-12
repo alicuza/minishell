@@ -222,7 +222,7 @@ void			scan_word(t_ctx *c, t_command_ctx *cmd,
 void			execute_list(t_ctx *c, uint64_t head_idx);
 
 /* -------- execute/execute_pipeline.c -------------------------------------- */
-int			execute_pipeline(t_ctx *c, t_node *pipeline_node);
+int				execute_pipeline(t_ctx *c, t_node *pipeline_node);
 
 /* -------- execute/execute_simple_command.c -------------------------------- */
 int				execute_simple_command(t_ctx *c, t_node *command_node);
@@ -251,7 +251,7 @@ int				build_command(t_ctx *c, t_command_ctx *command,
 char			**ft_split_with_empty(char const *s, char c);
 
 /* -------- execute/wait_return_status.c ------------------------------------ */
-int			wait_return_status(t_ctx *c);
+int				wait_return_status(t_ctx *c);
 
 /* -------- lexer/lookahead.c ----------------------------------------------- */
 bool			lex_token(t_ctx *c, t_lexer_state *lex);
