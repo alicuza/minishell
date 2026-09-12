@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 15:14:35 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/12 15:14:39 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/12 17:04:58 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void	cleanup_context(void *ctx)
 		arena_free(&c->arena[i]);
 	free(c->read_line);
 	c->read_line = NULL;
+	rl_clear_history();
 	free_env(&c->env);
 	close_all_fds(c);
 	get_next_line(-255);
