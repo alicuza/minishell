@@ -45,13 +45,13 @@ int	sig_set_interactive(void)
 {
 	if (set_action(SIGINT, &sig_record_sigint)
 		|| set_action(SIGQUIT, SIG_IGN))
-		return (msh_error_errno("sigaction", "interactive"));
+		return (msh_error("sigaction", "interactive", strerror(errno)));
 	return (EXIT_SUCCESS);
 }
 
 int	sig_set_default(void)
 {
 	if (set_action(SIGINT, SIG_DFL) || set_action(SIGQUIT, SIG_DFL))
-		return (msh_error_errno("sigaction", "default"));
+		return (msh_error("sigaction", "default", strerror(errno)));
 	return (EXIT_SUCCESS);
 }

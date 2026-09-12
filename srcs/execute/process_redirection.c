@@ -20,15 +20,17 @@ int open_in_file(t_ctx *c, t_node *redir_node)
 	errno = 0;
 	c->io_fd[0] = open(filename , O_RDONLY);
 	if (c->io_fd[0] == -1)
-		return handle_redirection_error(c, filename);
+		return (msh_error("redirection", filename, strerror(errno)));
 	return (EXIT_SUCCESS);
 }
 
 int open_here_file(t_ctx *c, t_node *redir_node)
 {
+	ft_close_fd(&c->io_fd[0]);
 	c->io_fd[0] = redir_node->data.redir.fd;
+	redir_node->data.redir.fd = -1;
 	if (c->io_fd[0] == -1)
-		return handle_redirection_error(c, "here-doc");
+		return (msh_error("redirection", "here-doc", strerror(EBADF)));
 
 	return (EXIT_SUCCESS);
 }
@@ -44,7 +46,7 @@ int open_out_file(t_ctx *c, t_node *redir_node, int oflag)
 	errno = 0;
 	c->io_fd[1] = open(filename, oflag, 0644);
 	if (c->io_fd[1] == -1)
-		return handle_redirection_error(c, filename);
+		return (msh_error("redirection", filename, strerror(errno)));
 	return (EXIT_SUCCESS);
 }
 

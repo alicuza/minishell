@@ -28,6 +28,8 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
 {
 	t_command_function	command;
 	int					status;
+	char				*orig_name;
+	t_error				e;
 
 	command = NULL;
 	if (ft_strchr(cmd_ctx->pathname, '/') == NULL)
@@ -37,13 +39,44 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
 			return (execute_builtin(c, cmd_ctx, command, redir_node));
 		else
 		{
+			orig_name = ft_strdup(cmd_ctx->pathname);
+			if (orig_name == NULL)
+			{
+				e = (t_error){NULL, strerror(ENOMEM), 1};
+				free(cmd_ctx->pathname);
+				cmd_ctx->pathname = NULL;
+				msh_exit(c, cmd_ctx, &e, NULL);
+				return (EXIT_FAILURE);
+			}
 			status = get_pathname(c, cmd_ctx);
 			if (status == EXIT_FAILURE)
-				return (exit_mem_issue());
+			{
+				e = (t_error){NULL, strerror(ENOMEM), 1};
+				free(orig_name);
+				msh_exit(c, cmd_ctx, &e, NULL);
+				return (EXIT_FAILURE);
+			}
 			else if (status == EXIT_SUCCESS && cmd_ctx->pathname != NULL)
+			{
+				free(orig_name);
 				return (execute_non_builtin(c, cmd_ctx, redir_node));
+			}
 			else
+			{
+				if (process_redirection(c, redir_node) == EXIT_FAILURE)
+				{
+					free(orig_name);
+					close_io(c);
+					return (1);
+				}
+				close_io(c);
+				if (orig_name)
+					msh_error(NULL, orig_name, "command not found");
+				else
+					msh_error(NULL, "", "command not found");
+				free(orig_name);
 				return (127);
+			}
 		}
 	}
 	else

@@ -1,10 +1,5 @@
 #include "minishell.h"
 
-static int	soft_exit_on_issue(char *error_prefix)
-{
-	perror(error_prefix);
-	return (EXIT_FAILURE);
-}
 int	wait_return_status(t_ctx *c)
 {
 	int		wstatus;
@@ -21,7 +16,10 @@ int	wait_return_status(t_ctx *c)
 			if (errno == EINTR)
 				continue ;
 			if (errno != ECHILD)
-				return (soft_exit_on_issue("waitpid"));
+			{
+				msh_error("waitpid", NULL, strerror(errno));
+				return ;
+			}
 			break ;
 		}
 		if (wpid == pid_to_wait)

@@ -19,7 +19,8 @@ char *join_key_value(t_env_content *content)
       return NULL;
     ft_strlcpy(join, content->key, key_val_len + 1);
     ft_strlcat(join, "=", key_val_len + 1);
-    ft_strlcat(join, content->val, key_val_len + 1);
+    if (content->val)
+      ft_strlcat(join, content->val, key_val_len + 1);
   return join;
 }
 
@@ -40,12 +41,7 @@ char **env_to_envp(t_env *env)
   {
     envp[i] = join_key_value((t_env_content*) env_vals->content);
     if(envp[i] == NULL)
-      while(i <= 0)
-      {
-        free(envp[i]);
-        i--;
-        return NULL;
-      }
+      return (free_str_arr(envp), NULL);
 	env_vals = env_vals->next;
     i++;
   }

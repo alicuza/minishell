@@ -1,4 +1,3 @@
-
 #include "env.h"
 #include "minishell.h"
 
@@ -11,20 +10,30 @@ static int	cd_path(t_ctx *c, char *curpath)
 	if (result == EXIT_SUCCESS)
 	{
 		oldpwd = env_get(&c->env, PWD);
-		if (env_update_with_copy(&c->env, OLDPWD, oldpwd) == EXIT_FAILURE
-			|| env_update_with_copy(&c->env, PWD, curpath) == EXIT_FAILURE)
+		if (oldpwd)
 		{
-			result = chdir(oldpwd);
-			result = EXIT_FAILURE;
+			if (env_update_with_copy(&c->env, OLDPWD, oldpwd) == EXIT_FAILURE
+				|| env_update_with_copy(&c->env, PWD, curpath) == EXIT_FAILURE)
+			{
+				chdir(oldpwd);
+				result = EXIT_FAILURE;
+			}
+			else
+				result = EXIT_SUCCESS;
+			free(oldpwd);
 		}
 		else
-			result = EXIT_SUCCESS;
-		free(oldpwd);
+		{
+			if (env_update_with_copy(&c->env, PWD, curpath) == EXIT_FAILURE)
+				result = EXIT_FAILURE;
+			else
+				result = EXIT_SUCCESS;
+		}
 		return (result);
 	}
 	else
 	{
-		perror("cd: Error during chdir\n");
+		msh_error("cd", curpath, strerror(errno));
 		return (EXIT_FAILURE);
 	}
 }
@@ -38,7 +47,7 @@ static int	cd_home(t_ctx *c)
 	home = env_get(&c->env, HOME);
 	if (is_empty_str(home))
 	{
-		ft_putstr_fd("cd: HOME not set\n", STDERR_FILENO);
+		msh_error("cd", NULL, "HOME not set");
 		result = EXIT_FAILURE;
 	}
 	else
@@ -57,7 +66,7 @@ int	cd_oldpwd(t_ctx *c)
 	old_path = env_get(&c->env, OLDPWD);
 	if (is_empty_str(old_path))
 	{
-		ft_putstr_fd("cd: OLDPWD not set\n", STDERR_FILENO);
+		msh_error("cd", NULL, "OLDPWD not set");
 		result = EXIT_FAILURE;
 	}
 	else
@@ -76,8 +85,12 @@ char	*add_pwd_prefix(t_ctx *c, const char *dir)
 	char	*tmp1;
 
 	tmp = get_pwd(c);
+	if (!tmp)
+		return (NULL);
 	tmp1 = ft_strjoin(tmp, "/");
 	free(tmp);
+	if (!tmp1)
+		return (NULL);
 	tmp = ft_strjoin(tmp1, dir);
 	free(tmp1);
 	return (tmp);
@@ -88,22 +101,37 @@ static int	cd_dir(t_ctx *c, const char *dir)
 	char	*curpath;
 	char	*canonical_form;
 	int		result;
+	t_error	e;
 
 	canonical_form = NULL;
+	errno = 0;
 	if (dir[0] != '/')
 		curpath = add_pwd_prefix(c, dir);
 	else
 		curpath = ft_strdup(dir);
 	if (curpath == NULL)
-		return (exit_mem_issue());
+	{
+		if (errno == ENOMEM)
+		{
+			e = (t_error){NULL, strerror(ENOMEM), 1};
+			msh_exit(c, NULL, &e, NULL);
+		}
+		msh_error("cd", (char *)dir, strerror(errno));
+		return (EXIT_FAILURE);
+	}
 	else
 	{
+		errno = 0;
 		canonical_form = get_path_canonical_form(curpath, ft_strlen(curpath));
 		if (canonical_form == NULL)
 		{
-			ft_putstr_fd("cd: ", STDERR_FILENO);
-			ft_putstr_fd((char *)dir, STDERR_FILENO);
-			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+			if (errno == ENOMEM)
+			{
+				e = (t_error){NULL, strerror(ENOMEM), 1};
+				free(curpath);
+				msh_exit(c, NULL, &e, NULL);
+			}
+			msh_error("cd", (char *)dir, "No such file or directory");
 			result = EXIT_FAILURE;
 		}
 		else
@@ -120,7 +148,7 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 
 	if (command_ctx->argc > 2)
 	{
-		ft_putstr_fd("cd: too many arguments\n", STDERR_FILENO);
+		msh_error("cd", NULL, "too many arguments");
 		return (2);
 	}
 	dir = command_ctx->argv[1];

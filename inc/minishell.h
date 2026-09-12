@@ -174,19 +174,23 @@ char			*get_prompt(t_ctx *c, bool with_cwd);
 void			init_input(t_ctx *c);
 char			*get_user_input(t_ctx *c, bool is_continuation);
 
-/* -------- ft_close_fd.c --------------------------------------------------- */
-void			ft_close_fd(int *fd);
-
-/* -------- cleanup.c ------------------------------------------------------- */
-int				cleanup(t_ctx *c);
-void			close_io(t_ctx *c);
+/* -------- error_handling/shell_errors.c ----------------------------------- */
+int				msh_error(char *where, char *what, char *why);
+void			cleanup_context(void *ctx);
+void			cleanup_shell(t_ctx *c, t_command_ctx *cmd, char **envp);
 void			free_str_arr(char **val);
+void			msh_exit(t_ctx *c, t_command_ctx *cmd, t_error *e, char **envp);
+
+/* -------- error_handling/close_fds.c -------------------------------------- */
+void			ft_close_fd(int *fd);
+void			close_io(t_ctx *c);
+void			close_all_fds(t_ctx *c);
 
 /* -------- expansions/expansion.c ------------------------------------------ */
 void			finish_args(t_ctx *c, t_command_ctx *command);
-void			expand_args_arena(t_ctx *c, t_command_ctx *command,
+void			expand_args(t_ctx *c, t_command_ctx *command,
 					t_expand_state *exp, t_node *arg_node);
-int				expand_redir_arena(t_ctx *c, t_node *redir_node,
+int				expand_redir(t_ctx *c, t_node *redir_node,
 					t_expand_state *exp);
 
 /* -------- expansions/expand_field.c --------------------------------------- */
@@ -240,7 +244,7 @@ int				process_redirection(t_ctx *c, t_node *redir_node);
 /* -------- execute/build_command.c ----------------------------------------- */
 void			init_command(t_ctx *c, t_command_ctx *command,
 					t_expand_state *exp);
-int				build_command_arena(t_ctx *c, t_command_ctx *command,
+int				build_command(t_ctx *c, t_command_ctx *command,
 					t_node *arg_node, t_node *redir_node);
 
 /* -------- execute/ft_split_with_empty.c ----------------------------------- */
@@ -326,18 +330,7 @@ int				add_env_defaults(t_env *env);
 /* -------- environment/env_to_envp.c --------------------------------------- */
 char			**env_to_envp(t_env *env);
 
-/* -------- error_handling/error_handling.c --------------------------------- */
-int				exit_mem_issue(void);
-int				handle_redirection_error(t_ctx *c, char *filename);
-void			handle_pipe_error(t_ctx *c);
-void			child_cleanup_all(t_ctx *c, t_command_ctx *cmd_ctx,
-					char **envp);
-int				exit_child(t_ctx *c, t_command_ctx *cmd_ctx, char **envp);
 
-/* -------- error_handling/msh_error.c -------------------------------------- */
-int				msh_error(char *where, char *what, char *why);
-int				msh_error_errno(char *where, char *what);
-void			fatal(t_ctx *c, char *where, char *why);
 
 /* -------- builtin/execute_builtin.c --------------------------------------- */
 int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,

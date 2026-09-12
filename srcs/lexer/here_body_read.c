@@ -46,7 +46,7 @@ void	get_here_doc(t_ctx *c, t_lexer_state *lex)
 			node->data.redir.arena_offset);
 	rfd = create_here_temp(&wfd);
 	if (wfd == -1 || rfd == -1)
-		msh_error_errno("heredoc", "temporary file");
+		msh_error("heredoc", "temporary file", strerror(errno));
 	while ((c->read_line[lex->char_idx]
 			|| read_here_line(c, lex, here_end))
 		&& !here_line_ends(c, lex, here_end))

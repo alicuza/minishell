@@ -1,5 +1,14 @@
 #include "minishell.h"
 
+static void 	handle_pipe_error(t_ctx *c)
+{
+	msh_error("pipe", NULL, strerror(errno));
+	cleanup_shell(c);
+	if (c->pid_to_wait != -1)
+		(void ) wait_return_status(c);
+	exit(EXIT_FAILURE);			
+}
+
 int	pipe_and_execute_simple_command(t_ctx *c, t_node *command_node)
 {
 	int	result;
@@ -12,8 +21,7 @@ int	pipe_and_execute_simple_command(t_ctx *c, t_node *command_node)
 	c->io_fd[1] = c->pipe_fd[1];
 	c->pipe_fd[1] = -1;
 	result = execute_simple_command(c, command_node);
-	ft_close_fd(&c->io_fd[0]);
-	ft_close_fd(&c->io_fd[1]);
+	close_io(c);
 	c->io_fd[0] = c->pipe_fd[0];
 	c->pipe_fd[0] = -1;
 	return (result);
@@ -37,12 +45,12 @@ int	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 		else
 			result = execute_simple_command(c, command_node);
 		if (c->should_exit)
-			return (result);
+			return (wait_return_status(c), result);
 		command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 				command_node->next_idx);
 	}
 	c->is_pipe = false;
-	if (result == EXIT_SUCCESS && c->pid_to_wait != -1)
+	if (result == EXIT_SUCCESS && c->pid_to_wait != -1) //todo maybe don't check for pid to wait, add make sure we wait everywhere even we failed
 		return (wait_return_status(c));
 	else
 		return (result);
