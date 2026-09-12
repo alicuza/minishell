@@ -3,10 +3,10 @@
 static void 	handle_pipe_error(t_ctx *c)
 {
 	msh_error("pipe", NULL, strerror(errno));
-	cleanup_shell(c);
+	cleanup_context(c);
 	if (c->pid_to_wait != -1)
-		(void ) wait_return_status(c);
-	exit(EXIT_FAILURE);			
+		(void)wait_return_status(c);
+	exit(EXIT_FAILURE);
 }
 
 int	pipe_and_execute_simple_command(t_ctx *c, t_node *command_node)
@@ -32,7 +32,7 @@ int	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 	t_node	*command_node;
 	int		result;
 
-	result == EXIT_SUCCESS;
+	result = EXIT_SUCCESS;
 	command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 			pipeline_node->data.pipeline.command_head_idx);
 	while (command_node->type == NODE_COMMAND)
