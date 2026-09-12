@@ -12,31 +12,40 @@
 
 #include "minishell.h"
 
-static t_ctx	init_ctx(char **envp)
+static void	init_ctx(t_ctx *c, char **envp)
 {
-	t_ctx	c;
+	t_arena_type	i;
+	t_error			e;
 
-	ft_memset(&c, 0, sizeof(t_ctx));
-	c.arena[AT_PROMPT] = arena_init(ARENA_SIZE, sizeof(char));
-	c.arena[AT_STRING] = arena_init(ARENA_SIZE, sizeof(char));
-	c.arena[AT_TOKENS] = arena_init(ARENA_SIZE, sizeof(t_token));
-	c.arena[AT_STACK] = arena_init(ARENA_SIZE, sizeof(t_symbol));
-	c.arena[AT_COMMAND] = arena_init(ARENA_SIZE, sizeof(t_node));
-	c.arena[AT_FIELDS] = arena_init(ARENA_SIZE, sizeof(char));
-	c.arena[AT_ARGV] = arena_init(ARENA_SIZE, sizeof(t_argv_slot));
-	c.io_fd[0] = -1;
-	c.io_fd[1] = -1;
-	c.pipe_fd[0] = -1;
-	c.pipe_fd[1] = -1;
-	c.pid_to_wait = -1;
-	init_input(&c);
-	if (init_env(&c.env, envp) == EXIT_FAILURE)
+	ft_memset(c, 0, sizeof(t_ctx));
+	c->io_fd[0] = -1;
+	c->io_fd[1] = -1;
+	c->pipe_fd[0] = -1;
+	c->pipe_fd[1] = -1;
+	c->pid_to_wait = -1;
+	c->arena[AT_PROMPT] = arena_init(ARENA_SIZE, sizeof(char));
+	c->arena[AT_STRING] = arena_init(ARENA_SIZE, sizeof(char));
+	c->arena[AT_TOKENS] = arena_init(ARENA_SIZE, sizeof(t_token));
+	c->arena[AT_STACK] = arena_init(ARENA_SIZE, sizeof(t_symbol));
+	c->arena[AT_COMMAND] = arena_init(ARENA_SIZE, sizeof(t_node));
+	c->arena[AT_FIELDS] = arena_init(ARENA_SIZE, sizeof(char));
+	c->arena[AT_ARGV] = arena_init(ARENA_SIZE, sizeof(t_argv_slot));
+	i = -1;
+	while (++i < AT_COUNT)
 	{
-		msh_error_errno("init_env", "env");
-		cleanup(&c);
-		exit(EXIT_FAILURE);
+		if (!c->arena[i].buf)
+		{
+			e = (t_error){"init", strerror(ENOMEM), 1};
+			msh_exit(c, NULL, &e, NULL);
+		}
+		arena_hook_cleanup(&c->arena[i], &cleanup_context, c);
 	}
-	return (c);
+	init_input(c);
+	if (init_env(&c->env, envp) == EXIT_FAILURE)
+	{
+		e = (t_error){"init_env", strerror(errno), 1};
+		msh_exit(c, NULL, &e, NULL);
+	}
 }
 
 static void	shell_loop(t_ctx *c)
@@ -87,16 +96,16 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	c = init_ctx(envp);
+	init_ctx(&c, envp);
 	if (sig_setup_handler(&c))
 	{
-		cleanup(&c);
+		cleanup_context(&c);
 		return (EXIT_FAILURE);
 	}
 #ifdef DEBUG
 	parse_debug_args(argc, argv, &c);
 #endif
 	shell_loop(&c);
-	cleanup(&c);
+	cleanup_context(&c);
 	return (c.return_status);
 }

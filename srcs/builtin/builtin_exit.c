@@ -33,14 +33,11 @@ static int exit_with_code(t_ctx *c, t_command_ctx *command_ctx)
 		exit_code = ft_atol(command_ctx->argv[1]);
 		if (exit_code < INT_MAX && exit_code > INT_MIN)
 		{
-			cleanup(c);
-			free(command_ctx->pathname);
+			cleanup_shell(c, command_ctx, NULL);
 			exit(exit_code);
 		}
 	}
-	ft_putstr_fd("exit: ", STDERR_FILENO);
-	ft_putstr_fd((char *)command_ctx->argv[1], STDERR_FILENO);
-	ft_putstr_fd(": numeric argument required", STDERR_FILENO);
+	msh_error("exit", command_ctx->argv[1], "numeric argument required");
 	c->should_exit = true;
 	return (2);
 }
@@ -49,7 +46,7 @@ int	builtin_exit(t_ctx *c, t_command_ctx *command_ctx)
 {
 	if (command_ctx->argc > 2)
 	{
-		ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
+		msh_error("exit", NULL, "too many arguments");
 		return (2);
 	}
 	else if (command_ctx->argc == 2)

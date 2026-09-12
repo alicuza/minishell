@@ -78,7 +78,10 @@ char	*get_path_canonical_form(char *curpath, size_t len)
 		else if (curpath[b.i_orig] == '.')
 		{
 			if (process_dot(curpath, canonical_form, &b) == EXIT_FAILURE)
+			{
+				free(canonical_form);
 				return (NULL);
+			}
 			continue ;
 		}
 		canonical_form[b.i_new] = curpath[b.i_orig];

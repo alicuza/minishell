@@ -84,6 +84,13 @@ typedef struct s_command_ctx
 	char		**argv;
 }	t_command_ctx;
 
+typedef struct s_error
+{
+	char	*name;
+	char	*msg;
+	int		status;
+}	t_error;
+
 typedef struct s_expand_state
 {
 	t_slice	field;
