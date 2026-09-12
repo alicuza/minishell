@@ -24,6 +24,7 @@ int	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 	t_node	*command_node;
 	int		result;
 
+	result == EXIT_SUCCESS;
 	command_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 			pipeline_node->data.pipeline.command_head_idx);
 	while (command_node->type == NODE_COMMAND)
