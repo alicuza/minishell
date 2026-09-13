@@ -27,10 +27,9 @@ int	env_add(t_env *env, char *key, char *value)
 	new_node = get_new_list_node(key, value);
 	if (!new_node)
 	{
-		ft_lstclear(vals, &free_env_content);
 		free(key);
 		free(value);
-		return (exit_mem_issue());
+		return (msh_error(NULL, NULL, strerror(ENOMEM)));
 	}
 	ft_lstadd_back(vals, new_node);
 	return (EXIT_SUCCESS);

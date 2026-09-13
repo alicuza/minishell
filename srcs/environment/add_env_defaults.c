@@ -16,7 +16,7 @@ static int	add_pwd(t_env *env)
 		{
 			free(key);
 			free(value);
-			return (exit_mem_issue());
+			return (msh_error(NULL, NULL, strerror(ENOMEM)));
 		}
 		return (env_add(env, key, value));
 	}
@@ -39,7 +39,7 @@ static int	add_path(t_env *env)
 		{
 			free(key);
 			free(value);
-			return (exit_mem_issue());
+			return (msh_error(NULL, NULL, strerror(ENOMEM)));
 		}
 		return (env_add(env, key, value));
 	}
@@ -61,7 +61,7 @@ static int	increase_shlvl(t_env *env, char *shlvl)
 	{
 		free(key);
 		free(value);
-		return (exit_mem_issue());
+		return (msh_error(NULL, NULL, strerror(ENOMEM)));
 	}
 	return (env_update(env, key, value));
 }
@@ -82,7 +82,7 @@ static int	add_shlvl(t_env *env)
 		{
 			free(key);
 			free(value);
-			return (exit_mem_issue());
+			return (msh_error(NULL, NULL, strerror(ENOMEM)));
 		}
 		return (env_add(env, key, value));
 	}

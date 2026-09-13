@@ -31,7 +31,7 @@ int	env_update_with_copy(t_env *env, char *key, char *value)
 	{
 		free(key_loc);
 		free(value_loc);
-		return (exit_mem_issue());
+		return (msh_error(NULL, NULL, strerror(ENOMEM)));
 	}
 	return (env_update(env, key_loc, value_loc));
 }

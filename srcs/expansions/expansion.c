@@ -36,7 +36,7 @@ void	finish_args(t_ctx *c, t_command_ctx *command)
 	command->argv = (char **)get_ptr_from_idx(arguments, first);
 }
 
-void	expand_args_arena(t_ctx *c, t_command_ctx *command,
+void	expand_args(t_ctx *c, t_command_ctx *command,
 		t_expand_state *exp, t_node *arg_node)
 {
 	char	*word;
@@ -77,7 +77,7 @@ static bool	redir_needs_scan(t_ctx *c, t_node *redir_node, char **word)
 		& (TKN_HAS_QUOTES | TKN_HAS_EXPANSION));
 }
 
-int	expand_redir_arena(t_ctx *c, t_node *redir_node, t_expand_state *exp)
+int	expand_redir(t_ctx *c, t_node *redir_node, t_expand_state *exp)
 {
 	t_command_ctx	tmp;
 	t_arena			*arguments;

@@ -27,13 +27,17 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char		**tmp;
 	uint64_t	i;
+	t_error		e;
 
 	i = 1;
 	while (i < command_ctx->argc)
 	{
 		tmp = ft_split_key_value(command_ctx->argv[i], '=');
 		if (tmp == NULL)
-			return (exit_mem_issue());
+		{
+			e = (t_error){NULL, strerror(ENOMEM), 1};
+			msh_exit(c, command_ctx, &e, NULL);
+		}
 		if (is_valid_var_name(tmp[0]) == false || ft_strncmp(tmp[0], SHLVL, 6)
 			== EQUAL)
 		{

@@ -35,8 +35,6 @@ SRCS        = \
 			main.c \
 			prompt.c \
 			input.c \
-			ft_close_fd.c \
-			cleanup.c \
 			expansions/expansion.c \
 			expansions/expand_field.c \
 			expansions/expand_quote.c \
@@ -88,8 +86,8 @@ SRCS        = \
 			environment/init_env.c \
 			environment/add_env_defaults.c \
 			environment/env_to_envp.c \
-			error_handling/error_handling.c \
-			error_handling/msh_error.c \
+			error_handling/shell_errors.c \
+			error_handling/close_fds.c \
 			builtin/execute_builtin.c \
 			builtin/execute_builtin_in_subshell.c \
 			builtin/env.c \

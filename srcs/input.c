@@ -16,6 +16,8 @@ static char	*read_interactive(t_ctx *c, bool is_continuation)
 {
 	char	*prompt;
 	char	*line;
+	char	*tmp;
+	t_error	e;
 
 	rl_outstream = stderr;
 	if (is_continuation)
@@ -27,7 +29,14 @@ static char	*read_interactive(t_ctx *c, bool is_continuation)
 		add_history(line);
 	if (!line || g_signal == SIGINT)
 		return (free(line), NULL);
-	line = ft_strjoin(line, "\n");
+	tmp = ft_strjoin(line, "\n");
+	free(line);
+	line = tmp;
+	if (!line)
+	{
+		e = (t_error){NULL, strerror(ENOMEM), 1};
+		msh_exit(c, NULL, &e, NULL);
+	}
 	return (line);
 }
 

@@ -2,8 +2,13 @@
 
 static void	write_here(t_ctx *c, int fd, char *buf, uint64_t len)
 {
+	t_error	e;
+
 	if (write(fd, buf, len) == -1)
-		fatal(c, "heredoc", strerror(errno));
+	{
+		e = (t_error){"heredoc", strerror(errno), 1};
+		msh_exit(c, NULL, &e, NULL);
+	}
 }
 
 static char	*get_expansion_value(t_ctx *c, char *name)
@@ -18,13 +23,14 @@ static uint64_t	expand_here_var(t_ctx *c, int fd, char *line, uint64_t i)
 	uint64_t	end;
 	char		*name;
 	char		*val;
+	t_error		e;
 
 	end = get_expansion_len(line + i);
 	name = ft_substr(line + i + 1, 0, end - 1);
 	if (!name)
 	{
-		fatal(c, "heredoc", "out of memory");
-		return (i + end);
+		e = (t_error){"heredoc", strerror(ENOMEM), 1};
+		msh_exit(c, NULL, &e, NULL);
 	}
 	val = get_expansion_value(c, name);
 	free(name);
