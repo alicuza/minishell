@@ -1,22 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error_handler.c                                    :+:      :+:    :+:   */
+/*   open_here_file.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/13 19:41:10 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/13 21:40:47 by nribakov         ###   ########.fr       */
+/*   Created: 2026/09/13 21:53:43 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 21:53:48 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	handle_mem_error(t_ctx *c, t_command_ctx *command_ctx, char *to_free)
+int	open_here_file(t_ctx *c, t_node *redir_node)
 {
-	t_error	e;
-
-	free(to_free);
-	e = (t_error){NULL, strerror(ENOMEM), 1};
-	msh_exit(c, command_ctx, &e, NULL);
+	ft_close_fd(&c->io_fd[0]);
+	c->io_fd[0] = redir_node->data.redir.fd;
+	redir_node->data.redir.fd = -1;
+	if (c->io_fd[0] == -1)
+		return (msh_error("redirection", "here-doc", strerror(EBADF)));
+	return (EXIT_SUCCESS);
 }

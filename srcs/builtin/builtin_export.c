@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:10:39 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/13 20:10:42 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 21:40:59 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 	{
 		tmp = ft_split_key_value(command_ctx->argv[i], '=');
 		if (tmp == NULL)
-			handle_mem_error(c, command_ctx);
+			handle_mem_error(c, command_ctx, NULL);
 		if (is_valid_var_name(tmp[0]) == false)
 		{
 			msh_error("export", command_ctx->argv[i], "not a valid identifier");

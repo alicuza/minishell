@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 21:26:58 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 23:00:09 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,8 +138,8 @@ void			close_io(t_ctx *c);
 void			close_all_fds(t_ctx *c);
 void			close_heredoc_fds(t_ctx *c);
 
-/* -------- error_handling/error_handler.c -------------------------------------- */
-void	handle_mem_error(t_ctx *c, t_command_ctx *command_ctx);
+/* -------- error_handling/error_handler.c ---------------------------------- */
+void			handle_mem_error(t_ctx *c, t_command_ctx *command_ctx, char *to_free);
 
 /* -------- expansions/expansion.c ------------------------------------------ */
 void			finish_args(t_ctx *c, t_command_ctx *command);
@@ -190,11 +190,17 @@ int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
 int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
 					t_node *redir_node);
 
-/* -------- execute/get_pathname.c ------------------------------------------ */
+/* -------- search_in_path/get_pathname.c ------------------------------------ */
 int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
+
+/* -------- search_in_path/get_pathname_from_current_dir.c ------------------- */
+int				get_pathname_from_current_dir(t_command_ctx *cmd_ctx);
 
 /* -------- execute/process_redirection.c ----------------------------------- */
 int				process_redirection(t_ctx *c, t_node *redir_node);
+
+/* -------- execute/open_here_file.c ---------------------------------------- */
+int				open_here_file(t_ctx *c, t_node *redir_node);
 
 /* -------- execute/build_command.c ----------------------------------------- */
 void			init_command(t_ctx *c, t_command_ctx *command,

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_redirection.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:52:52 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 20:56:29 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 21:53:35 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,6 @@ int	open_in_file(t_ctx *c, t_node *redir_node)
 	c->io_fd[0] = open(filename, O_RDONLY);
 	if (c->io_fd[0] == -1)
 		return (msh_error("redirection", filename, strerror(errno)));
-	return (EXIT_SUCCESS);
-}
-
-int	open_here_file(t_ctx *c, t_node *redir_node)
-{
-	ft_close_fd(&c->io_fd[0]);
-	c->io_fd[0] = redir_node->data.redir.fd;
-	redir_node->data.redir.fd = -1;
-	if (c->io_fd[0] == -1)
-		return (msh_error("redirection", "here-doc", strerror(EBADF)));
 	return (EXIT_SUCCESS);
 }
 

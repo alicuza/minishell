@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_pathname.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:58:41 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 20:58:43 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 22:33:23 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,66 +29,47 @@ char	*add_prefix(char *path, const char *pathname)
 	return (tmp1);
 }
 
+static char	*get_with_prefix(t_command_ctx *cmd_ctx, char *path)
+{
+	if (path[0] == '\0')
+		return (ft_strjoin("./", cmd_ctx->pathname));
+	else
+		return (add_prefix(path, cmd_ctx->pathname));
+}
+
+static int	handle_executable(t_command_ctx *cmd_ctx, char *tmp)
+{
+	free(cmd_ctx->pathname);
+	cmd_ctx->pathname = tmp;
+	return (EXIT_SUCCESS);
+}
+
 static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 {
 	struct stat	st;
 	char		*tmp;
-	char		*first_found;
 	int			i;
 
-	first_found = NULL;
-	i = 0;
-	while (paths[i] != NULL)
+	cmd_ctx->pathname = NULL;
+	i = -1;
+	while (paths[++i] != NULL)
 	{
-		if (paths[i][0] == '\0')
-			tmp = ft_strjoin("./", cmd_ctx->pathname);
-		else
-			tmp = add_prefix(paths[i], cmd_ctx->pathname);
+		tmp = get_with_prefix(cmd_ctx, paths[i]);
 		if (!tmp)
 			return (EXIT_FAILURE);
-		if (access(tmp, F_OK) != 0
-			|| stat(tmp, &st) != 0 || !S_ISREG(st.st_mode))
+		if (access(tmp, F_OK) || stat(tmp, &st) || !S_ISREG(st.st_mode))
 		{
 			free(tmp);
-			i++;
 			continue ;
 		}
 		if (access(tmp, X_OK) == 0)
-		{
-			free(cmd_ctx->pathname);
-			free(first_found);
+			return (handle_executable(cmd_ctx, tmp));
+		else if (cmd_ctx->pathname == NULL)
 			cmd_ctx->pathname = tmp;
-			return (EXIT_SUCCESS);
-		}
-		else if (first_found == NULL)
-			first_found = tmp;
-		if (first_found != tmp)
+		if (cmd_ctx->pathname != tmp)
 			free(tmp);
-		i++;
 	}
 	free(cmd_ctx->pathname);
-	cmd_ctx->pathname = first_found;
-	return (EXIT_SUCCESS);
-}
-
-static int	get_from_current(t_command_ctx *cmd_ctx)
-{
-	struct stat	st;
-	char		*tmp;
-
-	tmp = ft_strjoin("./", cmd_ctx->pathname);
-	if (!tmp)
-		return (EXIT_FAILURE);
-	if (access(tmp, F_OK) == 0
-		&& stat(tmp, &st) == 0 && S_ISREG(st.st_mode))
-	{
-		free(cmd_ctx->pathname);
-		cmd_ctx->pathname = tmp;
-		return (EXIT_SUCCESS);
-	}
-	free(tmp);
-	free(cmd_ctx->pathname);
-	cmd_ctx->pathname = NULL;
 	return (EXIT_SUCCESS);
 }
 
@@ -101,7 +82,7 @@ int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 	path = env_get(&c->env, PATH);
 	if (is_empty_str(path))
 	{
-		status = get_from_current(cmd_ctx);
+		status = get_pathname_from_current_dir(cmd_ctx);
 		free(path);
 		return (status);
 	}

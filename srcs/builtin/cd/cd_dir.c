@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 21:14:45 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/13 21:29:22 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 21:41:05 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static int	handle_failed_curpath(t_ctx *c, t_command_ctx *command_ctx,
 		const char *dir)
 {
 	if (errno == ENOMEM)
-		handle_mem_error(c, command_ctx);
+		handle_mem_error(c, command_ctx, NULL);
 	msh_error("cd", (char *)dir, strerror(errno));
 	return (EXIT_FAILURE);
 }
