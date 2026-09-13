@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 21:05:32 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 21:26:58 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,6 +311,9 @@ int				cd(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- builtin/cd/cd_path.c ---------------------------------------------------- */
 int				cd_path(t_ctx *c, char *curpath, const char *orig);
+
+/* -------- builtin/cd/cd_dir.c ---------------------------------------------------- */
+int	cd_dir(t_ctx *c, t_command_ctx *command_ctx, const char *dir);
 
 /* -------- builtin/cd/get_path_canonical_form.c ------------------------------- */
 char			*get_path_canonical_form(char *curpath, size_t len);

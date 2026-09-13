@@ -3,24 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   wait_return_status.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 21:03:02 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 21:03:05 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 22:00:58 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static int	get_return_status(int wstatus, int result)
+{
+	if (WIFSIGNALED(wstatus))
+		return (128 + WTERMSIG(wstatus));
+	else if (WIFEXITED(wstatus))
+		return (WEXITSTATUS(wstatus));
+	return (result);
+}
+
 int	wait_return_status(t_ctx *c)
 {
 	int		wstatus;
 	pid_t	wpid;
-	pid_t	pid_to_wait;
 	int		result;
 
 	result = EXIT_FAILURE;
-	pid_to_wait = c->pid_to_wait;
 	while (1)
 	{
 		wpid = waitpid(-1, &wstatus, 0);
@@ -35,13 +42,8 @@ int	wait_return_status(t_ctx *c)
 			}
 			break ;
 		}
-		if (wpid == pid_to_wait)
-		{
-			if (WIFSIGNALED(wstatus))
-				result = 128 + WTERMSIG(wstatus);
-			else if (WIFEXITED(wstatus))
-				result = WEXITSTATUS(wstatus);
-		}
+		if (wpid == c->pid_to_wait)
+			result = get_return_status(wstatus, result);
 	}
 	c->pid_to_wait = -1;
 	g_signal = 0;

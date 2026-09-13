@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/09/13 21:55:40 by sancuta          ###   ########.fr        #
+#    Updated: 2026/09/13 22:11:04 by sancuta          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -97,6 +97,7 @@ SRCS        = \
 			builtin/builtin_exit.c \
 			builtin/cd/cd.c \
 			builtin/cd/cd_path.c \
+			builtin/cd/cd_dir.c \
 			builtin/cd/get_path_canonical_form.c \
 			builtin/builtin_export.c \
 			builtin/unset.c \
