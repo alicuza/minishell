@@ -38,16 +38,6 @@ typedef enum e_arena_type
 	AT_COUNT,
 }	t_arena_type;
 
-# ifdef DEBUG
-typedef struct s_debug
-{
-	uint8_t	scope;				/* SCOPE_TOKENS | SCOPE_STACK | SCOPE_COMMAND */
-	uint8_t	states;				/* DBG_LEXER | DBG_PARSER | DBG_HEREDOC */
-	uint8_t	arenas;				/* DBG_ARENA_* mask */
-	uint8_t	parser;				/* DBG_SHOW_* mask: which parser parts to print */
-	bool	no_exec;
-}	t_debug;
-# endif
 
 typedef struct s_ctx	t_ctx;
 
@@ -66,9 +56,6 @@ typedef struct s_ctx
 	bool	is_pipe;
 	bool	should_exit;
 	int		pid_to_wait;
-# ifdef DEBUG
-	t_debug	dbg;
-# endif
 }	t_ctx;
 
 typedef struct s_slice

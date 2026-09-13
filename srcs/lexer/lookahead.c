@@ -14,10 +14,6 @@
 
 bool	lex_token(t_ctx *c, t_lexer_state *lex)
 {
-#ifdef DEBUG
-	if (c->dbg.states & DBG_LEXER)
-		print_lex_state(c, lex);
-#endif
 	if (!c->read_line[lex->char_idx])										// rule 1
 		return (apply_rule_1(c, lex));
 	else if (lex->type == TKN_OPERATOR)										// rule 2 & 3

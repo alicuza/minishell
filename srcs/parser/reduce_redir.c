@@ -55,10 +55,6 @@ uint64_t	reduce_io_here(t_ctx *c, t_parser_state *parse, t_rule *rule)
 	symbol = get_symbol_from_rhs(c, parse, rule, 1);
 	token = get_token_from_idx(c, symbol->token_idx);
 	flags = set_here_delim(c, token);
-#ifdef DEBUG
-	if (c->dbg.states & DBG_HEREDOC)
-		print_here_saving();
-#endif
 	parse->flags |= PARSE_SAVE_TOKENS;
 	node_idx = alloc_node(c, NODE_REDIR);
 	node = get_node_from_idx(c, node_idx);

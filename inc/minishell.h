@@ -39,9 +39,6 @@
 # include "types.h"
 # include <errno.h> // errno
 
-# ifdef DEBUG
-#  include "debug.h"
-# endif
 
 # ifndef ARENA_SIZE
 #  define ARENA_SIZE 64
@@ -114,50 +111,6 @@
 # define EXP_IN_SQUOTE			0x02
 # define EXP_IN_DQUOTE			0x04
 
-# ifdef DEBUG
-/* -------- test scope flags ------------------------------------------------ */
-#  define SCOPE_TOKENS 0x01
-#  define SCOPE_STACK 0x02
-#  define SCOPE_COMMAND 0x04
-#  define SCOPE_TRACE 0x08
-#  define SCOPE_ALL 0x0f
-
-/* -------- debug state flags (--states=) ----------------------------------- */
-#  define DBG_LEXER 0x01
-#  define DBG_PARSER 0x02
-#  define DBG_HEREDOC 0x04
-#  define DBG_ALL_STATES 0x07
-
-/* -------- debug arena flags (--arenas=) ----------------------------------- */
-#  define DBG_ARENA_PROMPT 0x01
-#  define DBG_ARENA_STRING 0x02
-#  define DBG_ARENA_TOKENS 0x04
-#  define DBG_ARENA_STACK 0x08
-#  define DBG_ARENA_COMMAND 0x10
-#  define DBG_ARENA_FIELDS 0x20
-#  define DBG_ARENA_ARGV 0x40
-#  define DBG_ARENA_ALL 0x7f
-
-/* -------- parser output sub-toggles (--parser=) --------------------------- */
-/* which parts of the DBG_PARSER trace to print, per shift/reduce step */
-#  define DBG_SHOW_FLAGS 0x01  /* banner + parse flags line */
-#  define DBG_SHOW_STACK 0x02  /* vertical symbol stack */
-#  define DBG_SHOW_ACTION 0x04 /* the shift/reduce action line */
-#  define DBG_SHOW_NODES 0x08  /* node arena dump after a reduce */
-#  define DBG_SHOW_LINKS 0x10  /* [rhs]/[lhs] node context lines */
-#  define DBG_SHOW_ALL 0x1f
-
-/* -------- lookahead sentinel labels --------------------------------------- */
-#  define DBG_LOOKAHEAD_PENDING "(pending)"
-#  define DBG_LOOKAHEAD_EOF "SYM_EOF"
-
-/* -------- default debug config (edit these to change what shows) ---------- */
-/* applied when the matching --states=/--parser=/--scope=/--arenas= is absent */
-#  define DBG_DEFAULT_STATES DBG_ALL_STATES
-#  define DBG_DEFAULT_PARSER DBG_SHOW_ALL
-#  define DBG_DEFAULT_SCOPE 0
-#  define DBG_DEFAULT_ARENAS 0
-# endif
 
 /* -------- grammar constants ----------------------------------------------- */
 # define NO_TOKEN 0

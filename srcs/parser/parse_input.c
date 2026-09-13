@@ -18,17 +18,8 @@ static void	check_and_run_pending_exec(t_ctx *c, t_parser_state *parse)
 
 	if (!parse->exec_root_idx)
 		return ;
-#ifndef DEBUG
 	execute_list(c, parse->exec_root_idx);
-#else
-	if (!c->dbg.no_exec)
-		execute_list(c, parse->exec_root_idx);
-#endif
 	parse->exec_root_idx = 0;
-#ifdef DEBUG
-	if (c->dbg.no_exec)
-		return ;
-#endif
 	close_heredoc_fds(c);
 	arena_clear(&c->arena[AT_COMMAND]);
 	symbol = get_symbol_from_idx(c, parse->stack_idx);
@@ -57,11 +48,6 @@ static bool	run_parse_iteration(t_ctx *c, t_parser_state *parse,
 {
 	t_lalr_action	action;
 
-#ifdef DEBUG
-	if ((c->dbg.states & DBG_PARSER) && (c->dbg.parser & DBG_SHOW_FLAGS))
-		debug_parse_header(parse);
-	debug_parse_arenas(c);
-#endif
 	if (!(parse->flags & PARSE_HAS_LOOKAHEAD))
 	{
 		if (!get_lookahead(c, parse, lex))
@@ -74,9 +60,6 @@ static bool	run_parse_iteration(t_ctx *c, t_parser_state *parse,
 	}
 	action = shift_reduce(c, parse);
 	check_and_run_pending_exec(c, parse);
-#ifdef DEBUG
-	debug_parse_action(c, parse, action);
-#endif
 	return (parse_advance(c, parse, action));
 }
 

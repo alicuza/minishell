@@ -22,12 +22,6 @@ char	*get_pwd(t_ctx *c)
 	pwd = env_get(&c->env, PWD);
 	if (!pwd)
 		pwd = getcwd(NULL, 0);
-#ifdef DEBUG
-	if (!pwd)
-	{
-		fprintf(stderr, "Error: failed to get cwd");
-	}
-#endif
 	return (pwd);
 }
 
@@ -35,9 +29,6 @@ int	pwd(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char *pwd;
 
-#ifdef DEBUG
-	fprintf(stderr, "\nExecuting pwd:\n");
-#endif
 
 
 	(void)command_ctx;

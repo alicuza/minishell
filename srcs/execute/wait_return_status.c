@@ -30,13 +30,6 @@ int	wait_return_status(t_ctx *c)
 			else if (WIFEXITED(wstatus))
 				result = WEXITSTATUS(wstatus);
 		}
-#ifdef DEBUG
-		fprintf(stderr, "\nreaped pid=%jd\n", (intmax_t)wpid);
-		if (WIFEXITED(wstatus))
-			fprintf(stderr, "exited, status=%d\n", WEXITSTATUS(wstatus));
-		else if (WIFSIGNALED(wstatus))
-			fprintf(stderr, "signaled, sig=%d\n", WTERMSIG(wstatus));
-#endif
 	}
 	c->pid_to_wait = -1;
 	g_signal = 0;

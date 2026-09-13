@@ -68,9 +68,6 @@ static void	shell_loop(t_ctx *c)
 			c->read_line = NULL;
 			continue ;
 		}
-#ifdef DEBUG
-		debug_print_read_line(c);
-#endif
 		parse = parse_input(c);
 		if (parse.flags & PARSE_INTERRUPTED)
 			sig_consume_sigint(c);
@@ -80,9 +77,6 @@ static void	shell_loop(t_ctx *c)
 				c->return_status = 2;
 			sig_reset_sigint();
 		}
-#ifdef DEBUG
-		debug_print_after_parse(c, &parse);
-#endif
 		free(c->read_line);
 		c->read_line = NULL;
 		if (c->should_exit)
@@ -102,9 +96,6 @@ int	main(int argc, char **argv, char **envp)
 		cleanup_context(&c);
 		return (EXIT_FAILURE);
 	}
-#ifdef DEBUG
-	parse_debug_args(argc, argv, &c);
-#endif
 	shell_loop(&c);
 	cleanup_context(&c);
 	return (c.return_status);
