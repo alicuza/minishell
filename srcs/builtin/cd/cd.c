@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 21:13:54 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 21:29:13 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "env.h"
 #include "minishell.h"
 
@@ -42,69 +54,6 @@ int	cd_oldpwd(t_ctx *c)
 	return (result);
 }
 
-char	*add_pwd_prefix(t_ctx *c, const char *dir)
-{
-	char	*tmp;
-	char	*tmp1;
-
-	tmp = get_pwd(c);
-	if (!tmp)
-		return (NULL);
-	tmp1 = ft_strjoin(tmp, "/");
-	free(tmp);
-	if (!tmp1)
-		return (NULL);
-	tmp = ft_strjoin(tmp1, dir);
-	free(tmp1);
-	return (tmp);
-}
-
-static int	cd_dir(t_ctx *c, const char *dir)
-{
-	char	*curpath;
-	char	*canonical_form;
-	int		result;
-	t_error	e;
-
-	canonical_form = NULL;
-	errno = 0;
-	if (dir[0] != '/')
-		curpath = add_pwd_prefix(c, dir);
-	else
-		curpath = ft_strdup(dir);
-	if (curpath == NULL)
-	{
-		if (errno == ENOMEM)
-		{
-			e = (t_error){NULL, strerror(ENOMEM), 1};
-			msh_exit(c, NULL, &e, NULL);
-		}
-		msh_error("cd", (char *)dir, strerror(errno));
-		return (EXIT_FAILURE);
-	}
-	else
-	{
-		errno = 0;
-		canonical_form = get_path_canonical_form(curpath, ft_strlen(curpath));
-		if (canonical_form == NULL)
-		{
-			if (errno == ENOMEM)
-			{
-				e = (t_error){NULL, strerror(ENOMEM), 1};
-				free(curpath);
-				msh_exit(c, NULL, &e, NULL);
-			}
-			msh_error("cd", (char *)dir, "No such file or directory");
-			result = EXIT_FAILURE;
-		}
-		else
-			result = cd_path(c, canonical_form, dir);
-	}
-	free(curpath);
-	free(canonical_form);
-	return (result);
-}
-
 int	cd(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char	*dir;
@@ -122,6 +71,6 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 		if (dir[0] == '-' && dir[1] == '\0')
 			return (cd_oldpwd(c));
 		else
-			return (cd_dir(c, dir));
+			return (cd_dir(c, command_ctx, dir));
 	}
 }
