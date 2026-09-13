@@ -1,12 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_delete.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:46:23 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:46:23 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #define EQUAL 0
 
-
 void	env_delete(t_env *env, char *key)
 {
-	t_list *prev_node;
-	t_list *vals;
-	size_t key_size;
+	t_list	*prev_node;
+	t_list	*vals;
+	size_t	key_size;
 
 	prev_node = NULL;
 	vals = env->vals;
