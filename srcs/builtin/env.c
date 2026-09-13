@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:35:41 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:35:41 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void	print_val(void *content_void_p)
 {
-	t_env_content *content;
+	t_env_content	*content;
 
 	content = (t_env_content *)content_void_p;
 	if (content->val != NULL)
@@ -15,10 +27,10 @@ static void	print_val(void *content_void_p)
 
 int	env(t_ctx *c, t_command_ctx *command_ctx)
 {
-
+	t_list	*env;
 
 	(void)command_ctx;
-	t_list *env = c->env.vals;
+	env = c->env.vals;
 	if (env)
 	{
 		ft_lstiter(env, &print_val);
