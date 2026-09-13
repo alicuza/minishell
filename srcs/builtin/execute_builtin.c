@@ -14,26 +14,27 @@ static int	save_fds(t_ctx *c, t_command_ctx *cmd_ctx, int saved[2])
 {
 	saved[0] = -1;
 	saved[1] = -1;
-	saved[0] = dup(0);
-	if (saved[0] < 0)
-		return (handle_dup_error(c, cmd_ctx, saved));
-	saved[1] = dup(1);
-	if (saved[1] < 0)
+	if (c->io_fd[0] != -1)
 	{
-		ft_close_fd(&saved[0]);
-		return (handle_dup_error(c, cmd_ctx, saved));
+		saved[0] = dup(0);
+		if (saved[0] < 0)
+			return (handle_dup_error(c, cmd_ctx, saved));
+	}
+	if (c->io_fd[1] != -1)
+	{
+		saved[1] = dup(1);
+		if (saved[1] < 0)
+			return (handle_dup_error(c, cmd_ctx, saved));
 	}
 	return (EXIT_SUCCESS);
 }
 
 int	reset_to_saved_fd(t_ctx *c, t_command_ctx *cmd_ctx, int saved[2])
 {
-	struct stat	buf;
-
-	if (fstat(STDIN_FILENO, &buf) != -1)
+	if (saved[0] != -1)
 		if (dup2(saved[0], 0) < 0)
 			return (handle_dup_error(c, cmd_ctx, saved));
-	if (fstat(STDOUT_FILENO, &buf) != -1)
+	if (saved[1] != -1)
 		if (dup2(saved[1], 1) < 0)
 			return (handle_dup_error(c, cmd_ctx, saved));
 	ft_close_fd(&saved[0]);
