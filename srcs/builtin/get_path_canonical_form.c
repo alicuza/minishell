@@ -35,7 +35,7 @@ static int	process_dot(char *curpath, char *canonical_form, t_builder *b)
 {
 	if (curpath[b->i_orig + 1] == '\0')
 		b->i_orig += 1;
-	if (curpath[b->i_orig + 1] == '/')
+	else if (curpath[b->i_orig + 1] == '/')
 		b->i_orig += 2;
 	else if (curpath[b->i_orig + 1] == '.')
 	{

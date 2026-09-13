@@ -1,7 +1,7 @@
 #include "env.h"
 #include "minishell.h"
 
-static int	cd_path(t_ctx *c, char *curpath)
+static int	cd_path(t_ctx *c, char *curpath, const char *orig)
 {
 	int		result;
 	char	*oldpwd;
@@ -33,7 +33,10 @@ static int	cd_path(t_ctx *c, char *curpath)
 	}
 	else
 	{
-		msh_error("cd", curpath, strerror(errno));
+		if(orig != NULL)
+			msh_error("cd", (char*) orig, strerror(errno));
+		else
+			msh_error("cd", curpath, strerror(errno));
 		return (EXIT_FAILURE);
 	}
 }
@@ -52,7 +55,7 @@ static int	cd_home(t_ctx *c)
 	}
 	else
 	{
-		result = cd_path(c, home);
+		result = cd_path(c, home, NULL);
 	}
 	free(home);
 	return (result);
@@ -71,7 +74,7 @@ int	cd_oldpwd(t_ctx *c)
 	}
 	else
 	{
-		result = cd_path(c, old_path);
+		result = cd_path(c, old_path, NULL);
 		if (result == EXIT_SUCCESS)
 			ft_putendl_fd(old_path, STDOUT_FILENO);
 	}
@@ -135,7 +138,7 @@ static int	cd_dir(t_ctx *c, const char *dir)
 			result = EXIT_FAILURE;
 		}
 		else
-			result = cd_path(c, canonical_form);
+			result = cd_path(c, canonical_form, dir);
 	}
 	free(curpath);
 	free(canonical_form);
@@ -149,7 +152,7 @@ int	cd(t_ctx *c, t_command_ctx *command_ctx)
 	if (command_ctx->argc > 2)
 	{
 		msh_error("cd", NULL, "too many arguments");
-		return (2);
+		return (1);
 	}
 	dir = command_ctx->argv[1];
 	if (is_empty_str(dir))
