@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 21:02:33 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/14 00:56:16 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 01:34:02 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ static int	execute_subshell(t_ctx *c, t_node *cmd_node, t_node *redir_node)
 	return (EXIT_SUCCESS);
 }
 
-static int	handle_empty_command(t_ctx *c, t_command_ctx	*command, t_node			*redir_node)
+static int	handle_empty_command(t_ctx *c, t_command_ctx *command,
+		t_node *redir_node)
 {
 	int	result;
 
@@ -58,14 +59,14 @@ static int	handle_empty_command(t_ctx *c, t_command_ctx	*command, t_node			*redi
 	return (result);
 }
 
-static int	handle_no_command(t_ctx *c, t_command_ctx	*command, t_node			*redir_node)
+static int	handle_no_command(t_ctx *c, t_command_ctx *command,
+		t_node *redir_node)
 {
 	int	result;
 
 	result = EXIT_SUCCESS;
 	if (c->is_pipe && command->argc == 0)
-		return (execute_builtin_in_subshell(c, command, no_op,
-				redir_node));
+		return (execute_builtin_in_subshell(c, command, no_op, redir_node));
 	if (process_redirection(c, redir_node) == EXIT_FAILURE)
 		result = EXIT_FAILURE;
 	close_io(c);
