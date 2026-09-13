@@ -1,17 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_builtin_in_subshell.c                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:37:12 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:40:42 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx,
-		t_command_function command, t_node *redir_node)
+static void	redirect_io(t_ctx *c, t_command_ctx *cmd_ctx)
 {
-	int		result_code;
 	t_error	e;
 
-	result_code = 0;
-	if (process_redirection(c, redir_node) == EXIT_FAILURE)
-	{
-		cleanup_shell(c, cmd_ctx, NULL);
-		exit(EXIT_FAILURE);
-	}
 	if (c->io_fd[0] != -1)
 	{
 		if (dup2(c->io_fd[0], 0) < 0)
@@ -28,6 +32,20 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx,
 			msh_exit(c, cmd_ctx, &e, NULL);
 		}
 	}
+}
+
+static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx,
+		t_command_function command, t_node *redir_node)
+{
+	int		result_code;
+
+	result_code = 0;
+	if (process_redirection(c, redir_node) == EXIT_FAILURE)
+	{
+		cleanup_shell(c, cmd_ctx, NULL);
+		exit(EXIT_FAILURE);
+	}
+	redirect_io(c, cmd_ctx);
 	close_all_fds(c);
 	result_code = command(c, cmd_ctx);
 	cleanup_shell(c, cmd_ctx, NULL);
