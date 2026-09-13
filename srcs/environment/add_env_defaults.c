@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   add_env_defaults.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:45:05 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:45:08 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "env.h"
 #include "minishell.h"
 
@@ -49,7 +61,7 @@ static int	add_path(t_env *env)
 
 static int	increase_shlvl(t_env *env, char *shlvl)
 {
-	int	tmp;
+	int		tmp;
 	char	*key;
 	char	*value;
 
