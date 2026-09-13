@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/09/07 05:43:42 by nribakov         ###   ########.fr        #
+#    Updated: 2026/09/13 20:11:50 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -88,6 +88,7 @@ SRCS        = \
 			environment/env_to_envp.c \
 			error_handling/shell_errors.c \
 			error_handling/close_fds.c \
+			error_handling/error_handler.c \
 			builtin/execute_builtin.c \
 			builtin/execute_builtin_in_subshell.c \
 			builtin/env.c \

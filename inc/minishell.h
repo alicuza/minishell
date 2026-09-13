@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/12 12:46:47 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 20:12:35 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,9 @@ void			ft_close_fd(int *fd);
 void			close_io(t_ctx *c);
 void			close_all_fds(t_ctx *c);
 void			close_heredoc_fds(t_ctx *c);
+
+/* -------- error_handling/error_handler.c -------------------------------------- */
+void	handle_mem_error(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- expansions/expansion.c ------------------------------------------ */
 void			finish_args(t_ctx *c, t_command_ctx *command);

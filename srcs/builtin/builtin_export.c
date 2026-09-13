@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_export.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:10:39 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:10:42 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "env.h"
 #include "minishell.h"
 
@@ -27,8 +39,7 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 {
 	char		**tmp;
 	uint64_t	i;
-	t_error		e;
-	int		result;
+	int			result;
 
 	i = 1;
 	result = EXIT_SUCCESS;
@@ -36,12 +47,8 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 	{
 		tmp = ft_split_key_value(command_ctx->argv[i], '=');
 		if (tmp == NULL)
-		{
-			e = (t_error){NULL, strerror(ENOMEM), 1};
-			msh_exit(c, command_ctx, &e, NULL);
-		}
-		if (is_valid_var_name(tmp[0]) == false || ft_strncmp(tmp[0], SHLVL, 6)
-			== EQUAL)
+			handle_mem_error(c, command_ctx);
+		if (is_valid_var_name(tmp[0]) == false)
 		{
 			msh_error("export", command_ctx->argv[i], "not a valid identifier");
 			result = EXIT_FAILURE;
@@ -50,40 +57,13 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 			continue ;
 		}
 		if (env_update(&c->env, tmp[0], tmp[1]))
-		{
-			free(tmp);
-			return (EXIT_FAILURE);
-		}
+			return (free(tmp), EXIT_FAILURE);
 		free(tmp);
 		i++;
 	}
 	return (result);
 }
 
-/* TODO nik:
-2.9.1.1 Order of Processing: if it is export , then any remaining words,
-	that would be recognized as a variable assignment in isolation,
-	shall be expanded as a variable assignment (tilde expansion after the first <equals-sign> and after any unquoted <colon>,
-	parameter expansion, command substitution, arithmetic expansion,
-	and quote removal,
-	but no field splitting or pathname expansion); while remaining words that would not be a variable assignment in isolation shall be subject to regular expansion (tilde expansion for only a leading <tilde>,
-	parameter expansion, command substitution, arithmetic expansion,
-	field splitting, pathname expansion,
-	and quote removal). For all other command names,
-	words after the word that produced the command name shall be subject only to regular expansion. All fields resulting from the expansion of the word that produced the command name and the subsequent words,
-	except for the field containing the command name,
-	shall be the arguments for the command.
-
-All values undergo variable expansion,
-	and quote removal (see Shell Parameter Expansion).
-	Word splitting and filename expansion are not performed.
-
-
-		If any of the assignments attempts to assign a value to a readonly variable,
-			an error occurs,
-			and the command exits with a non-zero status. see what are readonly ones
-
-*/
 int	builtin_export(t_ctx *c, t_command_ctx *command_ctx)
 {
 	if (command_ctx->argc == 1)

@@ -1,10 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_exit.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:11:06 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:11:06 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <limits.h>
 
-
 static int	ft_isnumber(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i] && ft_isspace(str[i]))
@@ -17,16 +28,17 @@ static int	ft_isnumber(char *str)
 		return (0);
 	while (str[i] && ft_isdigit(str[i]))
 		i++;
-	if(str[i] == 0)
-		return 1;
-	else while (str[i] && ft_isspace(str[i]))
-		i++;
+	if (str[i] == 0)
+		return (1);
+	else
+		while (str[i] && ft_isspace(str[i]))
+			i++;
 	return (str[i] == 0);
 }
 
 static int	exit_with_code(t_ctx *c, t_command_ctx *command_ctx)
 {
-	long int exit_code;
+	long int	exit_code;
 
 	if (command_ctx->argc == 1)
 		exit_code = c->return_status;
@@ -36,6 +48,7 @@ static int	exit_with_code(t_ctx *c, t_command_ctx *command_ctx)
 	exit(exit_code);
 	return (exit_code);
 }
+
 static int	handle_numeric_argument_required(t_ctx *c,
 		t_command_ctx *command_ctx)
 {
