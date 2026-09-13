@@ -1,46 +1,6 @@
 #include "env.h"
 #include "minishell.h"
 
-static int	cd_path(t_ctx *c, char *curpath, const char *orig)
-{
-	int		result;
-	char	*oldpwd;
-
-	result = chdir(curpath);
-	if (result == EXIT_SUCCESS)
-	{
-		oldpwd = env_get(&c->env, PWD);
-		if (oldpwd)
-		{
-			if (env_update_with_copy(&c->env, OLDPWD, oldpwd) == EXIT_FAILURE
-				|| env_update_with_copy(&c->env, PWD, curpath) == EXIT_FAILURE)
-			{
-				result = chdir(oldpwd);
-				result = EXIT_FAILURE;
-			}
-			else
-				result = EXIT_SUCCESS;
-			free(oldpwd);
-		}
-		else
-		{
-			if (env_update_with_copy(&c->env, PWD, curpath) == EXIT_FAILURE)
-				result = EXIT_FAILURE;
-			else
-				result = EXIT_SUCCESS;
-		}
-		return (result);
-	}
-	else
-	{
-		if(orig != NULL)
-			msh_error("cd", (char*) orig, strerror(errno));
-		else
-			msh_error("cd", curpath, strerror(errno));
-		return (EXIT_FAILURE);
-	}
-}
-
 static int	cd_home(t_ctx *c)
 {
 	char	*home;

@@ -1,17 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_path_canonical_form.c                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:27:43 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:31:22 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-/*
-#include "../../libs/libft/libft.h"
-#include <stdio.h>
-#include <stdlib.h> */
 
-typedef struct s_builder
-{
-	size_t	i_orig;
-	size_t	i_new;
-	size_t	dir_start;
-}			t_builder;
-
-static void	skip_last_slash(char *canonical_form, t_builder *b)
+static void	skip_last_slash(char *canonical_form, t_str_builder *b)
 {
 	size_t	len;
 
@@ -23,15 +24,15 @@ static void	skip_last_slash(char *canonical_form, t_builder *b)
 	}
 }
 
-static void	process_slash(char *curpath, size_t len, t_builder *b)
+static void	process_slash(char *curpath, size_t len, t_str_builder *b)
 {
 	b->dir_start = b->i_orig;
 	while (b->i_orig < len && curpath[b->i_orig] == '/' && curpath[b->i_orig
-		+ 1] == '/')
+			+ 1] == '/')
 		b->i_orig++;
 }
 
-static int	process_dot(char *curpath, char *canonical_form, t_builder *b)
+static int	process_dot(char *curpath, char *canonical_form, t_str_builder *b)
 {
 	if (curpath[b->i_orig + 1] == '\0')
 		b->i_orig += 1;
@@ -55,7 +56,7 @@ static int	process_dot(char *curpath, char *canonical_form, t_builder *b)
 	return (0);
 }
 
-void	init_builder(t_builder *builder)
+void	init_builder(t_str_builder *builder)
 {
 	builder->i_orig = 0;
 	builder->i_new = 0;
@@ -64,8 +65,8 @@ void	init_builder(t_builder *builder)
 
 char	*get_path_canonical_form(char *curpath, size_t len)
 {
-	char		*canonical_form;
-	t_builder	b;
+	char			*canonical_form;
+	t_str_builder	b;
 
 	init_builder(&b);
 	canonical_form = ft_calloc(sizeof(char), len + 1);
@@ -78,10 +79,7 @@ char	*get_path_canonical_form(char *curpath, size_t len)
 		else if (curpath[b.i_orig] == '.')
 		{
 			if (process_dot(curpath, canonical_form, &b) == EXIT_FAILURE)
-			{
-				free(canonical_form);
-				return (NULL);
-			}
+				return (free(canonical_form), NULL);
 			continue ;
 		}
 		canonical_form[b.i_new] = curpath[b.i_orig];
@@ -92,19 +90,3 @@ char	*get_path_canonical_form(char *curpath, size_t len)
 	skip_last_slash(canonical_form, &b);
 	return (canonical_form);
 }
-
-/* int	main(int ac, char *av[])
-{
-	char	*new;
-
-	new = get_path_canonical_form(av[1], ft_strlen(av[1]));
-	printf("Was: %s\n", av[1]);
-	printf("New: %s\n", new);
-	printf("Comper: %i\n", ft_strncmp(av[2], new, ft_strlen(new)));
-	if (ft_strncmp(av[2], new, ft_strlen(new)) != 0)
-		printf("KO\n");
-	else
-		printf("OK\n");
-	free(new);
-	return (0);
-} */

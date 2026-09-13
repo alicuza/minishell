@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 20:12:35 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 20:24:19 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,10 +310,13 @@ char			*get_pwd(t_ctx *c);
 /* -------- builtin/builtin_exit.c ------------------------------------------ */
 int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- builtin/cd.c ---------------------------------------------------- */
+/* -------- builtin/cd/cd.c ---------------------------------------------------- */
 int				cd(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- builtin/get_path_canonical_form.c ------------------------------- */
+/* -------- builtin/cd/cd_path.c ---------------------------------------------------- */
+int	cd_path(t_ctx *c, char *curpath, const char *orig);
+
+/* -------- builtin/cd/get_path_canonical_form.c ------------------------------- */
 char			*get_path_canonical_form(char *curpath, size_t len);
 
 /* -------- builtin/builtin_export.c ---------------------------------------- */

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 08:07:58 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 13:35:39 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 20:29:34 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,4 +255,11 @@ typedef struct s_rule
 	uint32_t		rhs_len;		/* number of rhs symbols in rule */
 	t_symbol_type	lhs_type;		/* type of lhs in rule */
 }	t_rule;
+
+typedef struct s_str_builder
+{
+	size_t	i_orig;
+	size_t	i_new;
+	size_t	dir_start;
+}			t_str_builder;
 #endif
