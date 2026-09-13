@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:37:12 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/13 20:40:42 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 22:08:56 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx,
 	}
 	redirect_io(c, cmd_ctx);
 	close_all_fds(c);
+	close_heredoc_fds(c);
 	result_code = command(c, cmd_ctx);
 	cleanup_shell(c, cmd_ctx, NULL);
 	exit(result_code);

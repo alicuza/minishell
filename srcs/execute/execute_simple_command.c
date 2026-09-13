@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 21:02:33 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 21:02:37 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 22:09:22 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ static void	run_subshell(t_ctx *c, t_node *cmd_node, t_node *redir_node)
 		}
 	}
 	close_all_fds(c);
+	close_heredoc_fds(c);
 	c->pid_to_wait = -1;
 	execute_list(c, cmd_node->data.command.arg_head_idx);
 	cleanup_context(c);

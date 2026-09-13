@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/09/13 21:15:38 by nribakov         ###   ########.fr        #
+#    Updated: 2026/09/13 22:11:04 by sancuta          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -107,18 +107,8 @@ SRCS        = \
 			signals/signal_setup.c \
 			signals/signal_helpers.c
 
-DEBUG_SRCS  = \
-			debug/debug_main.c \
-			debug/debug_utils.c \
-			debug/debug_names.c \
-			debug/debug_arena.c \
-			debug/debug_lex.c \
-			debug/debug_parse.c \
-			debug/debug_heredoc.c
-
 RELEASE_OBJS = $(addprefix $(RELEASE_DIR)/, $(SRCS:.c=.o))
 DEBUG_OBJS   = $(addprefix $(DEBUG_DIR)/, $(SRCS:.c=.o)) \
-               $(addprefix $(DEBUG_DIR)/, $(DEBUG_SRCS:.c=.o))
 
 # ---- source lookup ------------------------------------------------------- #
 vpath %.c srcs
