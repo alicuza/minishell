@@ -1,15 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_update.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
+/*   Created: 2026/09/13 20:54:14 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:54:14 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #define EQUAL 0
 
-
 static t_list	*search_node(t_env *env, char *key)
 {
-	t_list *vals;
-	size_t key_size;
+	t_list	*vals;
+	size_t	key_size;
 
 	vals = env->vals;
 	key_size = ft_strlen(key) + 1;
 	if (vals)
+	{
 		while (vals)
 		{
 			if (ft_strncmp(((t_env_content *)vals->content)->key, key,
@@ -17,13 +32,14 @@ static t_list	*search_node(t_env *env, char *key)
 				return (vals);
 			vals = vals->next;
 		}
+	}
 	return (NULL);
 }
 
 int	env_update_with_copy(t_env *env, char *key, char *value)
 {
-	char *key_loc;
-	char *value_loc;
+	char	*key_loc;
+	char	*value_loc;
 
 	key_loc = ft_strdup(key);
 	value_loc = ft_strdup(value);
@@ -38,7 +54,7 @@ int	env_update_with_copy(t_env *env, char *key, char *value)
 
 int	env_update(t_env *env, char *key, char *value)
 {
-	t_list *node;
+	t_list	*node;
 
 	node = search_node(env, key);
 	if (node == NULL)
