@@ -4,8 +4,8 @@ static int	handle_dup_error(t_ctx *c, t_command_ctx *cmd_ctx, int saved[2])
 {
 	msh_error("dup", NULL, strerror(errno));
 	cleanup_shell(c, cmd_ctx, NULL);
-	ft_close_fd(&saved_fds[0]);
-	ft_close_fd(&saved_fds[1]);
+	ft_close_fd(&saved[0]);
+	ft_close_fd(&saved[1]);
 	exit(EXIT_FAILURE);
 	return (EXIT_FAILURE);
 }
@@ -19,7 +19,10 @@ static int	save_fds(t_ctx *c, t_command_ctx *cmd_ctx, int saved[2])
 		return (handle_dup_error(c, cmd_ctx, saved));
 	saved[1] = dup(1);
 	if (saved[1] < 0)
+	{
+		ft_close_fd(&saved[0]);
 		return (handle_dup_error(c, cmd_ctx, saved));
+	}
 	return (EXIT_SUCCESS);
 }
 

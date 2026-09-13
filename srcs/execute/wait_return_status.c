@@ -7,6 +7,7 @@ int	wait_return_status(t_ctx *c)
 	pid_t	pid_to_wait;
 	int		result;
 
+	result = EXIT_FAILURE;
 	pid_to_wait = c->pid_to_wait;
 	while (1)
 	{
@@ -18,7 +19,7 @@ int	wait_return_status(t_ctx *c)
 			if (errno != ECHILD)
 			{
 				msh_error("waitpid", NULL, strerror(errno));
-				return ;
+				return (result);
 			}
 			break ;
 		}

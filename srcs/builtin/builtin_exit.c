@@ -47,7 +47,7 @@ static int	handle_numeric_argument_required(t_ctx *c,
 static int	handle_too_many_arguments(void)
 {
 	msh_error("exit", NULL, "too many arguments");
-	return (1);
+	return (2);
 }
 
 int	builtin_exit(t_ctx *c, t_command_ctx *command_ctx)
