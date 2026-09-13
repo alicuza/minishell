@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:59:22 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 20:59:23 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 22:08:08 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx,
 		}
 	}
 	close_all_fds(c);
+	close_heredoc_fds(c);
 	envp = env_to_envp(&c->env);
 	if (envp == NULL)
 	{
