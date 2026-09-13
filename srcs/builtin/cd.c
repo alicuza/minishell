@@ -15,7 +15,7 @@ static int	cd_path(t_ctx *c, char *curpath)
 			if (env_update_with_copy(&c->env, OLDPWD, oldpwd) == EXIT_FAILURE
 				|| env_update_with_copy(&c->env, PWD, curpath) == EXIT_FAILURE)
 			{
-				chdir(oldpwd);
+				result = chdir(oldpwd);
 				result = EXIT_FAILURE;
 			}
 			else
