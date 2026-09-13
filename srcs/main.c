@@ -6,23 +6,17 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 21:01:16 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 21:12:57 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	init_ctx(t_ctx *c, char **envp)
+static void	init_all_arenas(t_ctx *c)
 {
-	t_arena_type	i;
 	t_error			e;
+	t_arena_type	i;
 
-	ft_memset(c, 0, sizeof(t_ctx));
-	c->io_fd[0] = -1;
-	c->io_fd[1] = -1;
-	c->pipe_fd[0] = -1;
-	c->pipe_fd[1] = -1;
-	c->pid_to_wait = -1;
 	c->arena[AT_PROMPT] = arena_init(ARENA_SIZE, sizeof(char));
 	c->arena[AT_STRING] = arena_init(ARENA_SIZE, sizeof(char));
 	c->arena[AT_TOKENS] = arena_init(ARENA_SIZE, sizeof(t_token));
@@ -40,18 +34,45 @@ static void	init_ctx(t_ctx *c, char **envp)
 		}
 		arena_hook_cleanup(&c->arena[i], &cleanup_context, c);
 	}
+}
+
+static void	init_ctx(t_ctx *c, char **envp)
+{
+	t_error	e;
+
+	ft_memset(c, 0, sizeof(t_ctx));
+	c->io_fd[0] = -1;
+	c->io_fd[1] = -1;
+	c->pipe_fd[0] = -1;
+	c->pipe_fd[1] = -1;
+	c->pid_to_wait = -1;
+	init_all_arenas(c);
 	init_input(c);
-	if (init_env(&c->env, envp) == EXIT_FAILURE || add_env_defaults(&c->env) == EXIT_FAILURE)
+	if (init_env(&c->env, envp) == EXIT_FAILURE
+		|| add_env_defaults(&c->env) == EXIT_FAILURE)
 	{
 		e = (t_error){"init_env", strerror(errno), 1};
 		msh_exit(c, NULL, &e, NULL);
 	}
 }
 
-static void	shell_loop(t_ctx *c)
+static void	shell_loop_parse(t_ctx *c)
 {
 	t_parser_state	parse;
 
+	parse = parse_input(c);
+	if (parse.flags & PARSE_INTERRUPTED)
+		sig_consume_sigint(c);
+	else
+	{
+		if (parse.flags & PARSE_ERROR)
+			c->return_status = 2;
+		sig_reset_sigint();
+	}
+}
+
+static void	shell_loop(t_ctx *c)
+{
 	while (true)
 	{
 		if (!get_user_input(c, INPUT_DEFAULT))
@@ -68,15 +89,7 @@ static void	shell_loop(t_ctx *c)
 			c->read_line = NULL;
 			continue ;
 		}
-		parse = parse_input(c);
-		if (parse.flags & PARSE_INTERRUPTED)
-			sig_consume_sigint(c);
-		else
-		{
-			if (parse.flags & PARSE_ERROR)
-				c->return_status = 2;
-			sig_reset_sigint();
-		}
+		shell_loop_parse(c);
 		free(c->read_line);
 		c->read_line = NULL;
 		if (c->should_exit)
