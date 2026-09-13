@@ -19,9 +19,10 @@ char	*add_prefix(char *path, const char *pathname)
 
 static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 {
-	char	*tmp;
-	char	*first_found;
-	int		i;
+	struct stat	st;
+	char		*tmp;
+	char		*first_found;
+	int			i;
 
 	first_found = NULL;
 	i = 0;
@@ -33,16 +34,22 @@ static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 			tmp = add_prefix(paths[i], cmd_ctx->pathname);
 		if (!tmp)
 			return (EXIT_FAILURE);
+		if (access(tmp, F_OK) != 0
+			|| stat(tmp, &st) != 0 || !S_ISREG(st.st_mode))
+		{
+			free(tmp);
+			i++;
+			continue ;
+		}
 		if (access(tmp, X_OK) == 0)
 		{
 			free(cmd_ctx->pathname);
+			free(first_found);
 			cmd_ctx->pathname = tmp;
 			return (EXIT_SUCCESS);
 		}
-		else if (first_found == NULL && access(tmp, F_OK) == 0)
-		{
+		else if (first_found == NULL)
 			first_found = tmp;
-		}
 		if(first_found != tmp)
 			free(tmp);
 		i++;
@@ -52,23 +59,26 @@ static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 	return (EXIT_SUCCESS);
 }
 
-static int get_from_current(t_command_ctx *cmd_ctx)
+static int	get_from_current(t_command_ctx *cmd_ctx)
 {
-	char	*tmp;
+	struct stat	st;
+	char		*tmp;
 
 	tmp = ft_strjoin("./", cmd_ctx->pathname);
 	if (!tmp)
 		return (EXIT_FAILURE);
-	if (access(tmp, F_OK) == 0)
+	if (access(tmp, F_OK) == 0
+		&& stat(tmp, &st) == 0 && S_ISREG(st.st_mode))
 	{
 		free(cmd_ctx->pathname);
 		cmd_ctx->pathname = tmp;
 		return (EXIT_SUCCESS);
 	}
+	free(tmp);
 	free(cmd_ctx->pathname);
 	cmd_ctx->pathname = NULL;
 	return (EXIT_SUCCESS);
-} 
+}
 
 int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 {

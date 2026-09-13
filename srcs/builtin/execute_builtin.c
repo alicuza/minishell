@@ -20,8 +20,7 @@ static int	save_fds(t_ctx *c, t_command_ctx *cmd_ctx, int saved[2])
 	saved[1] = dup(1);
 	if (saved[1] < 0)
 	{
-		close(saved[0]);
-		saved[0] = -1;
+		ft_close_fd(&saved[0]);
 		return (handle_dup_error(c, cmd_ctx, saved));
 	}
 	return (EXIT_SUCCESS);

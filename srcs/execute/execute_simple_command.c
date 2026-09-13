@@ -47,6 +47,13 @@ static int	execute_subshell(t_ctx *c, t_node *cmd_node, t_node *redir_node)
 	return (EXIT_SUCCESS);
 }
 
+static int	builtin_noop(t_ctx *c, t_command_ctx *cmd)
+{
+	(void)c;
+	(void)cmd;
+	return (EXIT_SUCCESS);
+}
+
 int	execute_simple_command(t_ctx *c, t_node *command_node)
 {
 	t_node			*arg_node;
@@ -77,6 +84,9 @@ int	execute_simple_command(t_ctx *c, t_node *command_node)
 	}
 	else if (command.pathname == NULL)
 	{
+		if (c->is_pipe && command.argc == 0)
+			return (execute_builtin_in_subshell(c, &command,
+					builtin_noop, redir_node));
 		if (process_redirection(c, redir_node) == EXIT_FAILURE)
 			result = EXIT_FAILURE;
 		close_io(c);
