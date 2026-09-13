@@ -1,33 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_pathname_from_current_dir.c                    :+:      :+:    :+:   */
+/*   redirect_io.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/13 22:05:33 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/13 22:06:00 by nribakov         ###   ########.fr       */
+/*   Created: 2026/09/14 00:41:03 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/14 00:41:12 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	get_from_current(t_command_ctx *cmd_ctx)
+void	redirect_io(t_ctx *c, t_command_ctx *cmd_ctx)
 {
-	struct stat	st;
-	char		*tmp;
+	t_error	e;
 
-	tmp = ft_strjoin("./", cmd_ctx->pathname);
-	if (!tmp)
-		return (EXIT_FAILURE);
-	if (access(tmp, F_OK) == 0 && stat(tmp, &st) == 0 && S_ISREG(st.st_mode))
+	if (c->io_fd[0] != -1)
 	{
-		free(cmd_ctx->pathname);
-		cmd_ctx->pathname = tmp;
-		return (EXIT_SUCCESS);
+		if (dup2(c->io_fd[0], 0) < 0)
+		{
+			e = (t_error){"dup2", strerror(errno), 1};
+			msh_exit(c, cmd_ctx, &e, NULL);
+		}
 	}
-	free(tmp);
-	free(cmd_ctx->pathname);
-	cmd_ctx->pathname = NULL;
-	return (EXIT_SUCCESS);
+	if (c->io_fd[1] != -1)
+	{
+		if (dup2(c->io_fd[1], 1) < 0)
+		{
+			e = (t_error){"dup2", strerror(errno), 1};
+			msh_exit(c, cmd_ctx, &e, NULL);
+		}
+	}
 }

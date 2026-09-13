@@ -6,7 +6,7 @@
 #    By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/22 21:29:56 by sancuta           #+#    #+#              #
-#    Updated: 2026/09/13 22:53:18 by nribakov         ###   ########.fr        #
+#    Updated: 2026/09/14 00:54:58 by nribakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,12 +44,13 @@ SRCS        = \
 			execute/execute_pipeline.c \
 			execute/execute_simple_command.c \
 			execute/execute_non_builtin.c \
-			execute/process_redirection.c \
 			execute/open_here_file.c \
 			execute/ft_split_with_empty.c \
 			execute/command_search_and_execution.c \
 			execute/build_command.c \
 			execute/wait_return_status.c \
+			redirection/process_redirection.c \
+			redirection/redirect_io.c \
 			search_in_path/get_pathname.c \
 			search_in_path/get_pathname_from_current_dir.c \
 			parser/parse_input.c \
@@ -104,6 +105,7 @@ SRCS        = \
 			builtin/builtin_export.c \
 			builtin/unset.c \
 			builtin/echo.c \
+			builtin/no_op.c \
 			utils/str_utils.c \
 			utils/var_utils.c \
 			signals/signal_setup.c \

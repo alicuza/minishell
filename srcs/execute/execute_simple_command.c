@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 21:02:33 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 23:32:02 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 00:56:16 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,13 @@
 
 static void	run_subshell(t_ctx *c, t_node *cmd_node, t_node *redir_node)
 {
-	t_error	e;
-
 	sig_set_default();
 	if (process_redirection(c, redir_node) == EXIT_FAILURE)
 	{
 		cleanup_context(c);
 		exit(EXIT_FAILURE);
 	}
-	if (c->io_fd[0] != -1)
-	{
-		if (dup2(c->io_fd[0], 0) < 0)
-		{
-			e = (t_error){"dup2", strerror(errno), 1};
-			msh_exit(c, NULL, &e, NULL);
-		}
-	}
-	if (c->io_fd[1] != -1)
-	{
-		if (dup2(c->io_fd[1], 1) < 0)
-		{
-			e = (t_error){"dup2", strerror(errno), 1};
-			msh_exit(c, NULL, &e, NULL);
-		}
-	}
+	redirect_io(c, NULL);
 	close_all_fds(c);
 	close_heredoc_fds(c);
 	c->pid_to_wait = -1;
@@ -60,11 +43,33 @@ static int	execute_subshell(t_ctx *c, t_node *cmd_node, t_node *redir_node)
 	return (EXIT_SUCCESS);
 }
 
-static int	builtin_noop(t_ctx *c, t_command_ctx *cmd)
+static int	handle_empty_command(t_ctx *c, t_command_ctx	*command, t_node			*redir_node)
 {
-	(void)c;
-	(void)cmd;
-	return (EXIT_SUCCESS);
+	int	result;
+
+	if (process_redirection(c, redir_node) == EXIT_FAILURE)
+		result = EXIT_FAILURE;
+	else
+	{
+		msh_error(NULL, command->argv[0], "command not found");
+		result = 127;
+	}
+	close_io(c);
+	return (result);
+}
+
+static int	handle_no_command(t_ctx *c, t_command_ctx	*command, t_node			*redir_node)
+{
+	int	result;
+
+	result = EXIT_SUCCESS;
+	if (c->is_pipe && command->argc == 0)
+		return (execute_builtin_in_subshell(c, command, no_op,
+				redir_node));
+	if (process_redirection(c, redir_node) == EXIT_FAILURE)
+		result = EXIT_FAILURE;
+	close_io(c);
+	return (result);
 }
 
 int	execute_simple_command(t_ctx *c, t_node *command_node)
@@ -84,29 +89,12 @@ int	execute_simple_command(t_ctx *c, t_node *command_node)
 	ft_memset(&command, 0, sizeof(command));
 	if (build_command(c, &command, arg_node, redir_node) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
-	if (command.argc > 0 && is_empty_str(command.argv[0])) //this is on 
-	{
-		if (process_redirection(c, redir_node) == EXIT_FAILURE)
-			result = EXIT_FAILURE;
-		else
-		{
-			msh_error(NULL, command.argv[0], "command not found");
-			result = 127;
-		}
-		close_io(c);
-	}
+	if (command.argc > 0 && is_empty_str(command.argv[0]))
+		result = handle_empty_command(c, &command, redir_node);
 	else if (command.pathname == NULL)
-	{
-		if (c->is_pipe && command.argc == 0)
-			return (execute_builtin_in_subshell(c, &command,
-					builtin_noop, redir_node));
-		if (process_redirection(c, redir_node) == EXIT_FAILURE)
-			result = EXIT_FAILURE;
-		close_io(c);
-	}
+		result = handle_no_command(c, &command, redir_node);
 	else
-		result = command_search_and_execution(c, &command,
-				redir_node);
+		result = command_search_and_execution(c, &command, redir_node);
 	free(command.pathname);
 	return (result);
 }

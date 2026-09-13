@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 23:00:09 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 01:19:17 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@
 # endif
 
 # define SHELLNAME "shni"
+
+# define PROCESSED -1
+# define FOUND 0
 
 /* -------- with_cwd -------------------------------------------------------- */
 # define WITH_CWD true
@@ -196,9 +199,6 @@ int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
 /* -------- search_in_path/get_pathname_from_current_dir.c ------------------- */
 int				get_pathname_from_current_dir(t_command_ctx *cmd_ctx);
 
-/* -------- execute/process_redirection.c ----------------------------------- */
-int				process_redirection(t_ctx *c, t_node *redir_node);
-
 /* -------- execute/open_here_file.c ---------------------------------------- */
 int				open_here_file(t_ctx *c, t_node *redir_node);
 
@@ -213,6 +213,12 @@ char			**ft_split_with_empty(char const *s, char c);
 
 /* -------- execute/wait_return_status.c ------------------------------------ */
 int				wait_return_status(t_ctx *c);
+
+/* -------- redirection/process_redirection.c ------------------------------- */
+int				process_redirection(t_ctx *c, t_node *redir_node);
+
+/* -------- redirection/redirect_io.c --------------------------------------- */
+void			redirect_io(t_ctx *c, t_command_ctx *cmd_ctx);
 
 /* -------- lexer/lookahead.c ----------------------------------------------- */
 bool			lex_token(t_ctx *c, t_lexer_state *lex);
@@ -332,6 +338,9 @@ int				unset(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- builtin/echo.c -------------------------------------------------- */
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
+
+/* -------- builtin/no_op.c -------------------------------------------------- */
+int				no_op(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- utils/str_utils.c ----------------------------------------------- */
 bool			is_empty_str(char *str);

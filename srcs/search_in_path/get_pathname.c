@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:58:41 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/14 00:30:00 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/14 01:23:26 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int	handle_executable(t_command_ctx *cmd_ctx, char *tmp,
 	free(cmd_ctx->pathname);
 	free(first_found);
 	cmd_ctx->pathname = tmp;
-	return (EXIT_SUCCESS);
+	return (FOUND);
 }
 
 static int	check_path(t_command_ctx *cmd_ctx, char *path, char **first_found)
@@ -52,7 +52,7 @@ static int	check_path(t_command_ctx *cmd_ctx, char *path, char **first_found)
 	if (access(tmp, F_OK) || stat(tmp, &st) || !S_ISREG(st.st_mode))
 	{
 		free(tmp);
-		return (EXIT_SUCCESS);
+		return (PROCESSED);
 	}
 	if (access(tmp, X_OK) == 0)
 		return (handle_executable(cmd_ctx, tmp, *first_found));
@@ -60,20 +60,24 @@ static int	check_path(t_command_ctx *cmd_ctx, char *path, char **first_found)
 		*first_found = tmp;
 	if (*first_found != tmp)
 		free(tmp);
-	return (EXIT_SUCCESS);
+	return (PROCESSED);
 }
 
 static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 {
-	char		*first_found;
-	int			i;
+	char	*first_found;
+	int		i;
+	int		result;
 
 	first_found = NULL;
 	i = -1;
 	while (paths[++i] != NULL)
 	{
-		if (check_path(cmd_ctx, paths[i], &first_found) == EXIT_FAILURE)
+		result = check_path(cmd_ctx, paths[i], &first_found);
+		if (result == EXIT_FAILURE)
 			return (EXIT_FAILURE);
+		else if (result == FOUND)
+			return (EXIT_SUCCESS);
 	}
 	free(cmd_ctx->pathname);
 	cmd_ctx->pathname = first_found;
