@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_non_builtin.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:59:22 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 22:08:08 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/14 01:33:04 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,30 +25,12 @@ static int	execute_in_child(t_ctx *c, t_command_ctx *cmd_ctx,
 		cleanup_shell(c, cmd_ctx, NULL);
 		exit(EXIT_FAILURE);
 	}
-	if (c->io_fd[0] != -1)
-	{
-		if (dup2(c->io_fd[0], 0) < 0)
-		{
-			e = (t_error){"dup2", strerror(errno), 1};
-			msh_exit(c, cmd_ctx, &e, NULL);
-		}
-	}
-	if (c->io_fd[1] != -1)
-	{
-		if (dup2(c->io_fd[1], 1) < 0)
-		{
-			e = (t_error){"dup2", strerror(errno), 1};
-			msh_exit(c, cmd_ctx, &e, NULL);
-		}
-	}
+	redirect_io(c, cmd_ctx);
 	close_all_fds(c);
 	close_heredoc_fds(c);
 	envp = env_to_envp(&c->env);
 	if (envp == NULL)
-	{
-		e = (t_error){NULL, strerror(ENOMEM), 1};
-		msh_exit(c, cmd_ctx, &e, NULL);
-	}
+		handle_mem_error(c, cmd_ctx, NULL);
 	errno = 0;
 	execve(cmd_ctx->pathname, cmd_ctx->argv, envp);
 	if (errno == ENOENT)
