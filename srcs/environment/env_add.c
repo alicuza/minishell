@@ -1,9 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_add.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:45:37 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:45:38 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static t_list	*get_new_list_node(char *key, char *value)
 {
-	t_list *new_node;
-	t_env_content *content;
+	t_list			*new_node;
+	t_env_content	*content;
+
 	content = malloc(sizeof(t_env_content));
 	if (!content)
 		return (NULL);
@@ -20,8 +33,8 @@ static t_list	*get_new_list_node(char *key, char *value)
 
 int	env_add(t_env *env, char *key, char *value)
 {
-	t_list **vals;
-	t_list *new_node;
+	t_list	**vals;
+	t_list	*new_node;
 
 	vals = &env->vals;
 	new_node = get_new_list_node(key, value);
