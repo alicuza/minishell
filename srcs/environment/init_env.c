@@ -1,13 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init_env.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:56:40 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:56:40 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "env.h"
 #include "minishell.h"
 
 int	init_env(t_env *env, char **envp)
 {
-	char **tmp;
-	int i;
+	char	**tmp;
+	int		i;
 
 	i = 0;
 	if (envp)
+	{
 		while (envp[i])
 		{
 			tmp = ft_split_key_value(envp[i], '=');
@@ -20,14 +33,10 @@ int	init_env(t_env *env, char **envp)
 				continue ;
 			}
 			if (env_add(env, tmp[0], tmp[1]))
-			{
-				free(tmp);
-				return (EXIT_FAILURE);
-			}
+				return (free(tmp), EXIT_FAILURE);
 			free(tmp);
 			i++;
 		}
-	if (add_env_defaults(env) == EXIT_FAILURE)
-		return (EXIT_FAILURE);
+	}
 	return (EXIT_SUCCESS);
 }

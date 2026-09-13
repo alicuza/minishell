@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:47:55 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 14:02:25 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 21:01:16 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static void	init_ctx(t_ctx *c, char **envp)
 		arena_hook_cleanup(&c->arena[i], &cleanup_context, c);
 	}
 	init_input(c);
-	if (init_env(&c->env, envp) == EXIT_FAILURE)
+	if (init_env(&c->env, envp) == EXIT_FAILURE || add_env_defaults(&c->env) == EXIT_FAILURE)
 	{
 		e = (t_error){"init_env", strerror(errno), 1};
 		msh_exit(c, NULL, &e, NULL);
