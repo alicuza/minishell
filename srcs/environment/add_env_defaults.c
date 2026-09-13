@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:45:05 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/13 20:45:08 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 01:58:10 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	add_path(t_env *env)
 	if (is_empty_str(path))
 	{
 		key = ft_strdup(PATH);
-		value = ft_strdup(DEFAULT_PATH);
+		value = ft_strdup(DEF_PATH);
 		if (key == NULL || value == NULL)
 		{
 			free(key);

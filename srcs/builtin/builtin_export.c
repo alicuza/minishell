@@ -6,14 +6,12 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:10:39 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/13 21:40:59 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 01:39:33 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
 #include "minishell.h"
-
-#define EQUAL 0
 
 static void	print_val(void *content_void_p)
 {

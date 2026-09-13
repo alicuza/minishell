@@ -14,7 +14,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#define EQUAL 0
 
 static t_list	*search_node(t_env *env, char *key)
 {

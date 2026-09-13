@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#define EQUAL 0
 
 void	env_delete(t_env *env, char *key)
 {

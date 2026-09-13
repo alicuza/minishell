@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/14 01:19:17 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 01:39:16 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@
 
 # define PROCESSED -1
 # define FOUND 0
+
+# define EQUAL 0
 
 /* -------- with_cwd -------------------------------------------------------- */
 # define WITH_CWD true
