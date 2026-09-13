@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_helpers.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/09 17:29:40 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 12:46:29 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 23:34:08 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

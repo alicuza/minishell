@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   command_search_and_execution.c                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+
+	+:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+
+	+#+        */
+/*                                                +#+#+#+#+#+
+	+#+           */
 /*   Created: 2026/09/13 20:57:11 by sancuta           #+#    #+#             */
 /*   Updated: 2026/09/13 20:57:25 by sancuta          ###   ########.fr       */
 /*                                                                            */
@@ -14,6 +17,7 @@
 #include "minishell.h"
 
 #define EQUAL 0
+
 
 static t_command_function	match_builtin(char *name)
 {
@@ -35,15 +39,24 @@ static t_command_function	match_builtin(char *name)
 		return (NULL);
 }
 
+static int	handle_failed_orig_name(t_ctx *c, t_command_ctx *cmd_ctx)
+{
+	t_error e;
+
+	e = (t_error){NULL, strerror(ENOMEM), 1};
+	free(cmd_ctx->pathname);
+	cmd_ctx->pathname = NULL;
+	msh_exit(c, cmd_ctx, &e, NULL);
+	return (EXIT_FAILURE);
+}
+
 int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
 		t_node *redir_node)
 {
-	t_command_function	command;
-	int					status;
-	char				*orig_name;
-	t_error				e;
+	t_command_function command;
+	int status;
+	char *orig_name;
 
-	command = NULL;
 	if (ft_strchr(cmd_ctx->pathname, '/') == NULL)
 	{
 		command = match_builtin(cmd_ctx->pathname);
@@ -54,18 +67,13 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
 			orig_name = ft_strdup(cmd_ctx->pathname);
 			if (orig_name == NULL)
 			{
-				e = (t_error){NULL, strerror(ENOMEM), 1};
-				free(cmd_ctx->pathname);
-				cmd_ctx->pathname = NULL;
-				msh_exit(c, cmd_ctx, &e, NULL);
+				handle_failed_orig_name(c, cmd_ctx);
 				return (EXIT_FAILURE);
 			}
 			status = get_pathname(c, cmd_ctx);
 			if (status == EXIT_FAILURE)
 			{
-				e = (t_error){NULL, strerror(ENOMEM), 1};
-				free(orig_name);
-				msh_exit(c, cmd_ctx, &e, NULL);
+				handle_mem_error(c, cmd_ctx, orig_name);
 				return (EXIT_FAILURE);
 			}
 			else if (status == EXIT_SUCCESS && cmd_ctx->pathname != NULL)

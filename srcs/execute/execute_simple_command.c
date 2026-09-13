@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_simple_command.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 21:02:33 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 22:09:22 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 23:32:02 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int	execute_simple_command(t_ctx *c, t_node *command_node)
 	ft_memset(&command, 0, sizeof(command));
 	if (build_command(c, &command, arg_node, redir_node) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
-	if (command.argc > 0 && is_empty_str(command.argv[0]))
+	if (command.argc > 0 && is_empty_str(command.argv[0])) //this is on 
 	{
 		if (process_redirection(c, redir_node) == EXIT_FAILURE)
 			result = EXIT_FAILURE;
