@@ -1,9 +1,23 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_split_key_value.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
+/*   Created: 2026/09/13 20:42:01 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:42:01 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "minishell.h"
 
 size_t	word_len(const char *s, char del)
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	while (s[i] && s[i] != del)
@@ -21,8 +35,8 @@ static char	**on_alloc_fail_free_str_arr(char **arr, size_t ind)
 
 char	**ft_split_key_value(const char *s, char c)
 {
-	char **res;
-	size_t len;
+	char	**res;
+	size_t	len;
 
 	if (!s)
 		return (NULL);
