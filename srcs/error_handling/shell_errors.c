@@ -35,6 +35,7 @@ void	cleanup_context(void *ctx)
 	t_arena_type	i;
 
 	c = (t_ctx *)ctx;
+	close_heredoc_fds(c);
 	i = -1;
 	while (++i < AT_COUNT)
 		arena_free(&c->arena[i]);
