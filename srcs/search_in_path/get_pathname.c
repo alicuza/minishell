@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:58:41 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 22:33:23 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 00:30:00 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,47 +29,54 @@ char	*add_prefix(char *path, const char *pathname)
 	return (tmp1);
 }
 
-static char	*get_with_prefix(t_command_ctx *cmd_ctx, char *path)
-{
-	if (path[0] == '\0')
-		return (ft_strjoin("./", cmd_ctx->pathname));
-	else
-		return (add_prefix(path, cmd_ctx->pathname));
-}
-
-static int	handle_executable(t_command_ctx *cmd_ctx, char *tmp)
+static int	handle_executable(t_command_ctx *cmd_ctx, char *tmp,
+		char *first_found)
 {
 	free(cmd_ctx->pathname);
+	free(first_found);
 	cmd_ctx->pathname = tmp;
+	return (EXIT_SUCCESS);
+}
+
+static int	check_path(t_command_ctx *cmd_ctx, char *path, char **first_found)
+{
+	struct stat	st;
+	char		*tmp;
+
+	if (path[0] == '\0')
+		tmp = ft_strjoin("./", cmd_ctx->pathname);
+	else
+		tmp = add_prefix(path, cmd_ctx->pathname);
+	if (!tmp)
+		return (EXIT_FAILURE);
+	if (access(tmp, F_OK) || stat(tmp, &st) || !S_ISREG(st.st_mode))
+	{
+		free(tmp);
+		return (EXIT_SUCCESS);
+	}
+	if (access(tmp, X_OK) == 0)
+		return (handle_executable(cmd_ctx, tmp, *first_found));
+	else if (*first_found == NULL)
+		*first_found = tmp;
+	if (*first_found != tmp)
+		free(tmp);
 	return (EXIT_SUCCESS);
 }
 
 static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 {
-	struct stat	st;
-	char		*tmp;
+	char		*first_found;
 	int			i;
 
-	cmd_ctx->pathname = NULL;
+	first_found = NULL;
 	i = -1;
 	while (paths[++i] != NULL)
 	{
-		tmp = get_with_prefix(cmd_ctx, paths[i]);
-		if (!tmp)
+		if (check_path(cmd_ctx, paths[i], &first_found) == EXIT_FAILURE)
 			return (EXIT_FAILURE);
-		if (access(tmp, F_OK) || stat(tmp, &st) || !S_ISREG(st.st_mode))
-		{
-			free(tmp);
-			continue ;
-		}
-		if (access(tmp, X_OK) == 0)
-			return (handle_executable(cmd_ctx, tmp));
-		else if (cmd_ctx->pathname == NULL)
-			cmd_ctx->pathname = tmp;
-		if (cmd_ctx->pathname != tmp)
-			free(tmp);
 	}
 	free(cmd_ctx->pathname);
+	cmd_ctx->pathname = first_found;
 	return (EXIT_SUCCESS);
 }
 
