@@ -185,6 +185,7 @@ void			msh_exit(t_ctx *c, t_command_ctx *cmd, t_error *e, char **envp);
 void			ft_close_fd(int *fd);
 void			close_io(t_ctx *c);
 void			close_all_fds(t_ctx *c);
+void			close_heredoc_fds(t_ctx *c);
 
 /* -------- expansions/expansion.c ------------------------------------------ */
 void			finish_args(t_ctx *c, t_command_ctx *command);

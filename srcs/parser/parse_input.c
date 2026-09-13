@@ -29,6 +29,7 @@ static void	check_and_run_pending_exec(t_ctx *c, t_parser_state *parse)
 	if (c->dbg.no_exec)
 		return ;
 #endif
+	close_heredoc_fds(c);
 	arena_clear(&c->arena[AT_COMMAND]);
 	symbol = get_symbol_from_idx(c, parse->stack_idx);
 	symbol->node_idx = 0;
@@ -116,5 +117,7 @@ t_parser_state	parse_input(t_ctx *c)
 		parse.lookahead_type = SYM_EOF;
 		final_pass(c, &parse);
 	}
+	if (parse.flags & (PARSE_ERROR | PARSE_INTERRUPTED))
+		close_heredoc_fds(c);
 	return (parse);
 }
