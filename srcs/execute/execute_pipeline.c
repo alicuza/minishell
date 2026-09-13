@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipeline.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 21:03:20 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/13 21:03:22 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/14 01:37:23 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,14 @@ static int	pipe_and_execute_simple_command(t_ctx *c, t_node *command_node)
 	return (result);
 }
 
+static int	wait_child(t_ctx *c, int result)
+{
+	if (result == EXIT_SUCCESS)
+		return (wait_return_status(c));
+	(void)wait_return_status(c);
+	return (result);
+}
+
 int	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 {
 	t_node	*command_node;
@@ -63,10 +71,6 @@ int	execute_pipeline(t_ctx *c, t_node *pipeline_node)
 	}
 	c->is_pipe = false;
 	if (c->pid_to_wait != -1)
-	{
-		if (result == EXIT_SUCCESS)
-			return (wait_return_status(c));
-		(void)wait_return_status(c);
-	}
+		result = wait_child(c, result);
 	return (result);
 }
