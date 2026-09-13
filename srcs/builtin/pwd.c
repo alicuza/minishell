@@ -18,7 +18,8 @@
 
 char	*get_pwd(t_ctx *c)
 {
-	char *pwd;
+	char	*pwd;
+
 	pwd = env_get(&c->env, PWD);
 	if (!pwd)
 		pwd = getcwd(NULL, 0);
@@ -27,9 +28,7 @@ char	*get_pwd(t_ctx *c)
 
 int	pwd(t_ctx *c, t_command_ctx *command_ctx)
 {
-	char *pwd;
-
-
+	char	*pwd;
 
 	(void)command_ctx;
 	pwd = get_pwd(c);
