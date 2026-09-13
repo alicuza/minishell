@@ -28,8 +28,10 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 	char		**tmp;
 	uint64_t	i;
 	t_error		e;
+	int		result;
 
 	i = 1;
+	result = EXIT_SUCCESS;
 	while (i < command_ctx->argc)
 	{
 		tmp = ft_split_key_value(command_ctx->argv[i], '=');
@@ -41,6 +43,8 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 		if (is_valid_var_name(tmp[0]) == false || ft_strncmp(tmp[0], SHLVL, 6)
 			== EQUAL)
 		{
+			msh_error("export", command_ctx->argv[i], "not a valid identifier");
+			result = EXIT_FAILURE;
 			free_str_arr(tmp);
 			i++;
 			continue ;
@@ -53,7 +57,7 @@ int	add_args_to_env(t_ctx *c, t_command_ctx *command_ctx)
 		free(tmp);
 		i++;
 	}
-	return (EXIT_SUCCESS);
+	return (result);
 }
 
 /* TODO nik:
