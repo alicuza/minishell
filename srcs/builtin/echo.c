@@ -1,7 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:34:36 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:34:36 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-#define EQUAL 0
-
 
 static void	print_val(char *str)
 {
@@ -11,16 +20,16 @@ static void	print_val(char *str)
 
 static int64_t	find_n_flag(t_command_ctx *command_ctx)
 {
-	uint64_t i;
-	uint64_t j;
-	int64_t found_at;
+	uint64_t	i;
+	uint64_t	j;
+	int64_t		found_at;
 
 	found_at = -1;
 	i = 1;
 	j = 1;
 	while (i < command_ctx->argc && command_ctx->argv[i][0] == '-')
 	{
-		if(command_ctx->argv[i][j] == 'n')
+		if (command_ctx->argv[i][j] == 'n')
 		{
 			while (command_ctx->argv[i][j] == 'n')
 			{
@@ -39,10 +48,10 @@ static int64_t	find_n_flag(t_command_ctx *command_ctx)
 
 int	echo(t_ctx *c, t_command_ctx *command_ctx)
 {
-	uint64_t i;
-	int64_t n_flag_found_at;
+	uint64_t	i;
+	int64_t		n_flag_found_at;
 
-	(void) c;
+	(void)c;
 	if (command_ctx->argc == 1)
 		print_val("\n");
 	else
@@ -64,4 +73,3 @@ int	echo(t_ctx *c, t_command_ctx *command_ctx)
 	}
 	return (0);
 }
-
