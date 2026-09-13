@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   reduce_helpers.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:03:34 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/13 20:17:49 by sancuta          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 uint64_t	reduce_compute_result(t_ctx *c, t_parser_state *parse,
@@ -12,7 +24,7 @@ uint64_t	reduce_compute_result(t_ctx *c, t_parser_state *parse,
 		else
 			node_idx = get_symbol_from_rhs(c, parse, rule, 0)->node_idx;
 		*token_idx = get_symbol_from_rhs(c, parse, rule,
-			rule->rhs_len - 1)->token_idx;
+				rule->rhs_len - 1)->token_idx;
 	}
 	else
 	{

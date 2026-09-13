@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 13:10:11 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/12 12:47:19 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 20:59:06 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static t_node	*get_next_with_or(t_ctx *c, t_node *current_pipeline_node)
 // TODO nik maybe infinite loop
 {
-	t_node *pipeline_node;
+	t_node	*pipeline_node;
 
 	pipeline_node = get_ptr_from_idx(&c->arena[AT_COMMAND],
 			current_pipeline_node->next_idx);

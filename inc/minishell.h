@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/12 12:46:47 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 19:51:01 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@
 # include "types.h"
 # include <errno.h> // errno
 
-
 # ifndef ARENA_SIZE
 #  define ARENA_SIZE 64
 # endif
@@ -55,8 +54,8 @@
 # define INPUT_CONTINUATION 1
 
 /* -------- prompt colors --------------------------------------------------- */
-#define GREEN "\001\033[38;5;40m\002"
-#define RESET "\001\033[0m\002"
+# define GREEN "\001\033[38;5;40m\002"
+# define RESET "\001\033[0m\002"
 
 /* -------- heredoc --------------------------------------------------------- */
 # define HEREDOC_TMP "/tmp/.msh_heredoc_"
@@ -111,13 +110,12 @@
 # define EXP_IN_SQUOTE			0x02
 # define EXP_IN_DQUOTE			0x04
 
-
 /* -------- grammar constants ----------------------------------------------- */
 # define NO_TOKEN 0
 # define MAX_RHS_LEN 4
 # define RULE_COUNT 46
 
-/* -------- globals --------------------------------------------------------- */
+/* -------- global variable ------------------------------------------------- */
 extern volatile sig_atomic_t	g_signal;
 
 /* -------- prompt.c -------------------------------------------------------- */
@@ -238,7 +236,7 @@ void			handle_saved_tokens(t_ctx *c, t_parser_state *parse);
 uint64_t		consume_char(t_lexer_state *lex, uint64_t len);
 t_slice			save_lex_token_slice(t_lexer_state *lex);
 void			restore_lex_token_slice(t_lexer_state *lex, t_slice len);
-const char		**get_operator_strs(void);
+const char		**get_op_strs(void);
 
 /* -------- lexer/here_body_read.c ------------------------------------------ */
 void			get_here_doc(t_ctx *c, t_lexer_state *l);
@@ -283,8 +281,6 @@ int				add_env_defaults(t_env *env);
 
 /* -------- environment/env_to_envp.c --------------------------------------- */
 char			**env_to_envp(t_env *env);
-
-
 
 /* -------- builtin/execute_builtin.c --------------------------------------- */
 int				execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,

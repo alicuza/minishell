@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:45:50 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 15:53:05 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 20:18:59 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ char	*get_user_input(t_ctx *c, bool is_continuation)
 
 	free(c->read_line);
 	c->read_line = NULL;
-	if (fstat(STDIN_FILENO , &buf) == -1)
+	if (fstat(STDIN_FILENO, &buf) == -1)
 		return (0);
 	c->read_line = c->read_handler(c, is_continuation);
 	return (c->read_line);

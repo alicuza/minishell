@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lookahead_rules1.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 19:47:39 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/13 19:56:48 by sancuta          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 bool	apply_rule_1(t_ctx *c, t_lexer_state *lex)
@@ -43,6 +55,7 @@ bool	apply_rule_4(t_ctx *c, t_lexer_state *lex)
 bool	apply_rule_5(t_ctx *c, t_lexer_state *lex)
 {
 	uint64_t	len;
+
 	len = get_expansion_len(c->read_line + lex->char_idx);
 	if (!(lex->flags & LEX_IS_BUILDING))
 	{

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   reduce_command.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 19:58:41 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/13 20:05:00 by sancuta          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 uint64_t	reduce_simple_command_from_suffix(t_ctx *c, t_parser_state *parse,
@@ -63,7 +75,6 @@ static void	suffix_attach_last(t_ctx *c, t_parser_state *parse,
 		head_idx = &cmd->data.command.redir_head_idx;
 	else
 		head_idx = &cmd->data.command.arg_head_idx;
-	/* append returns the head (child_idx if the list was empty), store it back */
 	*head_idx = append_node_to_tail(c, *head_idx, child_idx);
 }
 

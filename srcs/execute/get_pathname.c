@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_pathname.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:58:41 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/13 20:58:43 by sancuta          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "env.h"
 #include "minishell.h"
 
@@ -9,7 +21,7 @@ char	*add_prefix(char *path, const char *pathname)
 	tmp = NULL;
 	tmp1 = NULL;
 	tmp = ft_strjoin(path, "/");
-	if(tmp != NULL)
+	if (tmp != NULL)
 	{
 		tmp1 = ft_strjoin(tmp, pathname);
 		free(tmp);
@@ -50,7 +62,7 @@ static int	search_in_paths(char **paths, t_command_ctx *cmd_ctx)
 		}
 		else if (first_found == NULL)
 			first_found = tmp;
-		if(first_found != tmp)
+		if (first_found != tmp)
 			free(tmp);
 		i++;
 	}
@@ -89,7 +101,7 @@ int	get_pathname(t_ctx *c, t_command_ctx *cmd_ctx)
 	path = env_get(&c->env, PATH);
 	if (is_empty_str(path))
 	{
-		status =  get_from_current(cmd_ctx);
+		status = get_from_current(cmd_ctx);
 		free(path);
 		return (status);
 	}

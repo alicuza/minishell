@@ -86,7 +86,7 @@ uint64_t		append_node_to_tail(t_ctx *c, uint64_t head_idx,
 					uint64_t new_idx);
 
 /* -------- parser/quote_remove.c ------------------------------------------- */
-char 			*quote_remove_inplace(char *s);
+char			*quote_remove_inplace(char *s);
 
 /* -------- parser/node_getters.c ------------------------------------------- */
 t_symbol		*get_symbol_from_rhs(t_ctx *c, t_parser_state *p, t_rule *r,
