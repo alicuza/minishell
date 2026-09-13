@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_builtin.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:41:17 by nribakov          #+#    #+#             */
+/*   Updated: 2026/09/13 20:41:32 by nribakov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	handle_dup_error(t_ctx *c, t_command_ctx *cmd_ctx, int saved[2])
@@ -79,7 +91,7 @@ int	execute_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
 	else
 	{
 		if (process_redirection(c, redir_node) == EXIT_FAILURE)
-				return (1);
+			return (1);
 		result = execute(c, cmd_ctx, command);
 		close_io(c);
 		return (result);
