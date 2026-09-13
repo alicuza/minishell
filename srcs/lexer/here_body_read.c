@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   here_body_read.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 19:46:33 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/13 19:46:47 by sancuta          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int32_t	create_here_temp(int32_t *wfd)
@@ -35,6 +47,7 @@ void	get_here_doc(t_ctx *c, t_lexer_state *lex)
 	char		*here_end;
 	int32_t		wfd;
 	int32_t		rfd;
+
 	node = get_node_from_idx(c, get_symbol_from_top(c, 1)->node_idx);
 	here_end = get_ptr_from_offset(&c->arena[AT_STRING],
 			node->data.redir.arena_offset);

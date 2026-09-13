@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/09 17:30:48 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 12:45:35 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 20:50:37 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ int	build_command(t_ctx *c, t_command_ctx *command,
 		t_node *arg_node, t_node *redir_node)
 {
 	t_expand_state	exp;
+	char			*word;
 
 	init_command(c, command, &exp);
 	expand_args(c, command, &exp, arg_node);
@@ -48,8 +49,6 @@ int	build_command(t_ctx *c, t_command_ctx *command,
 	{
 		if (expand_redir(c, redir_node, &exp) == EXIT_FAILURE)
 		{
-			char	*word;
-
 			if (redir_node->data.redir.flags
 				& (TKN_HAS_QUOTES | TKN_HAS_EXPANSION))
 				word = get_ptr_from_offset(&c->arena[AT_FIELDS],

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 14:43:42 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/11 14:11:13 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 20:47:15 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ static int	ft_number_of_element(char const *s, char c)
 	i = 0;
 	result = 1;
 	if (s != NULL)
+	{
 		while (s[i])
 		{
 			if (s[i] == c)
@@ -33,6 +34,7 @@ static int	ft_number_of_element(char const *s, char c)
 					i++;
 			}
 		}
+	}
 	return (result);
 }
 

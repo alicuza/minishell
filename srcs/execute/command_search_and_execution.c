@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   command_search_and_execution.c                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 20:57:11 by sancuta           #+#    #+#             */
+/*   Updated: 2026/09/13 20:57:25 by sancuta          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "builtin.h"
 #include "minishell.h"
 
@@ -35,7 +47,7 @@ int	command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
 	if (ft_strchr(cmd_ctx->pathname, '/') == NULL)
 	{
 		command = match_builtin(cmd_ctx->pathname);
-		if (command != NULL)		
+		if (command != NULL)
 			return (execute_builtin(c, cmd_ctx, command, redir_node));
 		else
 		{

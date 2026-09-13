@@ -38,10 +38,9 @@ typedef enum e_arena_type
 	AT_COUNT,
 }	t_arena_type;
 
-
 typedef struct s_ctx	t_ctx;
 
-typedef char	*(*t_read)(t_ctx *c, bool is_continuation);
+typedef char			*(*t_read)(t_ctx *c, bool is_continuation);
 
 typedef struct s_ctx
 {
@@ -96,7 +95,8 @@ typedef union u_argv_slot
 	char		*ptr;
 }	t_argv_slot;
 
-typedef int	(*t_command_function)(t_ctx *c, t_command_ctx *command_ctx);
+typedef int				(*t_command_function)(t_ctx *c,
+						t_command_ctx *command_ctx);
 
 typedef enum e_token_type
 {
@@ -108,9 +108,9 @@ typedef enum e_token_type
 
 typedef enum e_symbol_type
 {
-	/* -------- eof token ------------------------------------------------------- */
+	/* -------- eof token --------------------------------------------------- */
 	SYM_EOF = 0,
-	/* -------- lexical tokens -------------------------------------------------- */
+	/* -------- lexical tokens ---------------------------------------------- */
 	SYM_WORD = 3,
 	SYM_NEWLINE = 4,
 	SYM_PIPE = 5,
@@ -123,33 +123,33 @@ typedef enum e_symbol_type
 	SYM_OPAR = 12,
 	SYM_CPAR = 13,
 	SYM_ACCEPT = 14,
-	/* -------- entrypoint ------------------------------------------------------ */
+	/* -------- entrypoint -------------------------------------------------- */
 	SYM_PROGRAM = 15,
-	/* -------- complete_commands constructs ------------------------------------ */
+	/* -------- complete_commands constructs -------------------------------- */
 	SYM_COMPLETE_COMMANDS = 16,
-	/* -------- list constructs ------------------------------------------------- */
+	/* -------- list constructs --------------------------------------------- */
 	SYM_AND_OR = 17,
-	/* -------- pipeline constructs --------------------------------------------- */
+	/* -------- pipeline constructs ----------------------------------------- */
 	SYM_PIPELINE = 18,
-	/* -------- command constructs ---------------------------------------------- */
+	/* -------- command constructs ------------------------------------------ */
 	SYM_COMMAND = 19,
 	SYM_SUBSHELL = 20,
 	SYM_COMPOUND_LIST = 21,
 	SYM_TERM = 22,							/* actually also a list construct */
 	SYM_SIMPLE_COMMAND = 23,
-	/* -------- simple_command constructs --------------------------------------- */
+	/* -------- simple_command constructs ----------------------------------- */
 	SYM_CMD_NAME = 24,
 	SYM_CMD_WORD = 25,
 	SYM_CMD_PREFIX = 26,
 	SYM_CMD_SUFFIX = 27,
-	/* -------- redirection constructs ------------------------------------------ */
+	/* -------- redirection constructs -------------------------------------- */
 	SYM_REDIRECT_LIST = 28,
 	SYM_IO_REDIRECT = 29,
 	SYM_IO_FILE = 30,
 	SYM_FILENAME = 31,
 	SYM_IO_HERE = 32,
 	SYM_HERE_END = 33,
-	/* -------- separation contructs -------------------------------------------- */
+	/* -------- separation contructs ---------------------------------------- */
 	SYM_NEWLINE_LIST = 34,
 	SYM_LINEBREAK = 35,
 }	t_symbol_type;
@@ -165,15 +165,15 @@ typedef enum e_node_type
 
 typedef struct s_token
 {
-	uint64_t		offset;			/* into AT_STRING */
+	uint64_t		offset;
 	t_token_type	type;
-	uint8_t			flags;			/* TKN_HAS_QUOTES | TKN_HAS_EXPANSION */
+	uint8_t			flags;
 }	t_token;
 
 typedef struct s_symbol
 {
-	uint64_t		node_idx;		/* current node in AT_COMMAND*/
-	uint64_t		token_idx;		/* current token in AT_TOKENS */
+	uint64_t		node_idx;
+	uint64_t		token_idx;
 	uint32_t		entry_state;
 	t_symbol_type	type;
 }	t_symbol;
@@ -192,14 +192,14 @@ typedef struct s_node_command
 typedef struct s_node_arg
 {
 	uint64_t	arena_offset;
-	uint8_t	flags;
+	uint8_t		flags;
 }	t_node_arg;
 
 typedef struct s_node_redir
 {
 	uint64_t	arena_offset;
-	int32_t		fd;					// NOTE: only for heredocs?
-	uint8_t	flags;
+	int32_t		fd;
+	uint8_t		flags;
 }	t_node_redir;
 
 typedef union u_node_data
@@ -216,7 +216,7 @@ typedef struct s_node
 	t_node_data	data;
 	uint64_t	next_idx;
 	t_node_type	type;
-	uint8_t		flags;				/* FLAG_AND_IF | FLAG_OR_IF | FLAG_SUBSHELL | REDIR_IN | REDIR_OUT | REDIR_HERE | REDIR_APPEND */
+	uint8_t		flags;
 }	t_node;
 
 typedef enum e_lalr_action
@@ -229,31 +229,31 @@ typedef enum e_lalr_action
 
 typedef struct s_parser_state
 {
-	uint64_t		stack_idx;		/* current top symbol on the stack */
-	uint64_t		token_idx;		/* current lookahead token in AT_TOKENS */
-	uint64_t		exec_root_idx;	/* completed cmd root, awaiting exec */
-	int32_t			state;			/* current state of the stack */
-	t_symbol_type	lookahead_type;	/* classified type of the lookahead token */
-	uint8_t			flags;			/* PARSE_SAVE_TOKENS | PARSE_HERE_BODY | PARSE_ERROR */
+	uint64_t		stack_idx;
+	uint64_t		token_idx;
+	uint64_t		exec_root_idx;
+	int32_t			state;
+	t_symbol_type	lookahead_type;
+	uint8_t			flags;
 }	t_parser_state;
 
 typedef struct s_lexer_state
 {
-	t_slice			token;			/* tracks the position and length of the current token being built */
-	uint64_t		char_idx;		/* offset into the input string */
+	t_slice			token;
+	uint64_t		char_idx;
 	t_token_type	type;
-	uint8_t			flags;			/* TKN_HAS_EXPANSION | TKN_HAS_QUOTES | LEX_IS_BUILDING | LEX_NEW_INPUT */
+	uint8_t			flags;
 }	t_lexer_state;
 
 typedef struct s_rule	t_rule;
 
-typedef uint64_t	(*t_reduce)(t_ctx *, t_parser_state *, t_rule *);
+typedef uint64_t		(*t_reduce)(t_ctx *, t_parser_state *, t_rule *);
 
 typedef struct s_rule
 {
-	t_reduce		handler;		/* pointer to handler function */
-	uint32_t		rhs_len;		/* number of rhs symbols in rule */
-	t_symbol_type	lhs_type;		/* type of lhs in rule */
+	t_reduce		handler;
+	uint32_t		rhs_len;
+	t_symbol_type	lhs_type;
 }	t_rule;
 
 typedef struct s_str_builder

@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:41:14 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/02 12:11:15 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/13 20:21:24 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static bool	add_hostname_to_prompt(t_arena *prompt)
 	errno = 0;
 	fd = open("/proc/sys/kernel/hostname", O_RDONLY);
 	if (fd < 0 && errno)
-		return (/* error_log("add_hostname_to_prompt", "read", strerror(errno)), */ false);
+		return (false);
 	size = prompt->cap + prompt->stride - prompt->offset;
 	offset = arena_alloc(prompt, size, 1) - 1;
 	read_len = read(fd, prompt->buf + offset, size);
@@ -52,7 +52,7 @@ static void	init_prompt(t_arena *prompt)
 	size_t	save_offset;
 
 	user = getenv(USER);
-	if(!user)
+	if (!user)
 		user = getenv(LOGNAME);
 	if (!user)
 		user = ANON;
@@ -75,14 +75,13 @@ static bool	add_cwd_to_prompt(t_ctx *c)
 	prompt = &(c->arena[AT_PROMPT]);
 	arena_strlcat(prompt, ":", 2);
 	size = prompt->cap + prompt->stride - prompt->offset;
-	tmp_offset = arena_alloc(prompt, size, 1) - 1; // essentially doubling the capacity
+	tmp_offset = arena_alloc(prompt, size, 1) - 1;
 	errno = 0;
 	cwd = getcwd(prompt->buf + tmp_offset, size);
 	while (!cwd && errno)
 	{
 		if (errno != ERANGE)
-					// TODO stefan: implement error logging for debug
-			return (/* error_log("get_prompt", "get_cwd", strerror(errno)), */ false);
+			return (false);
 		size = prompt->cap;
 		init_prompt(prompt);
 		arena_strlcat(prompt, ":", 2);
@@ -99,7 +98,7 @@ static void	end_prompt(t_arena *prompt, int ret)
 {
 	arena_strlcat(prompt, "[", 2);
 	--(prompt->offset);
-	arena_itoa(prompt, ret); // to put the return of the last command
+	arena_itoa(prompt, ret);
 	arena_strlcat(prompt, "]", 2);
 	arena_strlcat(prompt, SHELLNAME, ft_strlen(SHELLNAME) + 1);
 	arena_strlcat(prompt, "$ ", 3);

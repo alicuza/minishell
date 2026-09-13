@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/11 12:41:20 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 12:41:27 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 20:04:27 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ static t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
 {
 	t_rule		rule;
 	t_symbol	sym;
+
 	rule = get_rule(action);
 	sym.node_idx = reduce_compute_result(c, parse, &rule, &sym.token_idx);
 	sym.type = rule.lhs_type;
@@ -24,9 +25,7 @@ static t_lalr_action	reduce(t_ctx *c, t_parser_state *parse, int32_t action)
 	reduce_apply_goto(parse, &rule);
 	push_symbol(c, parse, &sym);
 	if (parse->state == YYFINAL)
-	{
 		return (LALR_ACCEPT);
-	}
 	return (LALR_REDUCE);
 }
 
@@ -41,11 +40,10 @@ static t_lalr_action	reduce_or_error(t_ctx *c, t_parser_state *parse,
 static t_lalr_action	shift(t_ctx *c, t_parser_state *parse, int32_t action)
 {
 	t_symbol	sym;
+
 	parse->state = action;
 	if (parse->state == YYFINAL)
-	{
 		return (LALR_ACCEPT);
-	}
 	sym.type = parse->lookahead_type;
 	sym.token_idx = parse->token_idx;
 	sym.node_idx = 0;
@@ -55,8 +53,8 @@ static t_lalr_action	shift(t_ctx *c, t_parser_state *parse, int32_t action)
 
 t_lalr_action	shift_reduce(t_ctx *c, t_parser_state *parse)
 {
-	int32_t		action;
-	int32_t		index;
+	int32_t	action;
+	int32_t	index;
 
 	index = get_yypact(parse->state);
 	if (index == YYPACT_NINF)

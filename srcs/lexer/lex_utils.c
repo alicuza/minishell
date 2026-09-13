@@ -6,7 +6,7 @@
 /*   By: sancuta <sancuta@student.42vienna.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:03:51 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/11 12:40:50 by sancuta          ###   ########.fr       */
+/*   Updated: 2026/09/13 19:50:48 by sancuta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	restore_lex_token_slice(t_lexer_state *lex, t_slice saved)
 	lex->token.len = saved.len;
 }
 
-const char	**get_operator_strs(void)
+const char	**get_op_strs(void)
 {
 	static const char	*set[] = {"<<", ">>", "&&", "||", NULL};
 
