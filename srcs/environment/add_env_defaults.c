@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/13 20:45:05 by nribakov          #+#    #+#             */
-/*   Updated: 2026/09/14 01:58:10 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 02:35:38 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,15 @@ static int	add_path(t_env *env)
 
 static int	increase_shlvl(t_env *env, char *shlvl)
 {
-	int		tmp;
+	long	tmp;
 	char	*key;
 	char	*value;
 
-	tmp = ft_atoi(shlvl);
-	tmp += 1;
+	tmp = ft_atol(shlvl);
+	if (tmp == 0 && errno == EINVAL)
+		tmp = 1;
+	else
+		tmp += 1;
 	key = ft_strdup(SHLVL);
 	value = ft_itoa(tmp);
 	if (key == NULL || value == NULL)
