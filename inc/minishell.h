@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/14 01:39:16 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 02:08:45 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,8 @@ void			close_all_fds(t_ctx *c);
 void			close_heredoc_fds(t_ctx *c);
 
 /* -------- error_handling/error_handler.c ---------------------------------- */
-void			handle_mem_error(t_ctx *c, t_command_ctx *command_ctx, char *to_free);
+void			handle_mem_error(t_ctx *c,\
+	t_command_ctx *command_ctx, char *to_free);
 
 /* -------- expansions/expansion.c ------------------------------------------ */
 void			finish_args(t_ctx *c, t_command_ctx *command);
@@ -195,10 +196,10 @@ int				command_search_and_execution(t_ctx *c, t_command_ctx *cmd_ctx,
 int				execute_non_builtin(t_ctx *c, t_command_ctx *cmd_ctx,
 					t_node *redir_node);
 
-/* -------- search_in_path/get_pathname.c ------------------------------------ */
+/* -------- search_in_path/get_pathname.c ----------------------------------- */
 int				get_pathname(t_ctx *c, t_command_ctx *cmd_ctx);
 
-/* -------- search_in_path/get_pathname_from_current_dir.c ------------------- */
+/* -------- search_in_path/get_pathname_from_current_dir.c ------------------ */
 int				get_pathname_from_current_dir(t_command_ctx *cmd_ctx);
 
 /* -------- execute/open_here_file.c ---------------------------------------- */
@@ -320,16 +321,16 @@ char			*get_pwd(t_ctx *c);
 /* -------- builtin/builtin_exit.c ------------------------------------------ */
 int				builtin_exit(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- builtin/cd/cd.c ---------------------------------------------------- */
+/* -------- builtin/cd/cd.c ------------------------------------------------- */
 int				cd(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- builtin/cd/cd_path.c ---------------------------------------------------- */
+/* -------- builtin/cd/cd_path.c -------------------------------------------- */
 int				cd_path(t_ctx *c, char *curpath, const char *orig);
 
-/* -------- builtin/cd/cd_dir.c ---------------------------------------------------- */
-int	cd_dir(t_ctx *c, t_command_ctx *command_ctx, const char *dir);
+/* -------- builtin/cd/cd_dir.c --------------------------------------------- */
+int				cd_dir(t_ctx *c, t_command_ctx *command_ctx, const char *dir);
 
-/* -------- builtin/cd/get_path_canonical_form.c ------------------------------- */
+/* -------- builtin/cd/get_path_canonical_form.c ---------------------------- */
 char			*get_path_canonical_form(char *curpath, size_t len);
 
 /* -------- builtin/builtin_export.c ---------------------------------------- */
@@ -341,7 +342,7 @@ int				unset(t_ctx *c, t_command_ctx *command_ctx);
 /* -------- builtin/echo.c -------------------------------------------------- */
 int				echo(t_ctx *c, t_command_ctx *command_ctx);
 
-/* -------- builtin/no_op.c -------------------------------------------------- */
+/* -------- builtin/no_op.c ------------------------------------------------- */
 int				no_op(t_ctx *c, t_command_ctx *command_ctx);
 
 /* -------- utils/str_utils.c ----------------------------------------------- */
