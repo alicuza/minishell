@@ -6,7 +6,7 @@
 /*   By: nribakov <nribakov@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/22 21:48:28 by sancuta           #+#    #+#             */
-/*   Updated: 2026/09/14 02:08:45 by nribakov         ###   ########.fr       */
+/*   Updated: 2026/09/14 02:48:41 by nribakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@
 # define RESET "\001\033[0m\002"
 
 /* -------- heredoc --------------------------------------------------------- */
-# define HEREDOC_TMP "/tmp/.msh_heredoc_"
+# define HEREDOC_TMP "/tmp/.msh_heredoc"
 
 /* -------- operators ------------------------------------------------------- */
 # define NL "\n"
